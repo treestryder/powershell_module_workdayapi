@@ -73,23 +73,27 @@ Custom_ID/Badge_ID  1         Badge ID
         Type       = $null
         Id         = $null
         Descriptor = $null
+        Issued_Date = $null
+        Expiration_Date = $null
     }
 
-    $WorkerXml.GetElementsByTagName('wd:National_ID') | foreach {
+    $WorkerXml.GetElementsByTagName('wd:National_ID') | ForEach-Object {
         $o = $numberTemplate.PsObject.Copy()
-        $typeXml = $_.National_ID_Data.ID_Type_Reference.ID | where {$_.type -eq 'National_ID_Type_Code'}
+        $typeXml = $_.National_ID_Data.ID_Type_Reference.ID | Where-Object {$_.type -eq 'National_ID_Type_Code'}
         $o.Type = 'National_ID/{0}' -f $typeXml.'#text'
         $o.Id = $_.National_ID_Data.ID
         $o.Descriptor = $_.National_ID_Reference.Descriptor
         Write-Output $o
     }
 
-    $WorkerXml.GetElementsByTagName('wd:Custom_ID') | foreach {
+    $WorkerXml.GetElementsByTagName('wd:Custom_ID') | ForEach-Object {
         $o = $numberTemplate.PsObject.Copy()
-        $typeXml = $_.Custom_ID_Data.ID_Type_Reference.ID | where {$_.type -eq 'Custom_ID_Type_ID'}
+        $typeXml = $_.Custom_ID_Data.ID_Type_Reference.ID | Where-Object {$_.type -eq 'Custom_ID_Type_ID'}
         $o.Type = 'Custom_ID/{0}' -f $typeXml.'#text'
         $o.Id = $_.Custom_ID_Data.ID
         $o.Descriptor = $_.Custom_ID_Data.ID_Type_Reference.Descriptor
+        $o.Issued_Date = try { Get-Date $_.Custom_ID_Data.Issued_Date -ErrorAction Stop } catch {}
+        $o.Expiration_Date = try { Get-Date $_.Custom_ID_Data.Expiration_Date -ErrorAction Stop } catch {}
         Write-Output $o
     }
 

@@ -19,16 +19,20 @@ FunctionsToExport = @(
         'Set-WorkdayEndpoint',
         'Save-WorkdayConfiguration'
 
-        'Get-WorkdayWorkerPhone',
-		'Set-WorkdayWorkerPhone',
-        'Update-WorkdayWorkerPhone',
-
         'Get-WorkdayWorkerEmail',
 		'Set-WorkdayWorkerEmail',
         'Update-WorkdayWorkerEmail'
 
         'Get-WorkdayWorkerDocument',
         'Set-WorkdayWorkerDocument',
+
+        'Get-WorkdayWorkerOtherId',
+        'Set-WorkdayWorkerBadgeId',
+        'Update-WorkdayWorkerBadgeId',
+
+        'Get-WorkdayWorkerPhone',
+		'Set-WorkdayWorkerPhone',
+        'Update-WorkdayWorkerPhone',
 
         'Start-WorkdayIntegration',
         'Get-WorkdayIntegrationEvent'

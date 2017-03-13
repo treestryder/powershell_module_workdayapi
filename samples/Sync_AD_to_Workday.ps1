@@ -3,7 +3,7 @@
 Example script to push Active Directory values to Workday, when they differ.
 
 .Example
-.\Push_AD_to_Workday.ps1 | Export-Csv -Path Report.csv -NoTypeInformation
+.\Sync_AD_to_Workday.ps1 | Export-Csv -Path Report.csv -NoTypeInformation
 #>
 
 #REQUIRES -Modules ActiveDirectory
