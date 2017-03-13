@@ -89,7 +89,7 @@ function Set-WorkdayWorkerPhone {
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Effective_Date = (Get-Date).ToString( 'yyyy-MM-dd' )
 
     $scrubbedNumber = $WorkPhone -replace '[^\d]', ''
-	if ($scrubbedNumber -match '(?<country>[\d]*?)(?<areacode>\d{0,3})(?<prefix>\d{0,3})(?<line>\d{1,4})$') {
+	if ($scrubbedNumber -match '(?<country>[\d]*?)(?<areacode>\d{0,3}?)(?<prefix>\d{0,3}?)(?<line>\d{1,4})$') {
 		if ($Matches['country'].length -gt 0) {
 			$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.International_Phone_Code = $Matches['country']
 		}
