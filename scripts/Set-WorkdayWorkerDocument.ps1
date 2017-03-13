@@ -35,7 +35,9 @@ Set-WorkdayWorkerDocument -EmpoyeeId 123 -Path Document.pdf
 	param (
 		[Parameter(Mandatory = $true)]
 		[ValidateNotNullOrEmpty()]
-		[string]$EmployeeId,
+		[string]$WorkerId,
+		[ValidateSet('WID', 'Contingent_Worker_ID', 'Employee_ID')]
+		[string]$WorkerType = 'Employee_ID',
 		[Parameter(Mandatory = $true)]
 		[ValidateScript({Test-Path $_ -PathType Leaf})]
 		[string]$Path,
@@ -74,10 +76,17 @@ Set-WorkdayWorkerDocument -EmpoyeeId 123 -Path Document.pdf
 </bsvc:Put_Worker_Document_Request>
 '@
 
+    $request.Put_Worker_Document_Request.Worker_Document_Data.Worker_Reference.ID.InnerText = $WorkerId
+    if ($WorkerType -eq 'Contingent_Worker_ID') {
+        $request.Put_Worker_Document_Request.Worker_Document_Data.Worker_Reference.ID.type = 'Contingent_Worker_ID'
+    }
+    if ($WorkerType -eq 'WID') {
+        $request.Put_Worker_Document_Request.Worker_Document_Data.Worker_Reference.ID.type = 'WID'
+    }
+
     if ([string]::IsNullOrWhiteSpace($FileName)) {
         $FileName = [string] (Split-Path -Path $Path -Leaf)
     }
-	$request.Put_Worker_Document_Request.Worker_Document_Data.Worker_Reference.ID.InnerText = $EmployeeId
 	$request.Put_Worker_Document_Request.Worker_Document_Data.Filename = $FileName
     $request.Put_Worker_Document_Request.Worker_Document_Data.File = [System.Convert]::ToBase64String( [system.io.file]::ReadAllBytes( $Path ) )
     $request.Put_Worker_Document_Request.Worker_Document_Data.Document_Category_Reference.ID.type = $CategoryType
