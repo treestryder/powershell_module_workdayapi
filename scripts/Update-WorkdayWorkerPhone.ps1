@@ -79,7 +79,16 @@ Update-WorkdayWorkerPhone -WorkerId 123 -WorkPhone 1234567890
     $scrubbedProposed = scrub $WorkPhone
 
     Write-Verbose "Current: $scrubbedCurrent Proposed: $scrubbedProposed"
-    if ($scrubbedCurrent -ne $scrubbedProposed) {
-        Set-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType -WorkPhone $WorkPhone -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
+    $output = [pscustomobject][ordered]@{
+        Success = $true
+        Message = "No change necessary for current Workday number [$scrubbedCurrent]."
+        Xml     = $null
     }
+    if ($scrubbedCurrent -ne $scrubbedProposed) {
+        $output = Set-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType -WorkPhone $WorkPhone -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password
+        if ($output.Success) {
+            $output.Message = "Number changed at Workday from [$scrubbedCurrent] to [$scrubbedProposed]."
+        }
+    }
+    Write-Output $output
 }

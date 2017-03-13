@@ -90,6 +90,7 @@ urn:com.workday/bsvc v25.1   2015-12-02T12:18:30.841-08:00
         Message  = 'Unknown Error'
         Xml = $null
     }
+    $o.psobject.TypeNames.Insert(0, "WorkdayResponse")
 
 	$response = $null
     try {

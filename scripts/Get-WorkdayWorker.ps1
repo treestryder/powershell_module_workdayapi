@@ -108,8 +108,7 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
     if ($Passthru) { return $response }
 
     if (-not $response.Success) {
-        Write-Warning ('Failed to get Worker information: {0}' -f $response.Message)
-        return
+        return $response
     }
 
     $referenceId = $response.Xml.Get_Workers_Response.Response_Data.Worker.Worker_Reference.ID | where {$_.type -ne 'WID'}
@@ -127,6 +126,7 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
         Email            = $null
         XML              = $response.Xml
     }
+    $worker.psobject.TypeNames.Insert(0, "WorkdayWorker")
 
     if ($IncludePersonal) {
         $worker.Phone   = @(Get-WorkdayWorkerPhone -WorkerXml $response.Xml)

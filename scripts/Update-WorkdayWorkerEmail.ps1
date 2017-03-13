@@ -75,9 +75,17 @@ Update-WorkdayWorkerEmail -WorkerId 123 -WorkEmail test@example.com
     $currentWorkEmail = $current | where { $_.Type -eq 'Work' -and $_.Primary } | Select -First 1 -ExpandProperty Email
 
     Write-Verbose "Current: $currentWorkEmail Proposed: $WorkEmail"
-    if ($currentWorkEmail -ne $WorkEmail) {
-        Set-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -WorkEmail $WorkEmail -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
-    } else {
-        Write-Verbose 'Email matches Workday, no update necessary.'
+
+    $output = [pscustomobject][ordered]@{
+        Success = $true
+        Message = "No change necessary for current Workday email [$currentWorkEmail]."
+        Xml     = $null
     }
+    if ($currentWorkEmail -ne $WorkEmail) {
+        $output = Set-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -WorkEmail $WorkEmail -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
+        if ($output.Success) {
+            $output.Message = "Email changed at Workday from [$currentWorkEmail] to [$WorkEmail]."
+        }
+    }
+    Write-Output $output
 }
