@@ -43,7 +43,7 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
 	param (
 		[Parameter(Mandatory = $true,
             Position=0)]
-		[ValidateNotNullOrEmpty()]
+		[ValidatePattern ('^[a-fA-F0-9\-]{1,32}$')]
         [string]$WorkerId,
 		[ValidateSet('WID', 'Contingent_Worker_ID', 'Employee_ID')]
 		[string]$WorkerType = 'Employee_ID',

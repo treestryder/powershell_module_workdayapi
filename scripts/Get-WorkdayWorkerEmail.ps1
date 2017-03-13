@@ -42,7 +42,7 @@ Work work@example.com                True   True
 		[Parameter(Mandatory = $true,
             Position=0,
             ParameterSetName='Search')]
-		[ValidateNotNullOrEmpty()]
+		[ValidatePattern ('^[a-fA-F0-9\-]{1,32}$')]
 		[string]$WorkerId,
         [Parameter(ParameterSetName="Search")]
 		[ValidateSet('WID', 'Contingent_Worker_ID', 'Employee_ID')]

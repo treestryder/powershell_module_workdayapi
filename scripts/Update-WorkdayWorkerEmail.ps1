@@ -43,7 +43,7 @@ Update-WorkdayWorkerEmail -WorkerId 123 -WorkEmail test@example.com
 		[Parameter(Mandatory = $true,
             ParameterSetName="Search",
             Position=0)]
-		[ValidateNotNullOrEmpty()]
+		[ValidatePattern ('^[a-fA-F0-9\-]{1,32}$')]
 		[string]$WorkerId,
         [Parameter(ParameterSetName="Search")]
 		[ValidateSet('WID', 'Contingent_Worker_ID', 'Employee_ID')]
