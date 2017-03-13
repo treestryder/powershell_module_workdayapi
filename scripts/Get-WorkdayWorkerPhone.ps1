@@ -64,8 +64,8 @@ Work/Landline +1 (987) 654-3210 1         True
         $o = $numberTemplate.PsObject.Copy()
         $o.Type = $_.Usage_Data.Type_Data.Type_Reference.Descriptor + '/' + $_.Phone_Device_Type_Reference.Descriptor
         $o.Number = $_.Formatted_Phone
-        $o.Primary = $_.Usage_Data.Type_Data.Primary
-        $o.Public = $_.Usage_Data.Public -eq 1
+        $o.Primary = [bool]$_.Usage_Data.Type_Data.Primary
+        $o.Public = [bool]$_.Usage_Data.Public
         Write-Output $o
     }
 }

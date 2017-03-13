@@ -73,7 +73,7 @@ Set-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
 					<bsvc:ID bsvc:type="Phone_Device_Type_ID">Landline</bsvc:ID>
 				</bsvc:Phone_Device_Type_Reference>
 				<bsvc:Usage_Data bsvc:Public="true">
-					<bsvc:Type_Data bsvc:Primary="0">
+					<bsvc:Type_Data bsvc:Primary="true">
 						<bsvc:Type_Reference>
 							<bsvc:ID bsvc:type="Communication_Usage_Type_ID">WORK</bsvc:ID>
 						</bsvc:Type_Reference>

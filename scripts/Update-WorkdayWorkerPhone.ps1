@@ -52,11 +52,11 @@ Update-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
     
-    $current = Get-WorkdayWorkerPhone -EmployeeId $EmployeeId -Uri $Uri -Username $Username -Password $Password
+    $current = Get-WorkdayWorkerPhone -EmployeeId $EmployeeId -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
 
     function scrub ([string]$PhoneNumber) { $PhoneNumber -replace '[^\d]','' -replace '^1','' }
 
-    $scrubbedCurrent = scrub ( $current | where { $_.Type -eq 'Work/Landline' -and $_.Primary -eq 0 } | Select -First 1 -ExpandProperty Number)
+    $scrubbedCurrent = scrub ( $current | where { $_.Type -eq 'Work/Landline' -and $_.Primary } | Select -First 1 -ExpandProperty Number)
     $scrubbedProposed = scrub $WorkPhone
 
     Write-Verbose "Current: $scrubbedCurrent Proposed: $scrubbedProposed"

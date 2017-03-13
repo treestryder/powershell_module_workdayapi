@@ -66,7 +66,7 @@ Set-WorkdayWorkerEmail -EmpoyeeId 123 -WorkEmail worker@example.com
 			<bsvc:Email_Address_Data>
 				<bsvc:Email_Address>Email_Address</bsvc:Email_Address>
 				<bsvc:Usage_Data bsvc:Public="true">
-					<bsvc:Type_Data bsvc:Primary="0">
+					<bsvc:Type_Data bsvc:Primary="true">
 					<bsvc:Type_Reference>
 						<bsvc:ID bsvc:type="Communication_Usage_Type_ID">WORK</bsvc:ID>
 					</bsvc:Type_Reference>
