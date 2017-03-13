@@ -1,3 +1,4 @@
+function Get-WorkdayEndpoint {
 <#
 .SYNOPSIS
     Gets the default Uri value for all or a particular Endpoint.
@@ -23,7 +24,6 @@ Get-WorkdayEndpoint
 
 #>
 
-function Get-WorkdayEndpoint {
     [CmdletBinding()]
     param (
         [parameter(Mandatory=$false)]

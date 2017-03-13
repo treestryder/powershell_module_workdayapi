@@ -1,3 +1,4 @@
+function Get-WorkdayReport {
 <#
 .SYNOPSIS
     Returns the XML result from any Workday report, based on its URI.
@@ -18,7 +19,6 @@
 
 #>
 
-function Get-WorkdayReport {
 	[CmdletBinding()]
     [OutputType([XML])]
 	param (

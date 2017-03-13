@@ -1,3 +1,4 @@
+function Set-WorkdayWorkerDocument {
 <#
 .SYNOPSIS
     Uploads a document to a Worker's records in Workday.
@@ -30,7 +31,6 @@ Set-WorkdayWorkerDocument -EmpoyeeId 123 -Path Document.pdf
 
 #>
 
-function Set-WorkdayWorkerDocument {
 	[CmdletBinding()]
 	param (
 		[Parameter(Mandatory = $true)]

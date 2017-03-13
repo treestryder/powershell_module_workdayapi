@@ -1,3 +1,4 @@
+function Get-WorkdayWorker {
 <#
 .SYNOPSIS
     Gets Worker information as Workday XML.
@@ -34,8 +35,6 @@ Get-WorkdayWorker -EmpoyeeId 123 -IncludePersonal -IncludeDefault
 
 #>
 
-
-function Get-WorkdayWorker {
 	[CmdletBinding()]
     [OutputType([XML])]
 	param (

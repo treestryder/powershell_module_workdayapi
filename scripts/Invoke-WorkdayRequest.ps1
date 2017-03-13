@@ -1,3 +1,4 @@
+function Invoke-WorkdayRequest {
 <#
 .SYNOPSIS
     Sends XML requests to Workday API, with proper authentication and receives XML response.
@@ -40,7 +41,6 @@ urn:com.workday/bsvc v25.1   2015-12-02T12:18:30.841-08:00
     Workday XML
 #>
 
-function Invoke-WorkdayRequest {
 	[CmdletBinding()]
     [OutputType([XML])]
 	param (

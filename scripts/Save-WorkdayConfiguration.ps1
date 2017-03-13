@@ -1,3 +1,4 @@
+function Save-WorkdayConfiguration {
 <#
 .SYNOPSIS
     Saves default Workday configuration to a file in the current users Profile.
@@ -13,7 +14,6 @@
 
 #>
 
-function Save-WorkdayConfiguration {
     [CmdletBinding()]
     param ()
 

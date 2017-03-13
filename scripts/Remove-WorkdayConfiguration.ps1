@@ -1,3 +1,4 @@
+function Remove-WorkdayConfiguration {
 <#
 .SYNOPSIS
     Removes Workday configuration file from the current users Profile.
@@ -10,7 +11,6 @@
 
 #>
 
-function Remove-WorkdayConfiguration {
     [CmdletBinding()]
     param ()
 

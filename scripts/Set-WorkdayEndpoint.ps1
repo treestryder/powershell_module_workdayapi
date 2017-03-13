@@ -1,3 +1,4 @@
+function Set-WorkdayEndpoint {
 <#
 .SYNOPSIS
     Sets the default Uri value for a particular Endpoint.
@@ -32,7 +33,6 @@ Human_Resources,https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v
 
 #>
 
-function Set-WorkdayEndpoint {
     [CmdletBinding()]
     param (
         [parameter(Mandatory=$true,

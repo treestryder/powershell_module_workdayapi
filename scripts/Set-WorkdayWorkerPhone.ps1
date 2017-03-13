@@ -1,3 +1,4 @@
+function Set-WorkdayWorkerPhone {
 <#
 .SYNOPSIS
     Sets a Worker's phone number in Workday.
@@ -31,7 +32,6 @@ Set-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
 
 #>
 
-function Set-WorkdayWorkerPhone {
 	[CmdletBinding()]
 	param (
 		[Parameter(Mandatory = $true)]

@@ -1,4 +1,5 @@
-﻿<#
+﻿function Get-WorkdayWorkerPhone {
+<#
 .SYNOPSIS
     Returns a Worker's phone numbers.
 
@@ -32,7 +33,6 @@ Work/Landline +1 (987) 654-3210 1         True
 
 #>
 
-function Get-WorkdayWorkerPhone {
 	[CmdletBinding()]
     [OutputType([PSCustomObject])]
 	param (

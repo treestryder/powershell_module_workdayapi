@@ -1,3 +1,4 @@
+function Set-WorkdayCredential {
 <#
 .SYNOPSIS
     Sets the default Workday API credentials.
@@ -22,7 +23,6 @@
 
 #>
 
-function Set-WorkdayCredential {
     [CmdletBinding()]
     param (
         [PSCredential]$Credential = $(Get-Credential -Message 'Enter Workday API credentials.')

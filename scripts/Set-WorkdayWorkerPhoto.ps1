@@ -1,3 +1,4 @@
+function Set-WorkdayWorkerPhoto {
 <#
 .SYNOPSIS
     Uploads an image file to Workday and set it as a Worker's photo.
@@ -30,7 +31,6 @@ Set-WorkdayWorkerPhoto -EmpoyeeId 123 -Path Photo.jpg
 
 #>
 
-function Set-WorkdayWorkerPhoto {
 	[CmdletBinding()]
 	param (
 		[Parameter(Mandatory = $true)]

@@ -1,3 +1,4 @@
+function Set-WorkdayWorkerEmail {
 <#
 .SYNOPSIS
     Sets a Worker's email in Workday.
@@ -31,8 +32,6 @@ Set-WorkdayWorkerEmail -EmpoyeeId 123 -WorkEmail worker@example.com
 
 #>
 
-
-function Set-WorkdayWorkerEmail {
 	[CmdletBinding()]
 	param (
 		[Parameter(Mandatory = $true)]
