@@ -22,7 +22,7 @@ This simple Powershell Module has been written to fulfill my employer's Workday 
     Set-WorkdayEndpoint -Endpoint Human_Resources -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v25.1'
     Save-WorkdayConfiguration
 
-    Set-WorkdayWorkerPhone -EmployeeId -WorkPhone 9876543210
+    Set-WorkdayWorkerPhone -EmployeeId 123 -WorkPhone 9876543210
 
     Get-WorkdayWorkerPhone -EmpoyeeId 123
 
