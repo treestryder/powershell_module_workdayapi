@@ -12,9 +12,9 @@ Describe Get-WorkdayWorker {
         It 'Creates the correct XML for the Workday request.' {
 
         $expectedResponse = @'
-<bsvc:Get_Workers_Request xmlns:bsvc="urn:com.workday/bsvc"><bsvc:Request_References bsvc:Skip_Non_Existing_Instances="false"><bsvc:Worker_Reference><bsvc:ID bsvc:type="Employee_ID">1</bsvc:ID></bsvc:Worker_Reference></bsvc:Request_References><bsvc:Response_Group><bsvc:Include_Reference>false</bsvc:Include_Reference><bsvc:Include_Personal_Information>false</bsvc:Include_Personal_Information><bsvc:Include_Employment_Information>false</bsvc:Include_Employment_Information><bsvc:Include_Compensation>false</bsvc:Include_Compensation><bsvc:Include_Organizations>false</bsvc:Include_Organizations><bsvc:Include_Roles>false</bsvc:Include_Roles><bsvc:Include_Worker_Documents>false</bsvc:Include_Worker_Documents></bsvc:Response_Group></bsvc:Get_Workers_Request>
+<bsvc:Get_Workers_Request xmlns:bsvc="urn:com.workday/bsvc"><bsvc:Request_References bsvc:Skip_Non_Existing_Instances="false"><bsvc:Worker_Reference><bsvc:ID bsvc:type="Employee_ID">1</bsvc:ID></bsvc:Worker_Reference></bsvc:Request_References><bsvc:Request_Criteria><bsvc:Exclude_Inactive_Workers>true</bsvc:Exclude_Inactive_Workers></bsvc:Request_Criteria><bsvc:Response_Filter><bsvc:Page>1</bsvc:Page></bsvc:Response_Filter><bsvc:Response_Group><bsvc:Include_Reference>true</bsvc:Include_Reference><bsvc:Include_Personal_Information>false</bsvc:Include_Personal_Information><bsvc:Include_Employment_Information>false</bsvc:Include_Employment_Information><bsvc:Include_Compensation>false</bsvc:Include_Compensation><bsvc:Include_Organizations>false</bsvc:Include_Organizations><bsvc:Include_Roles>false</bsvc:Include_Roles><bsvc:Include_Worker_Documents>false</bsvc:Include_Worker_Documents></bsvc:Response_Group></bsvc:Get_Workers_Request>
 '@ -f (Get-Date)
-            $response = Get-WorkdayWorker -WorkerId 1 -WorkerType Employee_ID
+            $response = Get-WorkdayWorker -WorkerId 1 -WorkerType Employee_ID -Passthru
             $response.Xml.OuterXml | Should BeExactly $expectedResponse
             Assert-MockCalled Invoke-WorkdayRequest -Exactly 1
         }

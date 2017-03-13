@@ -75,7 +75,7 @@ Work/Landline +1 (555) 765-4321    True   True
         Public  = $null
     }
 
-    $WorkerXml.Get_Workers_Response.Response_Data.FirstChild.Worker_Data.Personal_Data.Contact_Data.Phone_Data | foreach {
+    $WorkerXml.GetElementsByTagName('wd:Phone_Data') | foreach {
         $o = $numberTemplate.PsObject.Copy()
         $o.Type = $_.Usage_Data.Type_Data.Type_Reference.Descriptor + '/' + $_.Phone_Device_Type_Reference.Descriptor
         $o.Number = $_.Formatted_Phone

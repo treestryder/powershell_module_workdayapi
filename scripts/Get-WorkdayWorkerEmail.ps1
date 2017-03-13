@@ -76,7 +76,7 @@ Work work@example.com                True   True
         Public           = $null
     }
 
-    $WorkerXml.Get_Workers_Response.Response_Data.FirstChild.Worker_Data.Personal_Data.Contact_Data.Email_Address_Data | foreach {
+    $WorkerXml.GetElementsByTagName('wd:Email_Address_Data') | foreach {
         $o = $numberTemplate.PsObject.Copy()
         $o.Type = $_.Usage_Data.Type_Data.Type_Reference.Descriptor
         $o.Email = $_.Email_Address

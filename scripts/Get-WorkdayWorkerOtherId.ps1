@@ -75,7 +75,7 @@ Custom_ID/Badge_ID  1         Badge ID
         Descriptor = $null
     }
 
-    $WorkerXml.Get_Workers_Response.Response_Data.Worker.Worker_Data.Personal_Data.Identification_Data.National_ID | foreach {
+    $WorkerXml.GetElementsByTagName('wd:National_ID') | foreach {
         $o = $numberTemplate.PsObject.Copy()
         $typeXml = $_.National_ID_Data.ID_Type_Reference.ID | where {$_.type -eq 'National_ID_Type_Code'}
         $o.Type = 'National_ID/{0}' -f $typeXml.'#text'
@@ -84,7 +84,7 @@ Custom_ID/Badge_ID  1         Badge ID
         Write-Output $o
     }
 
-    $WorkerXml.Get_Workers_Response.Response_Data.Worker.Worker_Data.Personal_Data.Identification_Data.Custom_ID | foreach {
+    $WorkerXml.GetElementsByTagName('wd:Custom_ID') | foreach {
         $o = $numberTemplate.PsObject.Copy()
         $typeXml = $_.Custom_ID_Data.ID_Type_Reference.ID | where {$_.type -eq 'Custom_ID_Type_ID'}
         $o.Type = 'Custom_ID/{0}' -f $typeXml.'#text'
