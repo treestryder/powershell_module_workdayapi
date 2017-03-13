@@ -1,3 +1,35 @@
+<#
+.SYNOPSIS
+    Uploads an image file to Workday and set it as a Worker's photo.
+
+.DESCRIPTION
+    Uploads an image file to Workday and set it as a Worker's photo.
+
+.PARAMETER EmployeeId
+    The Worker's Employee Id at Workday. This cmdlet does not currently
+    support Contengent Workers or referencing workers by WID.
+
+.PARAMETER Path
+    The Path to the image file to upload.
+
+.PARAMETER Human_ResourcesUri
+    Human_Resources Endpoint Uri for the request. If not provided, the value
+    stored with Set-WorkdayEndpoint -Endpoint Human_Resources is used.
+
+.PARAMETER Username
+    Username used to authenticate with Workday. If empty, the value stored
+    using Set-WorkdayCredential will be used.
+
+.PARAMETER Password
+    Password used to authenticate with Workday. If empty, the value stored
+    using Set-WorkdayCredential will be used.
+
+.EXAMPLE
+    
+Set-WorkdayWorkerPhoto -EmpoyeeId 123 -Path Photo.jpg
+
+#>
+
 function Set-WorkdayWorkerPhoto {
 	[CmdletBinding()]
 	param (
@@ -6,18 +38,16 @@ function Set-WorkdayWorkerPhoto {
 		[string]$EmployeeId,
 		[Parameter(Mandatory = $true)]
 		[ValidateScript({Test-Path $_ -PathType Leaf})]
-		[string]$Path,
-		[Parameter(Mandatory = $true)]
 		[ValidateNotNullOrEmpty()]
-		[string]$Uri,
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+        [string]$Path,
+        [string]$Human_ResourcesUri,
 		[string]$Username,
-		[Parameter(Mandatory = $true)]
 		[string]$Password,
         [switch]$Passthru
-
 	)
+
+    if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Uri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
+
 	$request = [xml]@'
 <bsvc:Put_Worker_Photo_Request xmlns:bsvc="urn:com.workday/bsvc">
     <bsvc:Worker_Reference>

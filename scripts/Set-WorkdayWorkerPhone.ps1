@@ -1,6 +1,36 @@
 <#
-[ValidatePattern('\d')]
+.SYNOPSIS
+    Sets a Worker's phone number in Workday.
+
+.DESCRIPTION
+    Sets a Worker's phone number in Workday.
+
+.PARAMETER EmployeeId
+    The Worker's Employee Id at Workday. This cmdlet does not currently
+    support Contengent Workers or referencing workers by WID.
+
+.PARAMETER WorkPhone
+    Sets the Workday primary Work Landline for a Worker. This cmdlet does not
+    currently support other phone types. Also excepts the alias OfficePhone.
+
+.PARAMETER Human_ResourcesUri
+    Human_Resources Endpoint Uri for the request. If not provided, the value
+    stored with Set-WorkdayEndpoint -Endpoint Human_Resources is used.
+
+.PARAMETER Username
+    Username used to authenticate with Workday. If empty, the value stored
+    using Set-WorkdayCredential will be used.
+
+.PARAMETER Password
+    Password used to authenticate with Workday. If empty, the value stored
+    using Set-WorkdayCredential will be used.
+
+.EXAMPLE
+    
+Set-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
+
 #>
+
 function Set-WorkdayWorkerPhone {
 	[CmdletBinding()]
 	param (
@@ -10,16 +40,14 @@ function Set-WorkdayWorkerPhone {
 		[Parameter(Mandatory = $true)]
         [Alias('OfficePhone')]
 		[string]$WorkPhone,
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
-		[string]$Uri,
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[string]$Human_ResourcesUri,
 		[string]$Username,
-		[Parameter(Mandatory = $true)]
 		[string]$Password,
         [switch]$Passthru
 	)
+
+    if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Uri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
+
 
 	$request = [xml]@'
 <bsvc:Maintain_Contact_Information_for_Person_Event_Request bsvc:Add_Only="false" xmlns:bsvc="urn:com.workday/bsvc">
@@ -45,7 +73,7 @@ function Set-WorkdayWorkerPhone {
 					<bsvc:ID bsvc:type="Phone_Device_Type_ID">Landline</bsvc:ID>
 				</bsvc:Phone_Device_Type_Reference>
 				<bsvc:Usage_Data bsvc:Public="true">
-					<bsvc:Type_Data bsvc:Primary="true">
+					<bsvc:Type_Data bsvc:Primary="0">
 						<bsvc:Type_Reference>
 							<bsvc:ID bsvc:type="Communication_Usage_Type_ID">WORK</bsvc:ID>
 						</bsvc:Type_Reference>

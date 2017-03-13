@@ -1,5 +1,48 @@
+<#
+.SYNOPSIS
+    Sends XML requests to Workday API, with proper authentication and receives XML response.
+
+.DESCRIPTION
+    Sends XML requests to Workday API, with proper authentication and receives XML response.
+
+    Used for all communication to Workday in this module and may be used to send
+    custom XML requests.
+
+.PARAMETER Request
+    The Workday request XML to be sent to Workday.
+    See https://community.workday.com/custom/developer/API/index.html for more information.
+
+.PARAMETER Uri
+    Endpoint Uri for the request.
+
+.PARAMETER Username
+    Username used to authenticate with Workday. If empty, the value stored
+    using Set-WorkdayCredential will be used.
+
+.PARAMETER Password
+    Password used to authenticate with Workday. If empty, the value stored
+    using Set-WorkdayCredential will be used.
+
+.EXAMPLE
+    
+$response = Invoke-WorkdayRequest -Request '<bsvc:Server_Timestamp_Get xmlns:bsvc="urn:com.workday/bsvc" />' -Uri https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v25.1
+
+$response.Server_Timestamp
+
+wd                   version Server_Timestamp_Data        
+--                   ------- ---------------------        
+urn:com.workday/bsvc v25.1   2015-12-02T12:18:30.841-08:00
+
+.INPUTS
+    Workday XML
+
+.OUTPUTS
+    Workday XML
+#>
+
 function Invoke-WorkdayRequest {
 	[CmdletBinding()]
+    [OutputType([XML])]
 	param (
 		[Parameter(Mandatory = $true)]
 		[ValidateNotNullOrEmpty()]
@@ -7,12 +50,12 @@ function Invoke-WorkdayRequest {
 		[Parameter(Mandatory = $true)]
 		[ValidateNotNullOrEmpty()]
 		[string]$Uri,
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
 		[string]$Username,
-		[Parameter(Mandatory = $true)]
 		[string]$Password
 	)
+
+    if ([string]::IsNullOrWhiteSpace($Username)) { $Username = $WorkdayConfiguration.Credential.Username }
+    if ([string]::IsNullOrWhiteSpace($Password)) { $Password = $WorkdayConfiguration.Credential.GetNetworkCredential().Password }
 
 	$WorkdaySoapEnvelope = [xml] @'
 <soapenv:Envelope xmlns:bsvc="urn:com.workday/bsvc" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">

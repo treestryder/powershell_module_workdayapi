@@ -1,3 +1,35 @@
+<#
+.SYNOPSIS
+    Uploads a document to a Worker's records in Workday.
+
+.DESCRIPTION
+    Uploads a document to a Worker's records in Workday.
+
+.PARAMETER EmployeeId
+    The Worker's Employee Id at Workday. This cmdlet does not currently
+    support Contengent Workers or referencing workers by WID.
+
+.PARAMETER Path
+    The Path to the document file to upload.
+
+.PARAMETER StaffingUri
+    Staffing Endpoint Uri for the request. If not provided, the value
+    stored with Set-WorkdayEndpoint -Endpoint Staffing is used.
+
+.PARAMETER Username
+    Username used to authenticate with Workday. If empty, the value stored
+    using Set-WorkdayCredential will be used.
+
+.PARAMETER Password
+    Password used to authenticate with Workday. If empty, the value stored
+    using Set-WorkdayCredential will be used.
+
+.EXAMPLE
+    
+Set-WorkdayWorkerDocument -EmpoyeeId 123 -Path Document.pdf
+
+#>
+
 function Set-WorkdayWorkerDocument {
 	[CmdletBinding()]
 	param (
@@ -14,16 +46,14 @@ function Set-WorkdayWorkerDocument {
         [Parameter(Mandatory = $true)]
         [string]$CategoryId,
         [string]$Comment,
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
-		[string]$Uri,
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[string]$StaffingUri,
 		[string]$Username,
-		[Parameter(Mandatory = $true)]
 		[string]$Password,
         [switch]$Passthru
 	)
+
+    if ([string]::IsNullOrWhiteSpace($StaffingUri)) { $Uri = $WorkdayConfiguration.Endpoints['Staffing'] }
+
 	$request = [xml]@'
 <bsvc:Put_Worker_Document_Request bsvc:Add_Only="false" xmlns:bsvc="urn:com.workday/bsvc">
   <bsvc:Worker_Document_Data>

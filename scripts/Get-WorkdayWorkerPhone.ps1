@@ -1,26 +1,33 @@
 ﻿function Get-WorkdayWorkerPhone {
 	[CmdletBinding()]
-    [OutputType([hashtable])]
+    [OutputType([PSCustomObject])]
 	param (
 		[Parameter(Mandatory = $true)]
 		[ValidateNotNullOrEmpty()]
 		[string]$EmployeeId,
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
-		[string]$Uri,
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[string]$Human_ResourcesUri,
 		[string]$Username,
-		[Parameter(Mandatory = $true)]
 		[string]$Password
 	)
 
-        $w = get-workdayworker @PSBoundParameters -IncludePersonal
+    if ([string]::IsNullOrWhiteSpace($Uri)) { $Uri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
-        $numbers = @{}
-        $w.Get_Workers_Response.Response_Data.FirstChild.Worker_Data.Personal_Data.Contact_Data.Phone_Data | foreach {
-             $numberType = $_.Usage_Data.Type_Data.Type_Reference.Descriptor + '/' + $_.Phone_Device_Type_Reference.Descriptor
-             $numbers.Add($numberType, $_.Formatted_Phone)
+        $w = Get-WorkdayWorker @PSBoundParameters -IncludePersonal
+        if ($w -eq $null) { return }
+
+        $numberTemplate = [pscustomobject][ordered]@{
+            Type    = $null
+            Number  = $null
+            Primary = $null
+            Public  = $null
         }
-        Write-Output $numbers
+
+        $w.Get_Workers_Response.Response_Data.FirstChild.Worker_Data.Personal_Data.Contact_Data.Phone_Data | foreach {
+            $o = $numberTemplate.PsObject.Copy()
+            $o.Type = $_.Usage_Data.Type_Data.Type_Reference.Descriptor + '/' + $_.Phone_Device_Type_Reference.Descriptor
+            $o.Number = $_.Formatted_Phone
+            $o.Primary = $_.Usage_Data.Type_Data.Primary
+            $o.Public = $_.Usage_Data.Public -eq 1
+            Write-Output $o
+        }
 	}
