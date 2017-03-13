@@ -89,7 +89,6 @@ urn:com.workday/bsvc v25.1   2015-12-02T12:18:30.841-08:00
         Success    = $false
         Message  = 'Unknown Error'
         Xml = $null
-        Response = $null
     }
 
 	$response = $null
