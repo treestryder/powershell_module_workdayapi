@@ -50,5 +50,5 @@ function Set-WorkdayWorkerEmail {
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Email_Address_Data.Email_Address = $WorkEmail
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Effective_Date = (Get-Date).ToString( 'yyyy-MM-dd' )
 
-	Invoke-WorkdayApiRequest -Request $request -Uri $Uri -Username $Username -Password $Password | Write-Output
+	Invoke-WorkdayRequest -Request $request -Uri $Uri -Username $Username -Password $Password | Write-Output
 	}

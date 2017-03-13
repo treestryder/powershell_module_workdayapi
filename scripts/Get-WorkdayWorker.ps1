@@ -245,5 +245,5 @@ function Get-WorkdayWorker {
 
 	$request.Get_Workers_Request.Request_References.Worker_Reference.ID.InnerText = $EmployeeId
 
-	Invoke-WorkdayApiRequest -Request $request -Uri $Uri -Username $Username -Password $Password | Write-Output
+	Invoke-WorkdayRequest -Request $request -Uri $Uri -Username $Username -Password $Password | Write-Output
 }
