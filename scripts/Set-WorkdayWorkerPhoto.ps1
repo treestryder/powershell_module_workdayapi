@@ -33,9 +33,12 @@ Set-WorkdayWorkerPhoto -EmpoyeeId 123 -Path Photo.jpg
 
 	[CmdletBinding()]
 	param (
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $true,
+            Position=0)]
 		[ValidateNotNullOrEmpty()]
-		[string]$EmployeeId,
+		[string]$WorkerId,
+		[ValidateSet('WID', 'Contingent_Worker_ID', 'Employee_ID')]
+		[string]$WorkerType = 'Employee_ID',
 		[Parameter(Mandatory = $true)]
 		[ValidateScript({Test-Path $_ -PathType Leaf})]
 		[ValidateNotNullOrEmpty()]
@@ -59,9 +62,16 @@ Set-WorkdayWorkerPhoto -EmpoyeeId 123 -Path Photo.jpg
 </bsvc:Put_Worker_Photo_Request>
 '@
 
-	$request.Put_Worker_Photo_Request.Worker_Reference.ID.InnerText = $EmployeeId
+    $request.Put_Worker_Photo_Request.Worker_Reference.ID.InnerText = $WorkerId
+    if ($WorkerType -eq 'Contingent_Worker_ID') {
+        $request.Put_Worker_Photo_Request.Worker_Reference.ID.type = 'Contingent_Worker_ID'
+    } elseif ($WorkerType -eq 'WID') {
+        $request.Put_Worker_Photo_Request.Worker_Reference.ID.type = 'WID'
+    }
+
 	$request.Put_Worker_Photo_Request.Worker_Photo_Data.File = [System.Convert]::ToBase64String( [system.io.file]::ReadAllBytes( $Path ) )
 	$request.Put_Worker_Photo_Request.Worker_Photo_Data.Filename = [string] (Split-Path -Path $Path -Leaf)
 
 	Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
-	}
+
+}
