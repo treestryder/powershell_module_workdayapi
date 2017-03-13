@@ -26,6 +26,10 @@
     
 Get-WorkdayWorkerOtherId -EmpoyeeId 123
 
+Type                Id        Descriptor           
+----                --        ----------           
+National_ID/USA-SSN 000000000 000-00-0000 (USA-SSN)
+Custom_ID/Badge_ID  1         Badge ID             
 
 #>
 
