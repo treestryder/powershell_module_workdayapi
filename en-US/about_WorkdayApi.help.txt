@@ -22,22 +22,23 @@ This simple Powershell Module has been written to fulfill my employer's Workday 
 
 
 ## Examples ##
+
     Set-WorkdayCredential
     Set-WorkdayEndpoint -Endpoint Staffing        -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Staffing/v26.0'
     Set-WorkdayEndpoint -Endpoint Human_Resources -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v26.0'
     Set-WorkdayEndpoint -Endpoint Integrations    -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Integrations/v26.0'
     Save-WorkdayConfiguration
 
-    Set-WorkdayWorkerPhone -EmployeeId 123 -WorkPhone 9876543210
+    Set-WorkdayWorkerPhone -WorkerId 123 -WorkerType Employee_ID -Number '+1 (234) 987-6543'
 
-    Get-WorkdayWorkerPhone -EmpoyeeId 123
+    Get-WorkdayWorkerPhone -WorkerId 123 -WorkerType Employee_ID | Format-Table
 
-    Type          Number            Primary Public
-    ----          ------            ------- ------
-    Home/Landline +1 (123) 456-7890 0        False
-    Work/Landline +1 (987) 654-3210 0         True
-
-
+    UsageType DeviceType Number           Extension Primary Public
+    --------- ---------- ------           --------- ------- ------
+    Home      Landline   1 (234) 567-8910             False  False
+    Work      Landline   1 (234) 987-6543              True  False
+    
+    
     $response = Invoke-WorkdayRequest -Request '<bsvc:Server_Timestamp_Get xmlns:bsvc="urn:com.workday/bsvc" />' -Uri https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v26.0
     $response.Xml.Server_TimeStamp
 
@@ -59,7 +60,7 @@ This simple Powershell Module has been written to fulfill my employer's Workday 
     Get-WorkdayWorkerEmail      Returns a Worker's email addresses.                                                     
     Get-WorkdayWorkerPhone      Returns a Worker's phone numbers.                                                       
     Invoke-WorkdayRequest       Sends XML requests to Workday API, with proper authentication and receives XML response.
-    Remove-WorkdayConfiguration Removes Workday configuration file from the current user's Profile.                      
+    Remove-WorkdayConfiguration Removes Workday configuration file from the current user's Profile.                     
     Save-WorkdayConfiguration   Saves default Workday configuration to a file in the current users Profile.             
     Set-WorkdayCredential       Sets the default Workday API credentials.                                               
     Set-WorkdayEndpoint         Sets the default Uri value for a particular Endpoint.                                   
@@ -69,7 +70,8 @@ This simple Powershell Module has been written to fulfill my employer's Workday 
     Set-WorkdayWorkerPhoto      Uploads an image file to Workday and set it as a Worker's photo.                        
     Start-WorkdayIntegration    Starts a Workday Integration.                                                           
     Update-WorkdayWorkerEmail   Updates a Worker's email in Workday, only if it is different.                           
-    Update-WorkdayWorkerPhone   Updates a Worker's phone number in Workday, only if it is different.                   
+    Update-WorkdayWorkerPhone   Updates a Worker's phone number in Workday, only if it is different.                    
+                 
 
 
 ## Installation ##
