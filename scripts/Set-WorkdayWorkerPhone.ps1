@@ -6,9 +6,12 @@ function Set-WorkdayWorkerPhone {
 .DESCRIPTION
     Sets a Worker's phone number in Workday.
 
-.PARAMETER EmployeeId
-    The Worker's Employee Id at Workday. This cmdlet does not currently
-    support Contengent Workers or referencing workers by WID.
+.PARAMETER WorkerId
+    The Worker's Id at Workday.
+
+.PARAMETER WorkerType
+    The type of ID that the WorkerId represents. Valid values
+    are 'WID', 'Contingent_Worker_ID' and 'Employee_ID'.
 
 .PARAMETER WorkPhone
     Sets the Workday primary Work Landline for a Worker. This cmdlet does not
@@ -28,7 +31,7 @@ function Set-WorkdayWorkerPhone {
 
 .EXAMPLE
     
-Set-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
+Set-WorkdayWorkerPhone -WorkerId 123 -WorkPhone 1234567890
 
 #>
 
@@ -37,9 +40,10 @@ Set-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
 		[Parameter(Mandatory = $true,
             Position=0)]
 		[ValidateNotNullOrEmpty()]
-		[string]$EmployeeId,
-		[Parameter(Mandatory = $true,
-            Position=1)]
+        [string]$WorkerId,
+		[ValidateSet('WID', 'Contingent_Worker_ID', 'Employee_ID')]
+		[string]$WorkerType = 'Employee_ID',
+		[Parameter(Mandatory = $true)]
         [Alias('OfficePhone')]
 		[string]$WorkPhone,
 		[string]$Human_ResourcesUri,
@@ -86,12 +90,18 @@ Set-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
 </bsvc:Maintain_Contact_Information_for_Person_Event_Request>
 '@
 
-	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Reference.ID.InnerText = $EmployeeId
+    $request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Reference.ID.InnerText = $WorkerId
+    if ($WorkerType -eq 'Contingent_Worker_ID') {
+        $request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Reference.ID.type = 'Contingent_Worker_ID'
+    } elseif ($WorkerType -eq 'WID') {
+        $request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Reference.ID.type = 'WID'
+    }
+
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Effective_Date = (Get-Date).ToString( 'yyyy-MM-dd' )
 
     $scrubbedNumber = $WorkPhone -replace '[^\d]', ''
 	if ($scrubbedNumber -notmatch '(?<country>[\d]*?)(?<areacode>\d{0,3}?)(?<prefix>\d{0,3}?)(?<line>\d{1,4})$') {
-        throw "Unable to update Work phone number for EmployeeId: $EmployeeId, invalid Phone Number: $WorkPhone"
+        throw "Unable to update Work phone number, invalid number: $WorkPhone"
     }
 
 	if ($Matches['country'].length -gt 0) {

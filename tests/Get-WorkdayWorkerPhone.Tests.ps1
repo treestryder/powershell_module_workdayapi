@@ -11,7 +11,7 @@ Describe Get-WorkdayWorkerPhone {
                     Mock_Invoke-WorkdayRequest_ExampleWorker
                 }
 
-                $response = @(Get-WorkdayWorkerPhone -EmployeeId 1)
+                $response = @(Get-WorkdayWorkerPhone -WorkerId 1)
                 $response.Count | Should Be 1
                 $response[0].Type | Should Be 'Work/Landline'
                 $response[0].Number | Should Be '+1 (517) 123-4567'

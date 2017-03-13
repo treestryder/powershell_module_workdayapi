@@ -6,9 +6,12 @@ function Set-WorkdayWorkerPhoto {
 .DESCRIPTION
     Uploads an image file to Workday and set it as a Worker's photo.
 
-.PARAMETER EmployeeId
-    The Worker's Employee Id at Workday. This cmdlet does not currently
-    support Contengent Workers or referencing workers by WID.
+.PARAMETER WorkerId
+    The Worker's Id at Workday.
+
+.PARAMETER WorkerType
+    The type of ID that the WorkerId represents. Valid values
+    are 'WID', 'Contingent_Worker_ID' and 'Employee_ID'.
 
 .PARAMETER Path
     The Path to the image file to upload.

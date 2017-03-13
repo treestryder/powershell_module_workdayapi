@@ -6,9 +6,12 @@ function Set-WorkdayWorkerDocument {
 .DESCRIPTION
     Uploads a document to a Worker's records in Workday.
 
-.PARAMETER EmployeeId
-    The Worker's Employee Id at Workday. This cmdlet does not currently
-    support Contengent Workers or referencing workers by WID.
+.PARAMETER WorkerId
+    The Worker's Id at Workday.
+
+.PARAMETER WorkerType
+    The type of ID that the WorkerId represents. Valid values
+    are 'WID', 'Contingent_Worker_ID' and 'Employee_ID'.
 
 .PARAMETER Path
     The Path to the document file to upload.
@@ -27,7 +30,7 @@ function Set-WorkdayWorkerDocument {
 
 .EXAMPLE
     
-Set-WorkdayWorkerDocument -EmpoyeeId 123 -Path Document.pdf
+Set-WorkdayWorkerDocument -WorkerId 123 -Path Document.pdf
 
 #>
 

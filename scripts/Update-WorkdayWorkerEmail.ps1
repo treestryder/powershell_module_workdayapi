@@ -9,9 +9,12 @@
     the email is the same. Unlike Set-WorkdayWorkerEmail, this cmdlet
     first checks the current email before requesting a change. 
 
-.PARAMETER EmployeeId
-    The Worker's Employee Id at Workday. This cmdlet does not currently
-    support Contengent Workers or referencing workers by WID.
+.PARAMETER WorkerId
+    The Worker's Id at Workday.
+
+.PARAMETER WorkerType
+    The type of ID that the WorkerId represents. Valid values
+    are 'WID', 'Contingent_Worker_ID' and 'Employee_ID'.
 
 .PARAMETER WorkEmail
     Sets the Workday primary, public, Work email for a Worker. This cmdlet does not
@@ -31,16 +34,20 @@
 
 .EXAMPLE
     
-Update-WorkdayWorkerEmail -EmpoyeeId 123 -WorkEmail test@example.com
+Update-WorkdayWorkerEmail -WorkerId 123 -WorkEmail test@example.com
 
 #>
 
 	[CmdletBinding(DefaultParametersetName='Search')]
 	param (
 		[Parameter(Mandatory = $true,
-            ParameterSetName="Search")]
+            ParameterSetName="Search",
+            Position=0)]
 		[ValidateNotNullOrEmpty()]
-		[string]$EmployeeId,
+		[string]$WorkerId,
+        [Parameter(ParameterSetName="Search")]
+		[ValidateSet('WID', 'Contingent_Worker_ID', 'Employee_ID')]
+		[string]$WorkerType = 'Employee_ID',
         [Parameter(ParameterSetName="Search")]
 		[string]$Human_ResourcesUri,
         [Parameter(ParameterSetName="Search")]
@@ -59,16 +66,17 @@ Update-WorkdayWorkerEmail -EmpoyeeId 123 -WorkEmail test@example.com
 
     if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
         $current = Get-WorkdayWorkerEmail -WorkerXml $WorkerXml
-        $EmployeeId = $WorkerXml.Get_Workers_Response.Response_Data.Worker.Worker_Data.Worker_ID
+        $WorkerType = 'WID'
+        $WorkerId = $WorkerXml.Get_Workers_Response.Response_Data.Worker.Worker_Reference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty '#text'
     } else {
-        $current = Get-WorkdayWorkerEmail -EmployeeId $EmployeeId -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
+        $current = Get-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
     }
 
     $currentWorkEmail = $current | where { $_.Type -eq 'Work' -and $_.Primary } | Select -First 1 -ExpandProperty Email
 
     Write-Verbose "Current: $currentWorkEmail Proposed: $WorkEmail"
     if ($currentWorkEmail -ne $WorkEmail) {
-        Set-WorkdayWorkerEmail -EmployeeId $EmployeeId -WorkEmail $WorkEmail -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
+        Set-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -WorkEmail $WorkEmail -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
     } else {
         Write-Verbose 'Email matches Workday, no update necessary.'
     }

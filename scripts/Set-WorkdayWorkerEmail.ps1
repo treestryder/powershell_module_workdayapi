@@ -6,9 +6,12 @@ function Set-WorkdayWorkerEmail {
 .DESCRIPTION
     Sets a Worker's email in Workday.
 
-.PARAMETER EmployeeId
-    The Worker's Employee Id at Workday. This cmdlet does not currently
-    support Contengent Workers or referencing workers by WID.
+.PARAMETER WorkerId
+    The Worker's Id at Workday.
+
+.PARAMETER WorkerType
+    The type of ID that the WorkerId represents. Valid values
+    are 'WID', 'Contingent_Worker_ID' and 'Employee_ID'.
 
 .PARAMETER WorkEmail
     Sets the Workday primary Work email for a Worker. This cmdlet does not
@@ -28,15 +31,18 @@ function Set-WorkdayWorkerEmail {
 
 .EXAMPLE
     
-Set-WorkdayWorkerEmail -EmpoyeeId 123 -WorkEmail worker@example.com
+Set-WorkdayWorkerEmail -WorkerId 123 -WorkEmail worker@example.com
 
 #>
 
 	[CmdletBinding()]
 	param (
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $true,
+            Position=0)]
 		[ValidateNotNullOrEmpty()]
-		[string]$EmployeeId,
+		[string]$WorkerId,
+		[ValidateSet('WID', 'Contingent_Worker_ID', 'Employee_ID')]
+		[string]$WorkerType = 'Employee_ID',
 		[Parameter(Mandatory = $true)]
 		[ValidatePattern('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$')]
 		[string]$WorkEmail,
@@ -77,7 +83,13 @@ Set-WorkdayWorkerEmail -EmpoyeeId 123 -WorkEmail worker@example.com
 </bsvc:Maintain_Contact_Information_for_Person_Event_Request>
 '@
 
-	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Reference.ID.InnerText = $EmployeeId
+    $request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Reference.ID.InnerText = $WorkerId
+    if ($WorkerType -eq 'Contingent_Worker_ID') {
+        $request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Reference.ID.type = 'Contingent_Worker_ID'
+    } elseif ($WorkerType -eq 'WID') {
+        $request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Reference.ID.type = 'WID'
+    }
+
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Email_Address_Data.Email_Address = $WorkEmail
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Effective_Date = (Get-Date).ToString( 'yyyy-MM-dd' )
 

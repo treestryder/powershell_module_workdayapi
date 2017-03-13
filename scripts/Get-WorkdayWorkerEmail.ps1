@@ -6,9 +6,12 @@
 .DESCRIPTION
     Returns a Worker's email addresses as custom Powershell objects.
 
-.PARAMETER EmployeeId
-    The Worker's Employee Id at Workday. This cmdlet does not currently
-    support Contengent Workers or referencing workers by WID.
+.PARAMETER WorkerId
+    The Worker's Id at Workday.
+
+.PARAMETER WorkerType
+    The type of ID that the WorkerId represents. Valid values
+    are 'WID', 'Contingent_Worker_ID' and 'Employee_ID'.
 
 .PARAMETER Human_ResourcesUri
     Human_Resources Endpoint Uri for the request. If not provided, the value
@@ -24,7 +27,7 @@
 
 .EXAMPLE
     
-Get-WorkdayWorkerEmail -EmpoyeeId 123
+Get-WorkdayWorkerEmail -WorkerId 123
 
 Type Email                        Primary Public
 ---- -----                        ------- ------
@@ -37,10 +40,13 @@ Work work@example.com                True   True
     [OutputType([PSCustomObject])]
 	param (
 		[Parameter(Mandatory = $true,
-            ParameterSetName="Search",
-            Position=0)]
+            Position=0,
+            ParameterSetName='Search')]
 		[ValidateNotNullOrEmpty()]
-		[string]$EmployeeId,
+		[string]$WorkerId,
+        [Parameter(ParameterSetName="Search")]
+		[ValidateSet('WID', 'Contingent_Worker_ID', 'Employee_ID')]
+		[string]$WorkerType = 'Employee_ID',
         [Parameter(ParameterSetName="Search")]
 		[string]$Human_ResourcesUri,
         [Parameter(ParameterSetName="Search")]
@@ -54,7 +60,7 @@ Work work@example.com                True   True
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
     if ($PsCmdlet.ParameterSetName -eq 'Search') {
-        $response = Get-WorkdayWorker -EmployeeId $EmployeeId -IncludePersonal -Passthru -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
+        $response = Get-WorkdayWorker -WorkerId $WorkerId -WorkerType $WorkerType -IncludePersonal -Passthru -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
         $WorkerXml = $response.Xml
     }
 

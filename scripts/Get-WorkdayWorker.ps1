@@ -6,14 +6,17 @@ function Get-WorkdayWorker {
 .DESCRIPTION
     Gets Worker information as Workday XML.
 
-.PARAMETER EmployeeId
-    The Worker's Employee Id at Workday. This cmdlet does not currently
-    support Contengent Workers or referencing workers by WID.
+.PARAMETER WorkerId
+    The Worker's Id at Workday.
+
+.PARAMETER WorkerType
+    The type of ID that the WorkerId represents. Valid values
+    are 'WID', 'Contingent_Worker_ID' and 'Employee_ID'.
 
 .PARAMETER IncludePersonal
     Adds Reference and Personal_Information values to response.
 
-.PARAMETER IncludeDefault
+.PARAMETER IncludeWork
     Adds Employment_Information, Compensation, Organizations and Roles
     values to the response.
 
@@ -31,19 +34,25 @@ function Get-WorkdayWorker {
 
 .EXAMPLE
     
-Get-WorkdayWorker -EmpoyeeId 123 -IncludePersonal -IncludeDefault
+Get-WorkdayWorker -WorkerId 123 -IncludePersonal
 
 #>
 
 	[CmdletBinding()]
-    [OutputType([XML],[PSCustomObject])]
+    [OutputType([PSCustomObject])]
 	param (
-		[string]$EmployeeId,
+		[Parameter(Mandatory = $true,
+            Position=0)]
+		[ValidateNotNullOrEmpty()]
+        [string]$WorkerId,
+		[ValidateSet('WID', 'Contingent_Worker_ID', 'Employee_ID')]
+		[string]$WorkerType = 'Employee_ID',
 		[string]$Human_ResourcesUri,
 		[string]$Username,
 		[string]$Password,
         [switch]$IncludePersonal,
-        [switch]$IncludeDefault,
+        [switch]$IncludeWork,
+        [switch]$IncludeDocuments,
         # Outputs raw XML, rather than a custom object.
         [switch]$Passthru
 	)
@@ -64,26 +73,36 @@ Get-WorkdayWorker -EmpoyeeId 123 -IncludePersonal -IncludeDefault
     <bsvc:Include_Compensation>false</bsvc:Include_Compensation>
     <bsvc:Include_Organizations>false</bsvc:Include_Organizations>
     <bsvc:Include_Roles>false</bsvc:Include_Roles>
+    <bsvc:Include_Worker_Documents>false</bsvc:Include_Worker_Documents>
   </bsvc:Response_Group>
 </bsvc:Get_Workers_Request>
 '@
 
-	$request.Get_Workers_Request.Request_References.Worker_Reference.ID.InnerText = $EmployeeId
+    $request.Get_Workers_Request.Request_References.Worker_Reference.ID.InnerText = $WorkerId
+    if ($WorkerType -eq 'Contingent_Worker_ID') {
+        $request.Get_Workers_Request.Request_References.Worker_Reference.ID.type = 'Contingent_Worker_ID'
+    } elseif ($WorkerType -eq 'WID') {
+        $request.Get_Workers_Request.Request_References.Worker_Reference.ID.type = 'WID'
+    }
 
     # Default = Reference, Personal Data, Employment Data, Compensation Data, Organization Data, and Role Data.
 
-    if ($IncludePersonal -or $IncludeDefault) {
+    if ($IncludePersonal) {
         $request.Get_Workers_Request.Response_Group.Include_Reference = 'true'
         $request.Get_Workers_Request.Response_Group.Include_Personal_Information = 'true'
     }
 
-    if ($IncludeDefault) {
+    if ($IncludeWork) {
         $request.Get_Workers_Request.Response_Group.Include_Employment_Information = 'true'
         $request.Get_Workers_Request.Response_Group.Include_Compensation = 'true'
         $request.Get_Workers_Request.Response_Group.Include_Organizations = 'true'
         $request.Get_Workers_Request.Response_Group.Include_Roles = 'true'
     }
-	
+
+    if ($IncludeDocuments) {
+        $request.Get_Workers_Request.Response_Group.Include_Worker_Documents = 'true'
+    }
+
     $response = Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password
 
     if ($Passthru) { return $response }

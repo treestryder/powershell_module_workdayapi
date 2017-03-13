@@ -11,7 +11,7 @@ Describe Get-WorkdayWorkerEmail {
                     Mock_Invoke-WorkdayRequest_ExampleWorker
                 }
 
-                $response = @(Get-WorkdayWorkerEmail -EmployeeId 1)
+                $response = @(Get-WorkdayWorkerEmail -WorkerId 1)
                 $response.Count | Should Be 1
                 $response[0].Type | Should Be 'Work'
                 $response[0].Email | Should Be 'test@example.com'

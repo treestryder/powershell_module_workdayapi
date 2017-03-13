@@ -9,9 +9,12 @@
     the number is the same. Unlike Set-WorkdayWorkerPhone, this cmdlet
     first checks the current phone number before requesting a change. 
 
-.PARAMETER EmployeeId
-    The Worker's Employee Id at Workday. This cmdlet does not currently
-    support Contengent Workers or referencing workers by WID.
+.PARAMETER WorkerId
+    The Worker's Id at Workday.
+
+.PARAMETER WorkerType
+    The type of ID that the WorkerId represents. Valid values
+    are 'WID', 'Contingent_Worker_ID' and 'Employee_ID'.
 
 .PARAMETER WorkPhone
     Sets the Workday primary Work Landline for a Worker. This cmdlet does not
@@ -32,7 +35,7 @@
 
 .EXAMPLE
     
-Update-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
+Update-WorkdayWorkerPhone -WorkerId 123 -WorkPhone 1234567890
 
 #>
 
@@ -42,7 +45,10 @@ Update-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
             ParameterSetName="Search",
             Position=0)]
 		[ValidateNotNullOrEmpty()]
-		[string]$EmployeeId,
+		[string]$WorkerId,
+        [Parameter(ParameterSetName="Search")]
+		[ValidateSet('WID', 'Contingent_Worker_ID', 'Employee_ID')]
+		[string]$WorkerType = 'Employee_ID',
         [Parameter(ParameterSetName="Search")]
 		[string]$Human_ResourcesUri,
         [Parameter(ParameterSetName="Search")]
@@ -61,10 +67,12 @@ Update-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
 
     if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
         $current = Get-WorkdayWorkerPhone -WorkerXml $WorkerXml
-        $EmployeeId = $WorkerXml.Get_Workers_Response.Response_Data.Worker.Worker_Data.Worker_ID
+        $WorkerType = 'WID'
+        $WorkerId = $WorkerXml.Get_Workers_Response.Response_Data.Worker.Worker_Reference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty '#text'
     } else {
-        $current = Get-WorkdayWorkerPhone -EmployeeId $EmployeeId -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password
+        $current = Get-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password
     }
+
     function scrub ([string]$PhoneNumber) { $PhoneNumber -replace '[^\d]','' -replace '^1','' }
 
     $scrubbedCurrent = scrub ( $current | where { $_.Type -eq 'Work/Landline' -and $_.Primary } | Select -First 1 -ExpandProperty Number)
@@ -72,6 +80,6 @@ Update-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
 
     Write-Verbose "Current: $scrubbedCurrent Proposed: $scrubbedProposed"
     if ($scrubbedCurrent -ne $scrubbedProposed) {
-        Set-WorkdayWorkerPhone -EmployeeId $EmployeeId -WorkPhone $WorkPhone -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
+        Set-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType -WorkPhone $WorkPhone -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
     }
 }

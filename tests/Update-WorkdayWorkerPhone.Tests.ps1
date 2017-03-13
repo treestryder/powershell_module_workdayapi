@@ -19,7 +19,7 @@ Describe Update-WorkdayWorkerPhone {
 
         Context DifferentNumber {
             It 'Calls Set-WorkdayWorkerPhone when a new number is presented.' {
-                $response = Update-WorkdayWorkerPhone -EmployeeId 1 -WorkPhone 2
+                $response = Update-WorkdayWorkerPhone -WorkerId 1 -WorkPhone 2
                 Assert-MockCalled Set-WorkdayWorkerPhone -Exactly 1
             }
 
@@ -32,7 +32,7 @@ Describe Update-WorkdayWorkerPhone {
 
         Context SameNumber {
             It 'Skips calling Set-WorkdayWorkerPhone when a duplicate number is presented.' {
-                $response = Update-WorkdayWorkerPhone -EmployeeId 1 -WorkPhone '1-517-123-4567'
+                $response = Update-WorkdayWorkerPhone -WorkerId 1 -WorkPhone '1-517-123-4567'
                 Assert-MockCalled Set-WorkdayWorkerPhone -Exactly 0
             }
         }

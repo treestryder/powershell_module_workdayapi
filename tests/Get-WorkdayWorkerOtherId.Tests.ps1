@@ -10,7 +10,7 @@ Describe Get-WorkdayWorkerOtherId {
                 Mock_Invoke-WorkdayRequest_ExampleWorker
             }
 
-            $response = @(Get-WorkdayWorkerOtherId -EmployeeId 1)
+            $response = @(Get-WorkdayWorkerOtherId -WorkerId 1)
             $response.Count | Should Be 2
             $response[0].Type | Should Be 'National_ID/USA-SSN'
             $response[0].Id | Should Be '000000000'
