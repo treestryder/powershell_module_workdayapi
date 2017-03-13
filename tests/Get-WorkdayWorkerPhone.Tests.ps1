@@ -12,8 +12,6 @@ Describe Get-WorkdayWorkerPhone {
 
             $response = @(Get-WorkdayWorkerPhone -EmployeeId 1)
             $response.Count | Should Be 1
-            $response[0].WorkerWid | Should Be '00000000000000000000000000000000'
-            $response[0].WorkerDescriptor | Should Be 'Example Worker (1)'
             $response[0].Type | Should Be 'Work/Landline'
             $response[0].Number | Should Be '+1 (517) 123-4567'
             $response[0].Primary | Should Be $true

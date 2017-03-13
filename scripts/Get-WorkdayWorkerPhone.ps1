@@ -26,12 +26,10 @@
     
 Get-WorkdayWorkerPhone -EmpoyeeId 123
 
-WorkerWid        : 00000000000000000000000000000000
-WorkerDescriptor : Example Worker (1)
-Type             : Work/Landline
-Number           : +1 (517) 123-4567
-Primary          : True
-Public           : True
+Type          Number            Primary Public
+----          ------            ------- ------
+Home/Cell     +1  5551234567       True   True
+Work/Landline +1 (555) 765-4321    True   True
 
 #>
 
@@ -58,17 +56,14 @@ Public           : True
         $w = $WorkerXml
     } else {
         try {
-            $w = Get-WorkdayWorker -EmployeeId $EmployeeId -IncludePersonal -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
+            $w = Get-WorkdayWorker -EmployeeId $EmployeeId -IncludePersonal -Passthru -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
         }
         catch {
             throw
         }
     }
 
-
     $numberTemplate = [pscustomobject][ordered]@{
-        WorkerWid        = $w.Get_Workers_Response.Response_Data.Worker.Worker_Reference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty '#text'
-        WorkerDescriptor = $w.Get_Workers_Response.Request_References.Worker_Reference.Descriptor
         Type    = $null
         Number  = $null
         Primary = $null

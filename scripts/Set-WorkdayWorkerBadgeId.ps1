@@ -7,7 +7,9 @@ function Set-WorkdayWorkerPhone {
 .NOTES
 
     HumanResources.Human_ResourcesPortClient client = WorkdayService.HumanResourcesHelper.GetNewHRClient();
+
     Change_Other_IDs_Business_Process_DataType dataType = new Change_Other_IDs_Business_Process_DataType();
+    
     dataType.Worker_Reference = badge.WorkerType.Worker_Reference;
     dataType.Custom_Identification_Data = new Custom_Identification_DataType();
     dataType.Custom_Identification_Data.Replace_All = false;
@@ -44,7 +46,7 @@ function Set-WorkdayWorkerPhone {
 #>
 
     $request = @'
-<bsvc:Change_Other_IDs_Request bsvc:version="string" xmlns:bsvc="urn:com.workday/bsvc">
+<bsvc:Change_Other_IDs_Request bsvc:version="25.0" xmlns:bsvc="urn:com.workday/bsvc">
   <!--Optional:-->
   <bsvc:Business_Process_Parameters>
     <!--Optional:-->

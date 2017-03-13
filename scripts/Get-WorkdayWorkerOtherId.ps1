@@ -1,10 +1,10 @@
-﻿function Get-WorkdayWorkerEmail {
+﻿function Get-WorkdayWorkerOtherId {
 <#
 .SYNOPSIS
-    Returns a Worker's email addresses.
+    Returns a Worker's Id information.
 
 .DESCRIPTION
-    Returns a Worker's email addresses as custom Powershell objects.
+    Returns a Worker's Id information as custom Powershell objects.
 
 .PARAMETER EmployeeId
     The Worker's Employee Id at Workday. This cmdlet does not currently
@@ -24,12 +24,8 @@
 
 .EXAMPLE
     
-Get-WorkdayWorkerEmail -EmpoyeeId 123
+Get-WorkdayWorkerOtherId -EmpoyeeId 123
 
-Type Email                        Primary Public
----- -----                        ------- ------
-Home home@example.com                True  False
-Work work@example.com                True   True
 
 #>
 
@@ -64,18 +60,31 @@ Work work@example.com                True   True
     }
 
     $numberTemplate = [pscustomobject][ordered]@{
-        Type             = $null
-        Email            = $null
-        Primary          = $null
-        Public           = $null
+        Type       = $null
+        Id         = $null
+        Descriptor = $null
     }
 
-    $w.Get_Workers_Response.Response_Data.FirstChild.Worker_Data.Personal_Data.Contact_Data.Email_Address_Data | foreach {
+    $w.Get_Workers_Response.Response_Data.Worker.Worker_Data.Personal_Data.Identification_Data.National_ID | foreach {
         $o = $numberTemplate.PsObject.Copy()
-        $o.Type = $_.Usage_Data.Type_Data.Type_Reference.Descriptor
-        $o.Email = $_.Email_Address
-        $o.Primary = $_.Usage_Data.Type_Data.Primary -match '1|true'
-        $o.Public = $_.Usage_Data.Public -match '1|true'
+        $typeXml = $_.National_ID_Data.ID_Type_Reference.ID | where {$_.type -eq 'National_ID_Type_Code'}
+        $o.Type = 'National_ID/{0}' -f $typeXml.'#text'
+        $o.Id = $_.National_ID_Data.ID
+        $o.Descriptor = $_.National_ID_Reference.Descriptor
         Write-Output $o
     }
+
+    $w.Get_Workers_Response.Response_Data.Worker.Worker_Data.Personal_Data.Identification_Data.Custom_ID | foreach {
+        $o = $numberTemplate.PsObject.Copy()
+        $typeXml = $_.Custom_ID_Data.ID_Type_Reference.ID | where {$_.type -eq 'Custom_ID_Type_ID'}
+        $o.Type = 'Custom_ID/{0}' -f $typeXml.'#text'
+        $o.Id = $_.Custom_ID_Data.ID
+        $o.Descriptor = $_.Custom_ID_Data.ID_Type_Reference.Descriptor
+        Write-Output $o
+    }
+<#
+        $badgeIdXml = $response.Get_Workers_Response.Response_Data.Worker.Worker_Data.Personal_Data.Identification_Data.Custom_ID.Custom_ID_Data | where { $_.ID_Type_Reference.ID  | where {$_.type -eq 'Custom_ID_Type_ID' -and $_.'#text' -eq 'Badge_ID'}}
+        $worker.BadgeId = $badgeIdXml.ID
+#>
+
 }

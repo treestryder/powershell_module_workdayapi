@@ -99,7 +99,7 @@ function Mock_Invoke-WorkdayRequest_ExampleWorker {
 							<wd:ID wd:type="Disability_Status_ID">DISABILITY_STATUS_REFERENCE-3-354</wd:ID>
 						</wd:Disability_Status_Reference>
 					</wd:Disability_Status_Data>
-					<wd:Ethnicity_Reference wd:Descriptor="White (United States of America)">
+					<wd:Ethnicity_Reference wd:Descriptor="Purple (United States of America)">
 						<wd:ID wd:type="WID">e20c9b6394e9107595745c28ac01495c</wd:ID>
 						<wd:ID wd:type="Ethnicity_ID">00000000000000000000000000000000</wd:ID>
 					</wd:Ethnicity_Reference>
@@ -121,11 +121,11 @@ function Mock_Invoke-WorkdayRequest_ExampleWorker {
 					</wd:Military_Service_Data>
 					<wd:Identification_Data>
 						<wd:National_ID>
-							<wd:National_ID_Reference wd:Descriptor="371-02-3983 (USA-SSN)">
+							<wd:National_ID_Reference wd:Descriptor="000-00-0000 (USA-SSN)">
 								<wd:ID wd:type="WID">00000000000000000000000000000000</wd:ID>
 							</wd:National_ID_Reference>
 							<wd:National_ID_Data>
-								<wd:ID>123456789</wd:ID>
+								<wd:ID>000000000</wd:ID>
 								<wd:ID_Type_Reference wd:Descriptor="Social Security Number (SSN)">
 									<wd:ID wd:type="WID">00000000000000000000000000000000</wd:ID>
 									<wd:ID wd:type="National_ID_Type_Code">USA-SSN</wd:ID>
@@ -152,7 +152,7 @@ function Mock_Invoke-WorkdayRequest_ExampleWorker {
 								<wd:ID wd:type="WID">00000000000000000000000000000000</wd:ID>
 							</wd:Custom_ID_Reference>
 							<wd:Custom_ID_Data>
-								<wd:ID>23557</wd:ID>
+								<wd:ID>1</wd:ID>
 								<wd:ID_Type_Reference wd:Descriptor="Badge ID">
 									<wd:ID wd:type="WID">00000000000000000000000000000000</wd:ID>
 									<wd:ID wd:type="Custom_ID_Type_ID">Badge_ID</wd:ID>

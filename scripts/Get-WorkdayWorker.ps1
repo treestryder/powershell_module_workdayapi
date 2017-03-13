@@ -36,14 +36,16 @@ Get-WorkdayWorker -EmpoyeeId 123 -IncludePersonal -IncludeDefault
 #>
 
 	[CmdletBinding()]
-    [OutputType([XML])]
+    [OutputType([XML],[PSCustomObject])]
 	param (
 		[string]$EmployeeId,
 		[string]$Human_ResourcesUri,
 		[string]$Username,
 		[string]$Password,
         [switch]$IncludePersonal,
-        [switch]$IncludeDefault
+        [switch]$IncludeDefault,
+        # Outputs raw XML, rather than a custom object.
+        [switch]$Passthru
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
@@ -67,9 +69,8 @@ Get-WorkdayWorker -EmpoyeeId 123 -IncludePersonal -IncludeDefault
 '@
 
 	$request.Get_Workers_Request.Request_References.Worker_Reference.ID.InnerText = $EmployeeId
-# <bsvc:Include_Personal_Information>true</bsvc:Include_Personal_Information>
 
-# Reference, Personal Data, Employment Data, Compensation Data, Organization Data, and Role Data.
+    # Default = Reference, Personal Data, Employment Data, Compensation Data, Organization Data, and Role Data.
 
     if ($IncludePersonal -or $IncludeDefault) {
         $request.Get_Workers_Request.Response_Group.Include_Reference = 'true'
@@ -82,5 +83,35 @@ Get-WorkdayWorker -EmpoyeeId 123 -IncludePersonal -IncludeDefault
         $request.Get_Workers_Request.Response_Group.Include_Organizations = 'true'
         $request.Get_Workers_Request.Response_Group.Include_Roles = 'true'
     }
-	Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
+	
+    try {
+        $response = Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password
+    }
+    catch { throw }
+
+    if ($Passthru) { return $response }
+
+    $referenceId = $response.Get_Workers_Response.Response_Data.Worker.Worker_Reference.ID | where {$_.type -ne 'WID'}
+
+    $worker = [pscustomobject][ordered]@{
+        WorkerWid        = $response.Get_Workers_Response.Response_Data.Worker.Worker_Reference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty '#text'
+        WorkerDescriptor = $response.Get_Workers_Response.Request_References.Worker_Reference.Descriptor
+        PreferredName    = $response.Get_Workers_Response.Response_Data.Worker.Worker_Data.Personal_Data.Name_Data.Preferred_Name_Data.Name_Detail_Data.Formatted_Name
+        FirstName        = $response.Get_Workers_Response.Response_Data.Worker.Worker_Data.Personal_Data.Name_Data.Preferred_Name_Data.Name_Detail_Data.First_Name
+        LastName         = $response.Get_Workers_Response.Response_Data.Worker.Worker_Data.Personal_Data.Name_Data.Preferred_Name_Data.Name_Detail_Data.Last_Name
+        WorkerType       = $referenceId.type
+        WorkerId         = $referenceId.'#text'
+        OtherId          = $null
+        Phone            = $null
+        Email            = $null
+        XML              = $response
+    }
+
+    if ($IncludePersonal) {
+        $worker.Phone   = @(Get-WorkdayWorkerPhone -WorkerXml $response)
+        $worker.Email   = @(Get-WorkdayWorkerEmail -WorkerXml $response)
+        $worker.OtherId = @(Get-WorkdayWorkerOtherId -WorkerXml $response)
+    }
+
+    Write-Output $worker
 }
