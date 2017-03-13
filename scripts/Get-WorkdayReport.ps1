@@ -1,7 +1,7 @@
 #
 # Invoke_WorkdayReport.ps1
 #$ Invoke-WorkdayRequest -Request '<role:Execute_Report xmlns:role="urn:com.workday.report/Role_Based_Security_Groups"></role:Execute_Report>' -Uri 'https://wd5-services1.myworkday.com/ccx/service/Report2/peckham/prehmann@peckham.org/Role_Based_Security_Groups' -Username $u -Password $p
-function Invoke-WorkdayReport {
+function Get-WorkdayReport {
 	[CmdletBinding()]
 	param (
 		[Parameter(Mandatory = $true)]
