@@ -1,0 +1,51 @@
+TOPIC
+	Workday API Module
+
+
+SYNOPSIS
+	Provides simple methods for accessing the Workday API.
+
+
+DESCRIPTION
+   Provides simple methods for accessing the Workday API.
+
+    Features
+    * Cmdlets for setting default configuration.
+    * Cmdlet to securly save default configuration to current user's profile.
+
+EXAMPLE
+    Set-WorkdayCredential
+    Set-WorkdayEndpoint -Endpoint Staffing        -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Staffing/v25.1'
+    Set-WorkdayEndpoint -Endpoint Human_Resources -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v25.1'
+    Save-WorkdayConfiguration
+
+    Set-WorkdayWorkerPhone -EmployeeId -WorkPhone 9876543210
+
+    Get-WorkdayWorkerPhone -EmpoyeeId 123
+
+    Type          Number            Primary Public
+    ----          ------            ------- ------
+    Home/Landline +1 (123) 456-7890 0        False
+    Work/Landline +1 (987) 654-3210 0         True
+
+
+CMDLETS AVAILABLE
+
+    Get-Command -Module WorkdayApi | %{help $_} | Format-Table -AutoSize Name, Synopsis
+
+    Name                        Synopsis                                                                                
+    ----                        --------                                                                                
+    Get-WorkdayEndpoint         Gets the default Uri value for all or a particular Endpoint.                            
+    Get-WorkdayReport           Returns the XML result from any Workday report, based on its URI.                       
+    Get-WorkdayWorker           Gets Worker information as Workday XML.                                                 
+    Get-WorkdayWorkerPhone      Returns a Worker's phone numbers.                                                       
+    Invoke-WorkdayRequest       Sends XML requests to Workday API, with proper authentication and receives XML response.
+    Remove-WorkdayConfiguration Removes Workday configuration file from the current users Profile.                      
+    Save-WorkdayConfiguration   Saves default Workday configuration to a file in the current users Profile.             
+    Set-WorkdayCredential       Sets the default Workday API credentials.                                               
+    Set-WorkdayEndpoint         Sets the default Uri value for a particular Endpoint.                                   
+    Set-WorkdayWorkerDocument   Uploads a document to a Worker's records in Workday.                                    
+    Set-WorkdayWorkerEmail      Sets a Worker's email in Workday.                                                       
+    Set-WorkdayWorkerPhone      Sets a Worker's phone number in Workday.                                                
+    Set-WorkdayWorkerPhoto      Uploads an image file to Workday and set it as a Worker's photo.                        
+    Update-WorkdayWorkerPhone   Updates a Worker's phone number in Workday, only if it is different.                    

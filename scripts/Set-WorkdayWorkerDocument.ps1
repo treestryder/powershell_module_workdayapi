@@ -52,6 +52,8 @@ Set-WorkdayWorkerDocument -EmpoyeeId 123 -Path Document.pdf
         [switch]$Passthru
 	)
 
+    Add-Type -AssemblyName "System.Web"
+
     if ([string]::IsNullOrWhiteSpace($StaffingUri)) { $StaffingUri = $WorkdayConfiguration.Endpoints['Staffing'] }
 
 	$request = [xml]@'
