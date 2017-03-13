@@ -47,7 +47,7 @@ function Set-WorkdayWorkerEmail {
         [switch]$Passthru
 	)
 
-    if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Uri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
+    if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
 	$request = [xml]@'
 <bsvc:Maintain_Contact_Information_for_Person_Event_Request bsvc:Add_Only="false" xmlns:bsvc="urn:com.workday/bsvc">
@@ -83,5 +83,5 @@ function Set-WorkdayWorkerEmail {
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Email_Address_Data.Email_Address = $WorkEmail
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Effective_Date = (Get-Date).ToString( 'yyyy-MM-dd' )
 
-	Invoke-WorkdayRequest -Request $request -Uri $Uri -Username $Username -Password $Password | where {$Passthru} | Write-Output
+	Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | where {$Passthru} | Write-Output
 	}

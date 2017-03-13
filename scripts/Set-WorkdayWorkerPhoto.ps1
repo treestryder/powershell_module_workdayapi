@@ -46,7 +46,7 @@ function Set-WorkdayWorkerPhoto {
         [switch]$Passthru
 	)
 
-    if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Uri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
+    if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
 	$request = [xml]@'
 <bsvc:Put_Worker_Photo_Request xmlns:bsvc="urn:com.workday/bsvc">
@@ -64,5 +64,5 @@ function Set-WorkdayWorkerPhoto {
 	$request.Put_Worker_Photo_Request.Worker_Photo_Data.File = [System.Convert]::ToBase64String( [system.io.file]::ReadAllBytes( $Path ) )
 	$request.Put_Worker_Photo_Request.Worker_Photo_Data.Filename = [string] (Split-Path -Path $Path -Leaf)
 
-	Invoke-WorkdayRequest -Request $request -Uri $Uri -Username $Username -Password $Password | where {$Passthru} | Write-Output
+	Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | where {$Passthru} | Write-Output
 	}

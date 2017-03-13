@@ -39,5 +39,5 @@ function Get-WorkdayReport {
          <role:Execute_Report xmlns:role="urn:com.workday.report/{0}"></role:Execute_Report>
 '@ -f $reportName
 
-	Invoke-WorkdayRequest -Request $request -Uri $Uri -Username $Username -Password $Password | Write-Output
+	Invoke-WorkdayRequest -Request $request -Uri $Uri -Username:$Username -Password:$Password | Write-Output
 }

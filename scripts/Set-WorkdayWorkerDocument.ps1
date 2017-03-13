@@ -52,7 +52,7 @@ function Set-WorkdayWorkerDocument {
         [switch]$Passthru
 	)
 
-    if ([string]::IsNullOrWhiteSpace($StaffingUri)) { $Uri = $WorkdayConfiguration.Endpoints['Staffing'] }
+    if ([string]::IsNullOrWhiteSpace($StaffingUri)) { $StaffingUri = $WorkdayConfiguration.Endpoints['Staffing'] }
 
 	$request = [xml]@'
 <bsvc:Put_Worker_Document_Request bsvc:Add_Only="false" xmlns:bsvc="urn:com.workday/bsvc">
@@ -83,5 +83,5 @@ function Set-WorkdayWorkerDocument {
     $request.Put_Worker_Document_Request.Worker_Document_Data.Comment = $Comment
 	$request.Put_Worker_Document_Request.Worker_Document_Data.Content_Type = [System.Web.MimeMapping]::GetMimeMapping( $fileName )
 
-	Invoke-WorkdayRequest -Request $request -Uri $Uri -Username $Username -Password $Password | where {$Passthru} | Write-Output
+	Invoke-WorkdayRequest -Request $request -Uri $StaffingUri -Username:$Username -Password:$Password | where {$Passthru} | Write-Output
 	}

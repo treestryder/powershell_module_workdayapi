@@ -53,9 +53,11 @@ function Invoke-WorkdayRequest {
 		[string]$Username,
 		[string]$Password
 	)
-
-    if ([string]::IsNullOrWhiteSpace($Username)) { $Username = $WorkdayConfiguration.Credential.Username }
-    if ([string]::IsNullOrWhiteSpace($Password)) { $Password = $WorkdayConfiguration.Credential.GetNetworkCredential().Password }
+    
+    if ($WorkdayConfiguration.Credential -is [PSCredential]) {
+        if ([string]::IsNullOrWhiteSpace($Username)) { $Username = $WorkdayConfiguration.Credential.Username }
+        if ([string]::IsNullOrWhiteSpace($Password)) { $Password = $WorkdayConfiguration.Credential.GetNetworkCredential().Password }
+    }
 
 	$WorkdaySoapEnvelope = [xml] @'
 <soapenv:Envelope xmlns:bsvc="urn:com.workday/bsvc" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">

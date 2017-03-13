@@ -50,7 +50,7 @@ function Update-WorkdayWorkerPhone {
         [switch]$Passthru
 	)
 
-    if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Uri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
+    if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
     
     $current = Get-WorkdayWorkerPhone -EmployeeId $EmployeeId -Uri $Uri -Username $Username -Password $Password
 
@@ -61,7 +61,7 @@ function Update-WorkdayWorkerPhone {
 
     Write-Verbose "Current: $scrubbedCurrent Proposed: $scrubbedProposed"
     if ($scrubbedCurrent -ne $scrubbedProposed) {
-        Set-WorkdayWorkerPhone @PSBoundParameters | where {$Passthru} | Write-Output
+        Set-WorkdayWorkerPhone -EmployeeId $EmployeeId -WorkPhone $WorkPhone -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password | where {$Passthru} | Write-Output
         Write-Verbose "     Number updated."
     }
 }

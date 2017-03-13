@@ -47,7 +47,7 @@ function Get-WorkdayWorker {
         [switch]$IncludeDefault
 	)
 
-    if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Uri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
+    if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
 	$request = [xml]@'
 <bsvc:Get_Workers_Request xmlns:bsvc="urn:com.workday/bsvc">
@@ -83,5 +83,5 @@ function Get-WorkdayWorker {
         $request.Get_Workers_Request.Response_Group.Include_Organizations = 'true'
         $request.Get_Workers_Request.Response_Group.Include_Roles = 'true'
     }
-	Invoke-WorkdayRequest -Request $request -Uri $Uri -Username $Username -Password $Password | Write-Output
+	Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
 }
