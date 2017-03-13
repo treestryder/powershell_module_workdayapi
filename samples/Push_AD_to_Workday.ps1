@@ -1,9 +1,17 @@
-#REQUIRES -Modules ActiveDirectory, WorkdayApi
+<#
+.Synopsis
+Example script to push Active Directory values to Workday, when they differ.
+
+.Example
+.\Push_AD_to_Workday.ps1 | Export-Csv -Path Report.csv -NoTypeInformation
+#>
+
+#REQUIRES -Modules ActiveDirectory
 
 [CmdletBinding()]
 param (
     [datetime]$LastSyncronized,
-    [switch]$All
+    [switch]$Force
 )
 
 Import-Module ActiveDirectory
@@ -18,8 +26,8 @@ if ( $LastSyncronized -eq $null -and (Test-Path $LastRanFile)) {
 }
 
 # We use extensionAttribute1 for employee ID, when AD now has the properties EmployeeID, EmployeeNumber.
-$filter = 'extensionAttribute1 -like "*" -and (EmailAddress -like "*" -or OfficePhone -like "*")'
-if ($LastSyncronized -is [DateTime] -and -not $All) {
+$filter = 'enabled -eq $true -and extensionAttribute1 -like "*" -and (EmailAddress -like "*" -or OfficePhone -like "*")'
+if ($LastSyncronized -is [DateTime] -and -not $Force) {
     $filter += ' -and Modified -ge "{0:o}"' -f $LastSyncronized
 }
 
@@ -42,28 +50,45 @@ foreach ($AdUser in $AdUsers) {
     $o.DistinguishedName = $AdUser.DistinguishedName
     $o.extensionAttribute1 = $AdUser.extensionAttribute1
     if ($o.extensionAttribute1 -match '^[\s0]*([1-9]\d*)\s*$') {
-        $worker = Get-WorkdayWorker -WorkerId $Matches[1] -WorkerType Employee_ID -IncludePersonal -Force
-        if ($worker.psobject.TypeNames[0] -eq 'Workday.Worker') {
+        $workerId = $Matches[1]
+        $worker = $null
+        try {
+            $worker = Get-WorkdayWorker -WorkerId $workerId -WorkerType Employee_ID -IncludePersonal -Force
+        }
+        catch {
+            $o.WID = "Unable to retrieve WorkerID [$workerId] from Workday: $_"
+        }
+        if ($worker -ne $null -and $worker.psobject.TypeNames[0] -eq 'Workday.Worker') {
             $o.WID = $worker.WorkerWid
 
             if ([string]::IsNullOrWhiteSpace($ADUser.EmailAddress)) {
                 $o.WorkEmailStatus = 'No EmailAddress in AD.'
             } else {
-                $response = Update-WorkdayWorkerEmail -WorkerXml $worker.Xml -WorkEmail $ADUser.EmailAddress
-                $o.WorkEmailStatus = $response.Message
+                try {
+                    $response = Update-WorkdayWorkerEmail -WorkerXml $worker.Xml -WorkEmail $ADUser.EmailAddress
+                    $o.WorkEmailStatus = $response.Message
+                }
+                catch {
+                    $o.WorkEmailStatus = "Error: $_"
+                }
             }
 
             if ([string]::IsNullOrWhiteSpace($ADUser.OfficePhone)) {
                 $o.WorkPhoneStatus = 'No OfficePhone in AD.'
             } else {
-                $response = Update-WorkdayWorkerPhone -WorkerXml $worker.Xml -WorkPhone $ADUser.OfficePhone
-                $o.WorkPhoneStatus = $response.Message
+                try {
+                    $response = Update-WorkdayWorkerPhone -WorkerXml $worker.Xml -WorkPhone $ADUser.OfficePhone
+                    $o.WorkPhoneStatus = $response.Message
+                }
+                catch {
+                    $o.WorkPhoneStatus = "Error: $_"
+                }
             }
-        } else {
+        } elseif ($worker -ne $null) {
             $o.WID = $worker.Message
         }
     } else {
-        $o.extensionAttribute1 = 'Invalid Worker ID [{0}]' -f $AdUser.extensionAttribute1
+        $o.WID = 'Invalid Worker ID.'
     }
     Write-Output $o
 }
