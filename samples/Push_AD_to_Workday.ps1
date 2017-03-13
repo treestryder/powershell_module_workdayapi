@@ -26,13 +26,13 @@ if ( $LastSyncronized -eq $null -and (Test-Path $LastRanFile)) {
 }
 
 # We use extensionAttribute1 for employee ID, when AD now has the properties EmployeeID, EmployeeNumber.
-$filter = 'enabled -eq $true -and extensionAttribute1 -like "*" -and (EmailAddress -like "*" -or OfficePhone -like "*")'
+$filter = 'enabled -eq $true -and extensionAttribute1 -like "*" -and (EmailAddress -like "*" -or OfficePhone -like "*" -or MobilePhone -like "*")'
 if ($LastSyncronized -is [DateTime] -and -not $Force) {
     $filter += ' -and Modified -ge "{0:o}"' -f $LastSyncronized
 }
 
 Write-Progress -Activity 'Pushing AD User email and phone values to Workday' -Status "Gathering AD Users using filter: $filter"
-$AdUsers = @(Get-ADUser -Filter $filter -ResultSetSize $null -Properties extensionAttribute1, EmailAddress, OfficePhone -Verbose)
+$AdUsers = @(Get-ADUser -Filter $filter -ResultSetSize $null -Properties extensionAttribute1, EmailAddress, OfficePhone, MobilePhone -Verbose)
 
 $outputTemplate = [pscustomobject][ordered]@{
         DistinguishedName   = $null
@@ -40,6 +40,7 @@ $outputTemplate = [pscustomobject][ordered]@{
         WID                 = $null
         WorkEmailStatus     = $null
         WorkPhoneStatus     = $null
+        MobilePhoneStatus   = $null
 }
 
 $count = 0
@@ -77,8 +78,20 @@ foreach ($AdUser in $AdUsers) {
                 $o.WorkPhoneStatus = 'No OfficePhone in AD.'
             } else {
                 try {
-                    $response = Update-WorkdayWorkerPhone -WorkerXml $worker.Xml -WorkPhone $ADUser.OfficePhone
+                    $response = Update-WorkdayWorkerPhone -WorkerXml $worker.Xml -Number $ADUser.OfficePhone -UsageType WORK -DeviceType Landline
                     $o.WorkPhoneStatus = $response.Message
+                }
+                catch {
+                    $o.WorkPhoneStatus = "Error: $_"
+                }
+            }
+
+           if ([string]::IsNullOrWhiteSpace($ADUser.MobilePhone)) {
+                $o.MobilePhoneStatus = 'No MobilePhone in AD.'
+            } else {
+                try {
+                    $response = Update-WorkdayWorkerPhone -WorkerXml $worker.Xml -Number $ADUser.MobilePhone -UsageType WORK -DeviceType Cell
+                    $o.MobilePhoneStatus = $response.Message
                 }
                 catch {
                     $o.WorkPhoneStatus = "Error: $_"

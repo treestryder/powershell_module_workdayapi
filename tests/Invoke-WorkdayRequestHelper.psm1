@@ -220,11 +220,12 @@ function Mock_Invoke-WorkdayRequest_ExampleWorker {
 								<wd:ID wd:type="Address_ID">ADDRESS_REFERENCE-6-153</wd:ID>
 							</wd:Address_Reference>
 						</wd:Address_Data>
-						<wd:Phone_Data wd:Formatted_Phone="+1 (517) 123-4567">
+						<wd:Phone_Data wd:Formatted_Phone="+1 (517) 123-4567 x4321">
 							<wd:Country_ISO_Code>MSR</wd:Country_ISO_Code>
 							<wd:International_Phone_Code>1</wd:International_Phone_Code>
 							<wd:Area_Code>517</wd:Area_Code>
 							<wd:Phone_Number>123-4567</wd:Phone_Number>
+							<wd:Phone_Extension>4321</wd:Phone_Extension>
 							<wd:Phone_Device_Type_Reference wd:Descriptor="Landline">
 								<wd:ID wd:type="WID">00000000000000000000000000000000</wd:ID>
 								<wd:ID wd:type="Phone_Device_Type_ID">Landline</wd:ID>

@@ -69,18 +69,25 @@ Work/Landline +1 (555) 765-4321    True   True
     }
 
     $numberTemplate = [pscustomobject][ordered]@{
-        Type    = $null
+        UsageType = $null
+        DeviceType = $null        
         Number  = $null
+        Extension = $null
         Primary = $null
         Public  = $null
     }
 
     $WorkerXml.GetElementsByTagName('wd:Phone_Data') | foreach {
         $o = $numberTemplate.PsObject.Copy()
-        $o.Type = $_.Usage_Data.Type_Data.Type_Reference.Descriptor + '/' + $_.Phone_Device_Type_Reference.Descriptor
-        $o.Number = $_.Formatted_Phone
-        $o.Primary = [bool]$_.Usage_Data.Type_Data.Primary
-        $o.Public = [bool]$_.Usage_Data.Public
+        $o.UsageType = $_.Usage_Data.Type_Data.Type_Reference.Descriptor
+        $o.DeviceType = $_.Phone_Device_Type_Reference.Descriptor
+        $international = $_ | select -ExpandProperty 'International_Phone_Code' -ErrorAction SilentlyContinue
+        $areaCode = $_ | select -ExpandProperty 'Area_Code' -ErrorAction SilentlyContinue
+        $phoneNumber = $_ | select -ExpandProperty 'Phone_Number' -ErrorAction SilentlyContinue
+        $o.Number = '{0} ({1}) {2}' -f $international, $areaCode, $phoneNumber
+        $o.Extension = $_ | select -ExpandProperty 'Phone_Extension' -ErrorAction SilentlyContinue
+        $o.Primary = [System.Xml.XmlConvert]::ToBoolean( $_.Usage_Data.Type_Data.Primary )
+        $o.Public = [System.Xml.XmlConvert]::ToBoolean( $_.Usage_Data.Public )
         Write-Output $o
     }
 }

@@ -35,11 +35,11 @@
 
 .EXAMPLE
     
-Update-WorkdayWorkerPhone -WorkerId 123 -WorkPhone 1234567890
+Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
 
 #>
 
-	[CmdletBinding(DefaultParametersetName='Search')]
+	[CmdletBinding()]
 	param (
 		[Parameter(Mandatory = $true,
             ParameterSetName="Search",
@@ -58,9 +58,16 @@ Update-WorkdayWorkerPhone -WorkerId 123 -WorkPhone 1234567890
         [Parameter(Mandatory = $true,
             ParameterSetName="NoSearch")]
         [xml]$WorkerXml,
-        [Parameter(Mandatory = $true)]
-        [Alias('OfficePhone')]
-		[string]$WorkPhone
+		[Parameter(Mandatory = $true)]
+		[ValidateNotNullOrEmpty()]
+		[string]$Number,
+		[string]$Extension,
+		[ValidateSet('HOME','WORK')]
+        [string]$UsageType = 'WORK',
+		[ValidateSet('Landline','Cell')]
+        [string]$DeviceType = 'Landline',
+        [switch]$Private,
+        [switch]$Secondary
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
@@ -71,25 +78,47 @@ Update-WorkdayWorkerPhone -WorkerId 123 -WorkPhone 1234567890
         $workerReference = $WorkerXml.GetElementsByTagName('wd:Worker_Reference') | Select -First 1
         $WorkerId = $workerReference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty InnerText
     } else {
-        $current = Get-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password
+        $current = Get-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
     }
 
-    function scrub ([string]$PhoneNumber) { $PhoneNumber -replace '[^\d]','' -replace '^1','' }
+    function scrub ([string]$PhoneNumber) { $PhoneNumber -replace '[^\d]','' }
 
-    $scrubbedCurrent = scrub ( $current | where { $_.Type -eq 'Work/Landline' -and $_.Primary } | Select -First 1 -ExpandProperty Number)
-    $scrubbedProposed = scrub $WorkPhone
-
-    Write-Verbose "Current: $scrubbedCurrent Proposed: $scrubbedProposed"
+    $scrubbedProposedNumber = scrub $Number
+    $scrubbedProposedExtention = scrub $Extension
+    $scrubbedCurrentNumber = $null
+    $scrubbedCurrentExtension = $null
+    $currentMatch = $current |
+     where {
+        $_.UsageType -eq $UsageType -and
+        $_.DeviceType -eq $DeviceType -and
+        $_.Primary -ne $Secondary -and
+        $_.Public -ne $Private
+    } | Select -First 1
+    if ($currentMatch -ne $null) {
+        $scrubbedCurrentNumber = scrub $currentMatch.Number
+        $scrubbedCurrentExtension = scrub $currentMatch.Extension
+    }
+    
+    $msg = "Current [$scrubbedCurrentNumber $scrubbedCurrentExtension] {0} Proposed [$scrubbedProposedNumber $scrubbedProposedExtention]"
     $output = [pscustomobject][ordered]@{
         Success = $true
-        Message = "No change necessary for current Workday number [$scrubbedCurrent]."
+        Message = $msg -f 'matched'
         Xml     = $null
     }
-    if ($scrubbedCurrent -ne $scrubbedProposed) {
-        $output = Set-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType -WorkPhone $WorkPhone -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password
+    if (
+        $scrubbedCurrentNumber -ne $scrubbedProposedNumber -or
+        $scrubbedCurrentExtension -ne $scrubbedProposedExtention
+    ) {
+        $params = $PSBoundParameters
+        $null = $params.Remove('WorkerXml')
+        $null = $params.Remove('WorkerId')
+        $null = $params.Remove('WorkerType')
+        #  Set-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password -Number:$Number -Extension:$Extension -UsageType:$UsageType -DeviceType:$DeviceType -Private:$Private -Secondary:$Secondary
+        $output = Set-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType @params
         if ($output.Success) {
-            $output.Message = "Number changed at Workday from [$scrubbedCurrent] to [$scrubbedProposed]."
+            $output.Message = $msg -f 'changed to'
         }
     }
+    
     Write-Output $output
 }

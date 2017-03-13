@@ -13,7 +13,7 @@ function Set-WorkdayWorkerPhone {
     The type of ID that the WorkerId represents. Valid values
     are 'WID', 'Contingent_Worker_ID' and 'Employee_ID'.
 
-.PARAMETER WorkPhone
+.PARAMETER Number
     Sets the Workday primary Work Landline for a Worker. This cmdlet does not
     currently support other phone types. Also excepts the alias OfficePhone.
 
@@ -31,7 +31,7 @@ function Set-WorkdayWorkerPhone {
 
 .EXAMPLE
     
-Set-WorkdayWorkerPhone -WorkerId 123 -WorkPhone 1234567890
+Set-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
 
 #>
 
@@ -44,8 +44,15 @@ Set-WorkdayWorkerPhone -WorkerId 123 -WorkPhone 1234567890
 		[ValidateSet('WID', 'Contingent_Worker_ID', 'Employee_ID')]
 		[string]$WorkerType = 'Employee_ID',
 		[Parameter(Mandatory = $true)]
-        [Alias('OfficePhone')]
-		[string]$WorkPhone,
+		[ValidateNotNullOrEmpty()]
+		[string]$Number,
+		[string]$Extension,
+		[ValidateSet('HOME','WORK')]
+        [string]$UsageType = 'WORK',
+		[ValidateSet('Landline','Cell')]
+        [string]$DeviceType = 'Landline',
+        [switch]$Private,
+        [switch]$Secondary,
 		[string]$Human_ResourcesUri,
 		[string]$Username,
 		[string]$Password
@@ -60,27 +67,27 @@ Set-WorkdayWorkerPhone -WorkerId 123 -WorkPhone 1234567890
 		<bsvc:Auto_Complete>true</bsvc:Auto_Complete>
 		<bsvc:Run_Now>true</bsvc:Run_Now>
 		<bsvc:Comment_Data>
-			<bsvc:Comment>Work Phone set by Set-WorkdayWorkerPhone</bsvc:Comment>
+			<bsvc:Comment>Phone number set by Set-WorkdayWorkerPhone</bsvc:Comment>
 		</bsvc:Comment_Data>
 	</bsvc:Business_Process_Parameters>
     <bsvc:Maintain_Contact_Information_Data>
 		<bsvc:Worker_Reference>
-			<bsvc:ID bsvc:type="Employee_ID">Employee_ID</bsvc:ID>
+			<bsvc:ID bsvc:type="Employee_ID">Employee_ID?</bsvc:ID>
 		</bsvc:Worker_Reference>
-		<bsvc:Effective_Date>Effective_Date</bsvc:Effective_Date>
+		<bsvc:Effective_Date>Effective_Date?</bsvc:Effective_Date>
 		<bsvc:Worker_Contact_Information_Data>
 			<bsvc:Phone_Data>
 				<bsvc:International_Phone_Code>1</bsvc:International_Phone_Code>
-				<bsvc:Area_Code/>
-                <bsvc:Phone_Number/>
-				<bsvc:Phone_Extension/>
+				<bsvc:Area_Code>?</bsvc:Area_Code>
+                <bsvc:Phone_Number>?</bsvc:Phone_Number>
+				<bsvc:Phone_Extension>?</bsvc:Phone_Extension>
 				<bsvc:Phone_Device_Type_Reference>
-					<bsvc:ID bsvc:type="Phone_Device_Type_ID">Landline</bsvc:ID>
+					<bsvc:ID bsvc:type="Phone_Device_Type_ID">Landline?</bsvc:ID>
 				</bsvc:Phone_Device_Type_Reference>
-				<bsvc:Usage_Data bsvc:Public="true">
-					<bsvc:Type_Data bsvc:Primary="true">
+				<bsvc:Usage_Data bsvc:Public="1">
+					<bsvc:Type_Data bsvc:Primary="1">
 						<bsvc:Type_Reference>
-							<bsvc:ID bsvc:type="Communication_Usage_Type_ID">WORK</bsvc:ID>
+							<bsvc:ID bsvc:type="Communication_Usage_Type_ID">WORK?</bsvc:ID>
 						</bsvc:Type_Reference>
 					</bsvc:Type_Data>
 				</bsvc:Usage_Data>
@@ -99,28 +106,40 @@ Set-WorkdayWorkerPhone -WorkerId 123 -WorkPhone 1234567890
 
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Effective_Date = (Get-Date).ToString( 'yyyy-MM-dd' )
 
-    $scrubbedNumber = $WorkPhone -replace '[^\d]', ''
-	if ($scrubbedNumber -notmatch '(?<country>[\d]*?)(?<areacode>\d{0,3}?)(?<prefix>\d{0,3}?)(?<line>\d{1,4})$') {
-        throw "Unable to update Work phone number, invalid number: $WorkPhone"
+    $scrubbedNumber = $Number -replace '[^\d]', ''
+    if ($scrubbedNumber -notmatch '(?<country>[\d]*?)(?<areacode>\d{0,3}?)(?<prefix>\d{0,3}?)(?<line>\d{1,4})$') {
+        throw "Invalid number: [$Number]"
     }
 
-	if ($Matches['country'].length -gt 0) {
-		$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.International_Phone_Code = $Matches['country']
+	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Phone_Device_Type_Reference.ID.'#text' =
+	 $DeviceType
+	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Usage_Data.Type_Data.Type_Reference.ID.'#text' =
+	 $UsageType
+	
+	if ($Private) {
+		$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Usage_Data.Public = '0'
 	}
-	if ($Matches['areacode'].length -gt 0) {
-		$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Area_Code = $Matches['areacode']
+
+	if ($Secondary) {
+		$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Usage_Data.Type_Data.Primary = '0'
 	}
+
+	$country = if ([string]::IsNullOrWhiteSpace($Matches['country'])) {'1'} else { $Matches['country'] }
+	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.International_Phone_Code =
+	 $country
+	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Area_Code =
+	 $Matches['areacode']
 
     $phoneNumber = ''
     if ($Matches['prefix'].length -gt 0) {
         $phoneNumber = $Matches['prefix'] + '-'
     }
-    if ($Matches['line'].length -gt 0) {
-        $phoneNumber += $Matches['line']
-    }
-	if ($phoneNumber.length -gt 0) {
-		$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Phone_Number = $phoneNumber
-	}
+    $phoneNumber += $Matches['line']
+	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Phone_Number = $phoneNumber
 
+	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Phone_Extension =
+	 $Extension
+
+	Write-Debug $request.OuterXml
     Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
 }

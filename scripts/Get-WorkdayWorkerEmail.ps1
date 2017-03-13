@@ -80,8 +80,8 @@ Work work@example.com                True   True
         $o = $numberTemplate.PsObject.Copy()
         $o.Type = $_.Usage_Data.Type_Data.Type_Reference.Descriptor
         $o.Email = $_.Email_Address
-        $o.Primary = $_.Usage_Data.Type_Data.Primary -match '1|true'
-        $o.Public = $_.Usage_Data.Public -match '1|true'
+        $o.Primary = [System.Xml.XmlConvert]::ToBoolean( $_.Usage_Data.Type_Data.Primary )
+        $o.Public = [System.Xml.XmlConvert]::ToBoolean( $_.Usage_Data.Public )
         Write-Output $o
     }
 }
