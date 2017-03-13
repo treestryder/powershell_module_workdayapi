@@ -23,8 +23,6 @@ if ($LastSyncronized -is [DateTime] -and -not $All) {
     $filter += ' -and Modified -ge "{0:o}"' -f $LastSyncronized
 }
 
-#$filter = 'DistinguishedName -eq "CN=Sherrie Stewart,OU=Team Members,OU=Accounts,OU=TIS-Supported,DC=peckham,DC=org"'
-
 Write-Progress -Activity 'Pushing AD User email and phone values to Workday' -Status "Gathering AD Users using filter: $filter"
 $AdUsers = @(Get-ADUser -Filter $filter -ResultSetSize $null -Properties extensionAttribute1, EmailAddress, OfficePhone -Verbose)
 
