@@ -4,19 +4,44 @@ function Mock_Invoke-WorkdayRequest_Echo {
     param (
         $Request
     )
-    $Request
+    [pscustomobject][ordered]@{
+        Success    = $true
+        Message  = ''
+        Xml = [xml]$Request
+    }
 }
 
 
 # Return an error
 function Mock_Invoke-WorkdayRequest_ExampleError {
-    throw 'Workday Request Example Error'
+    [pscustomobject][ordered]@{
+        Success = $false
+        Message = 'SOAP-ENV:Client.validationError: Workday Request Error Example'
+        Xml     = [xml]@'
+<SOAP-ENV:Fault xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wd="urn:com.workday/bsvc">
+    <faultcode>SOAP-ENV:Client.validationError</faultcode>
+    <faultstring>Workday Request Error Example/bsvc</faultstring>
+    <detail>
+        <wd:Validation_Fault>
+            <wd:Validation_Error>
+                <wd:Message>Workday Request Error Example</wd:Message>
+                <wd:Detail_Message></wd:Detail_Message>
+                <wd:Xpath></wd:Xpath>
+            </wd:Validation_Error>
+        </wd:Validation_Fault>
+    </detail>
+</SOAP-ENV:Fault>
+'@
+    }
 }
 
 
 # Return a Good example
 function Mock_Invoke-WorkdayRequest_ExampleWorker {
-    [xml]@'
+    [pscustomobject][ordered]@{
+        Success    = $true
+        Message  = ''
+        Xml = [xml]@'
 <wd:Get_Workers_Response xmlns:wd="urn:com.workday/bsvc" wd:version="v25.1">
 	<wd:Request_References>
 		<wd:Worker_Reference wd:Descriptor="Example Worker (1)">
@@ -232,4 +257,5 @@ function Mock_Invoke-WorkdayRequest_ExampleWorker {
 	</wd:Response_Data>
 </wd:Get_Workers_Response>
 '@
+    }
 }

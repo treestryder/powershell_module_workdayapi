@@ -5,18 +5,36 @@ Import-Module "$PsScriptRoot\Invoke-WorkdayRequestHelper.psm1" -Force -DisableNa
 Describe Get-WorkdayWorkerPhone {
     InModuleScope WorkdayApi {
 
-        It 'Returns expected phone number information.' {
-            Mock Invoke-WorkdayRequest {
-                Mock_Invoke-WorkdayRequest_ExampleWorker
-            }
+        Context Search {
+            It 'Returns expected phone information when provided an EmployeeId.' {
+                Mock Invoke-WorkdayRequest {
+                    Mock_Invoke-WorkdayRequest_ExampleWorker
+                }
 
-            $response = @(Get-WorkdayWorkerPhone -EmployeeId 1)
-            $response.Count | Should Be 1
-            $response[0].Type | Should Be 'Work/Landline'
-            $response[0].Number | Should Be '+1 (517) 123-4567'
-            $response[0].Primary | Should Be $true
-            $response[0].Public | Should Be $true
-            Assert-MockCalled Invoke-WorkdayRequest -Exactly 1
+                $response = @(Get-WorkdayWorkerPhone -EmployeeId 1)
+                $response.Count | Should Be 1
+                $response[0].Type | Should Be 'Work/Landline'
+                $response[0].Number | Should Be '+1 (517) 123-4567'
+                $response[0].Primary | Should Be $true
+                $response[0].Public | Should Be $true
+                Assert-MockCalled Invoke-WorkdayRequest -Exactly 1
+            }
         }
+
+        Context NoSearch {
+            It 'Returns expected Phone information when provided a Worker XML object.' {
+                Mock Invoke-WorkdayRequest {}
+                
+                $worker = Mock_Invoke-WorkdayRequest_ExampleWorker
+                $response = @(Get-WorkdayWorkerPhone -WorkerXml $worker.Xml )
+                $response.Count | Should Be 1
+                $response[0].Type | Should Be 'Work/Landline'
+                $response[0].Number | Should Be '+1 (517) 123-4567'
+                $response[0].Primary | Should Be $true
+                $response[0].Public | Should Be $true
+                Assert-MockCalled Invoke-WorkdayRequest -Exactly 0
+            }
+        }
+
     }
 }

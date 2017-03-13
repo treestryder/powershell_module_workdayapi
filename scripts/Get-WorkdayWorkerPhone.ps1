@@ -37,7 +37,8 @@ Work/Landline +1 (555) 765-4321    True   True
     [OutputType([PSCustomObject])]
 	param (
 		[Parameter(Mandatory = $true,
-            ParameterSetName="Search")]
+            ParameterSetName="Search",
+            Position=0)]
 		[ValidateNotNullOrEmpty()]
 		[string]$EmployeeId,
         [Parameter(ParameterSetName="Search")]
@@ -50,17 +51,15 @@ Work/Landline +1 (555) 765-4321    True   True
         [xml]$WorkerXml
 	)
 
-    if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
+    if ($PsCmdlet.ParameterSetName -eq 'Search') {
+        if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
+        $response = Get-WorkdayWorker -EmployeeId $EmployeeId -IncludePersonal -Passthru -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
+        $WorkerXml = $response.Xml
+    }
 
-    if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
-        $w = $WorkerXml
-    } else {
-        try {
-            $w = Get-WorkdayWorker -EmployeeId $EmployeeId -IncludePersonal -Passthru -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
-        }
-        catch {
-            throw
-        }
+    if ($WorkerXml -eq $null) {
+        Write-Warning 'Worker not found.'
+        return
     }
 
     $numberTemplate = [pscustomobject][ordered]@{
@@ -70,7 +69,7 @@ Work/Landline +1 (555) 765-4321    True   True
         Public  = $null
     }
 
-    $w.Get_Workers_Response.Response_Data.FirstChild.Worker_Data.Personal_Data.Contact_Data.Phone_Data | foreach {
+    $WorkerXml.Get_Workers_Response.Response_Data.FirstChild.Worker_Data.Personal_Data.Contact_Data.Phone_Data | foreach {
         $o = $numberTemplate.PsObject.Copy()
         $o.Type = $_.Usage_Data.Type_Data.Type_Reference.Descriptor + '/' + $_.Phone_Device_Type_Reference.Descriptor
         $o.Number = $_.Formatted_Phone

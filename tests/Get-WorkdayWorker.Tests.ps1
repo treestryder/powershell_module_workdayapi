@@ -15,7 +15,7 @@ Describe Get-WorkdayWorker {
 <bsvc:Get_Workers_Request xmlns:bsvc="urn:com.workday/bsvc"><bsvc:Request_References bsvc:Skip_Non_Existing_Instances="false"><bsvc:Worker_Reference><bsvc:ID bsvc:type="Employee_ID">1</bsvc:ID></bsvc:Worker_Reference></bsvc:Request_References><bsvc:Response_Group><bsvc:Include_Reference>false</bsvc:Include_Reference><bsvc:Include_Personal_Information>false</bsvc:Include_Personal_Information><bsvc:Include_Employment_Information>false</bsvc:Include_Employment_Information><bsvc:Include_Compensation>false</bsvc:Include_Compensation><bsvc:Include_Organizations>false</bsvc:Include_Organizations><bsvc:Include_Roles>false</bsvc:Include_Roles></bsvc:Response_Group></bsvc:Get_Workers_Request>
 '@ -f (Get-Date)
             $response = Get-WorkdayWorker -EmployeeId 1 -Passthru
-            $response.OuterXml | Should BeExactly $expectedResponse
+            $response.Xml.OuterXml | Should BeExactly $expectedResponse
             Assert-MockCalled Invoke-WorkdayRequest -Exactly 1
         }
 

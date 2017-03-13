@@ -84,31 +84,40 @@ urn:com.workday/bsvc v25.1   2015-12-02T12:18:30.841-08:00
 		'Content-Type' = 'text/xml;charset=UTF-8'
 	}
 	
-	$response = ''
-	$responseXML = $null
-	try {
+    
+     $o = [pscustomobject][ordered]@{
+        Success    = $false
+        Message  = 'Unknown Error'
+        Xml = $null
+        Response = $null
+    }
+
+	$response = $null
+    try {
 		$response = Invoke-RestMethod -Method Post -UseBasicParsing -Uri $Uri -Headers $headers -Body $WorkdaySoapEnvelope
+        $o.Xml = [xml]$response.Envelope.Body.InnerXml
+        $o.Message = ''
+        $o.Success = $true
 	}
 	catch {
+        $o.Success = $false
 		$reader = New-Object System.IO.StreamReader -ArgumentList $_.Exception.Response.GetResponseStream()
 		$response = $reader.ReadToEnd()
 		$reader.Close()
-	}
-	if ($response -is [xml]) {
-		$responseXML = $response
-		$response = $responseXML.OuterXml
-	} else {
-		$responseXML = [xml]$response
-	}
-	Write-Debug "Response: $($response)"
-	if ([String]::IsNullOrWhiteSpace($response)) {
-		Write-Warning 'Empty Response'
-	} else {
-        
-        [xml]$responseXML.Envelope.Body.InnerXml | Write-Output
+        try {
+           $xml = [xml]$response
+           $o.Xml = [xml]$xml.Envelope.Body.InnerXml 
 
-        if ($responseXML.Envelope.Body.FirstChild.Name -eq 'SOAP-ENV:Fault') {
-            Write-Error "$($responseXML.Envelope.Body.Fault.faultcode): $($responseXML.Envelope.Body.Fault.faultstring)"
+            # Put the first Workday Exception into the Message property.
+            if ($o.Xml.InnerXml.StartsWith('<SOAP-ENV:Fault ')) {
+                $o.Success = $false
+                $o.Message = "$($o.Xml.Fault.faultcode): $($o.Xml.Fault.faultstring)"
+            }
+        }
+        catch {
+            $o.Message = $response
         }
 	}
+    
+    Write-Output $o
 }

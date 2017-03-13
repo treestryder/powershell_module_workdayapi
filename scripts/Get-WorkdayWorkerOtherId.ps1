@@ -37,7 +37,8 @@ Custom_ID/Badge_ID  1         Badge ID
     [OutputType([PSCustomObject])]
 	param (
 		[Parameter(Mandatory = $true,
-            ParameterSetName="Search")]
+            ParameterSetName="Search",
+            Position=0)]
 		[ValidateNotNullOrEmpty()]
 		[string]$EmployeeId,
         [Parameter(ParameterSetName="Search")]
@@ -52,15 +53,14 @@ Custom_ID/Badge_ID  1         Badge ID
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
-    if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
-        $w = $WorkerXml
-    } else {
-        try {
-            $w = Get-WorkdayWorker -EmployeeId $EmployeeId -IncludePersonal -Passthru -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
-        }
-        catch {
-            throw
-        }
+    if ($PsCmdlet.ParameterSetName -eq 'Search') {
+        $response = Get-WorkdayWorker -EmployeeId $EmployeeId -IncludePersonal -Passthru -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
+        $WorkerXml = $response.Xml
+    }
+
+    if ($WorkerXml -eq $null) {
+        Write-Warning 'Unable to get Other Id information, Worker not found.'
+        return
     }
 
     $numberTemplate = [pscustomobject][ordered]@{
@@ -69,7 +69,7 @@ Custom_ID/Badge_ID  1         Badge ID
         Descriptor = $null
     }
 
-    $w.Get_Workers_Response.Response_Data.Worker.Worker_Data.Personal_Data.Identification_Data.National_ID | foreach {
+    $WorkerXml.Get_Workers_Response.Response_Data.Worker.Worker_Data.Personal_Data.Identification_Data.National_ID | foreach {
         $o = $numberTemplate.PsObject.Copy()
         $typeXml = $_.National_ID_Data.ID_Type_Reference.ID | where {$_.type -eq 'National_ID_Type_Code'}
         $o.Type = 'National_ID/{0}' -f $typeXml.'#text'
@@ -78,7 +78,7 @@ Custom_ID/Badge_ID  1         Badge ID
         Write-Output $o
     }
 
-    $w.Get_Workers_Response.Response_Data.Worker.Worker_Data.Personal_Data.Identification_Data.Custom_ID | foreach {
+    $WorkerXml.Get_Workers_Response.Response_Data.Worker.Worker_Data.Personal_Data.Identification_Data.Custom_ID | foreach {
         $o = $numberTemplate.PsObject.Copy()
         $typeXml = $_.Custom_ID_Data.ID_Type_Reference.ID | where {$_.type -eq 'Custom_ID_Type_ID'}
         $o.Type = 'Custom_ID/{0}' -f $typeXml.'#text'
@@ -86,9 +86,5 @@ Custom_ID/Badge_ID  1         Badge ID
         $o.Descriptor = $_.Custom_ID_Data.ID_Type_Reference.Descriptor
         Write-Output $o
     }
-<#
-        $badgeIdXml = $response.Get_Workers_Response.Response_Data.Worker.Worker_Data.Personal_Data.Identification_Data.Custom_ID.Custom_ID_Data | where { $_.ID_Type_Reference.ID  | where {$_.type -eq 'Custom_ID_Type_ID' -and $_.'#text' -eq 'Badge_ID'}}
-        $worker.BadgeId = $badgeIdXml.ID
-#>
 
 }

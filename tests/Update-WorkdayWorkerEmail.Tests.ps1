@@ -24,8 +24,8 @@ Describe Update-WorkdayWorkerEmail {
             }
 
             It 'Works when passed a Worker XML object.' {
-                $workerXml = Mock_Invoke-WorkdayRequest_ExampleWorker
-                $response = Update-WorkdayWorkerEmail -WorkerXml $workerXml -WorkEmail 'new@example.com'
+                $worker = Mock_Invoke-WorkdayRequest_ExampleWorker
+                $response = Update-WorkdayWorkerEmail -WorkerXml $worker.Xml -WorkEmail 'new@example.com'
                 Assert-MockCalled Set-WorkdayWorkerEmail -Exactly 2
             }
         }

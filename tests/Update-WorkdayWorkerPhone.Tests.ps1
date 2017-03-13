@@ -24,8 +24,8 @@ Describe Update-WorkdayWorkerPhone {
             }
 
             It 'Works when passed a Worker XML object.' {
-                $workerXml = Mock_Invoke-WorkdayRequest_ExampleWorker
-                $response = Update-WorkdayWorkerPhone -WorkerXml $workerXml -WorkPhone 2
+                $worker = Mock_Invoke-WorkdayRequest_ExampleWorker
+                $response = Update-WorkdayWorkerPhone -WorkerXml $worker.Xml -WorkPhone 2
                 Assert-MockCalled Set-WorkdayWorkerPhone -Exactly 2
             }
         }

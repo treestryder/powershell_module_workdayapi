@@ -50,8 +50,7 @@ Set-WorkdayWorkerDocument -EmpoyeeId 123 -Path Document.pdf
         [string]$Comment,
 		[string]$StaffingUri,
 		[string]$Username,
-		[string]$Password,
-        [switch]$Passthru
+		[string]$Password
 	)
 
     Add-Type -AssemblyName "System.Web"
@@ -94,5 +93,5 @@ Set-WorkdayWorkerDocument -EmpoyeeId 123 -Path Document.pdf
     $request.Put_Worker_Document_Request.Worker_Document_Data.Comment = $Comment
 	$request.Put_Worker_Document_Request.Worker_Document_Data.Content_Type = [System.Web.MimeMapping]::GetMimeMapping( $fileName )
 
-	Invoke-WorkdayRequest -Request $request -Uri $StaffingUri -Username:$Username -Password:$Password | where {$Passthru} | Write-Output
+	Invoke-WorkdayRequest -Request $request -Uri $StaffingUri -Username:$Username -Password:$Password | Write-Output
 	}

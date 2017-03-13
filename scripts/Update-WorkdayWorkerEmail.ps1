@@ -68,7 +68,8 @@ Update-WorkdayWorkerEmail -EmpoyeeId 123 -WorkEmail test@example.com
 
     Write-Verbose "Current: $currentWorkEmail Proposed: $WorkEmail"
     if ($currentWorkEmail -ne $WorkEmail) {
-        Set-WorkdayWorkerEmail -EmployeeId $EmployeeId -WorkEmail $WorkEmail -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password | where {$Passthru} | Write-Output
-        Write-Verbose "     Email updated."
+        Set-WorkdayWorkerEmail -EmployeeId $EmployeeId -WorkEmail $WorkEmail -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
+    } else {
+        Write-Verbose 'Email matches Workday, no update necessary.'
     }
 }

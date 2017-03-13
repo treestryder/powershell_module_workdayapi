@@ -42,8 +42,7 @@ Set-WorkdayWorkerEmail -EmpoyeeId 123 -WorkEmail worker@example.com
 		[string]$WorkEmail,
 		[string]$Human_ResourcesUri,
 		[string]$Username,
-		[string]$Password,
-        [switch]$Passthru
+		[string]$Password
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
@@ -82,5 +81,5 @@ Set-WorkdayWorkerEmail -EmpoyeeId 123 -WorkEmail worker@example.com
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Email_Address_Data.Email_Address = $WorkEmail
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Effective_Date = (Get-Date).ToString( 'yyyy-MM-dd' )
 
-	Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | where {$Passthru} | Write-Output
-	}
+	Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
+}

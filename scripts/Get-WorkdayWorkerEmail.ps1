@@ -37,7 +37,8 @@ Work work@example.com                True   True
     [OutputType([PSCustomObject])]
 	param (
 		[Parameter(Mandatory = $true,
-            ParameterSetName="Search")]
+            ParameterSetName="Search",
+            Position=0)]
 		[ValidateNotNullOrEmpty()]
 		[string]$EmployeeId,
         [Parameter(ParameterSetName="Search")]
@@ -52,15 +53,14 @@ Work work@example.com                True   True
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
-    if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
-        $w = $WorkerXml
-    } else {
-        try {
-            $w = Get-WorkdayWorker -EmployeeId $EmployeeId -IncludePersonal -Passthru -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
-        }
-        catch {
-            throw
-        }
+    if ($PsCmdlet.ParameterSetName -eq 'Search') {
+        $response = Get-WorkdayWorker -EmployeeId $EmployeeId -IncludePersonal -Passthru -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
+        $WorkerXml = $response.Xml
+    }
+
+    if ($WorkerXml -eq $null) {
+        Write-Warning 'Unable to get Email information, Worker not found.'
+        return
     }
 
     $numberTemplate = [pscustomobject][ordered]@{
@@ -70,7 +70,7 @@ Work work@example.com                True   True
         Public           = $null
     }
 
-    $w.Get_Workers_Response.Response_Data.FirstChild.Worker_Data.Personal_Data.Contact_Data.Email_Address_Data | foreach {
+    $WorkerXml.Get_Workers_Response.Response_Data.FirstChild.Worker_Data.Personal_Data.Contact_Data.Email_Address_Data | foreach {
         $o = $numberTemplate.PsObject.Copy()
         $o.Type = $_.Usage_Data.Type_Data.Type_Reference.Descriptor
         $o.Email = $_.Email_Address

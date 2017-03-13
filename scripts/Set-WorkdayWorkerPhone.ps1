@@ -34,16 +34,17 @@ Set-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
 
 	[CmdletBinding()]
 	param (
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $true,
+            Position=0)]
 		[ValidateNotNullOrEmpty()]
 		[string]$EmployeeId,
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $true,
+            Position=1)]
         [Alias('OfficePhone')]
 		[string]$WorkPhone,
 		[string]$Human_ResourcesUri,
 		[string]$Username,
-		[string]$Password,
-        [switch]$Passthru
+		[string]$Password
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
@@ -89,27 +90,27 @@ Set-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Effective_Date = (Get-Date).ToString( 'yyyy-MM-dd' )
 
     $scrubbedNumber = $WorkPhone -replace '[^\d]', ''
-	if ($scrubbedNumber -match '(?<country>[\d]*?)(?<areacode>\d{0,3}?)(?<prefix>\d{0,3}?)(?<line>\d{1,4})$') {
-		if ($Matches['country'].length -gt 0) {
-			$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.International_Phone_Code = $Matches['country']
-		}
-		if ($Matches['areacode'].length -gt 0) {
-			$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Area_Code = $Matches['areacode']
-		}
-
-        $phoneNumber = ''
-        if ($Matches['prefix'].length -gt 0) {
-            $phoneNumber = $Matches['prefix'] + '-'
-        }
-        if ($Matches['line'].length -gt 0) {
-            $phoneNumber += $Matches['line']
-        }
-		if ($phoneNumber.length -gt 0) {
-			$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Phone_Number = $phoneNumber
-		}
-
-    	Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | where {$Passthru} | Write-Output
-	} else {
+	if ($scrubbedNumber -notmatch '(?<country>[\d]*?)(?<areacode>\d{0,3}?)(?<prefix>\d{0,3}?)(?<line>\d{1,4})$') {
         throw "Unable to update Work phone number for EmployeeId: $EmployeeId, invalid Phone Number: $WorkPhone"
     }
+
+	if ($Matches['country'].length -gt 0) {
+		$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.International_Phone_Code = $Matches['country']
+	}
+	if ($Matches['areacode'].length -gt 0) {
+		$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Area_Code = $Matches['areacode']
+	}
+
+    $phoneNumber = ''
+    if ($Matches['prefix'].length -gt 0) {
+        $phoneNumber = $Matches['prefix'] + '-'
+    }
+    if ($Matches['line'].length -gt 0) {
+        $phoneNumber += $Matches['line']
+    }
+	if ($phoneNumber.length -gt 0) {
+		$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Phone_Number = $phoneNumber
+	}
+
+    Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
 }

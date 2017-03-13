@@ -39,7 +39,8 @@ Update-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
 	[CmdletBinding(DefaultParametersetName='Search')]
 	param (
 		[Parameter(Mandatory = $true,
-            ParameterSetName="Search")]
+            ParameterSetName="Search",
+            Position=0)]
 		[ValidateNotNullOrEmpty()]
 		[string]$EmployeeId,
         [Parameter(ParameterSetName="Search")]
@@ -62,9 +63,8 @@ Update-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
         $current = Get-WorkdayWorkerPhone -WorkerXml $WorkerXml
         $EmployeeId = $WorkerXml.Get_Workers_Response.Response_Data.Worker.Worker_Data.Worker_ID
     } else {
-        $current = Get-WorkdayWorkerPhone -EmployeeId $EmployeeId -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
+        $current = Get-WorkdayWorkerPhone -EmployeeId $EmployeeId -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password
     }
-
     function scrub ([string]$PhoneNumber) { $PhoneNumber -replace '[^\d]','' -replace '^1','' }
 
     $scrubbedCurrent = scrub ( $current | where { $_.Type -eq 'Work/Landline' -and $_.Primary } | Select -First 1 -ExpandProperty Number)
@@ -72,7 +72,6 @@ Update-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
 
     Write-Verbose "Current: $scrubbedCurrent Proposed: $scrubbedProposed"
     if ($scrubbedCurrent -ne $scrubbedProposed) {
-        Set-WorkdayWorkerPhone -EmployeeId $EmployeeId -WorkPhone $WorkPhone -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password | where {$Passthru} | Write-Output
-        Write-Verbose "     Number updated."
+        Set-WorkdayWorkerPhone -EmployeeId $EmployeeId -WorkPhone $WorkPhone -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
     }
 }

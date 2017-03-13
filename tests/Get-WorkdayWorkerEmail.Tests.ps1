@@ -25,8 +25,8 @@ Describe Get-WorkdayWorkerEmail {
             It 'Returns expected email information when provided a Worker XML object.' {
                 Mock Invoke-WorkdayRequest {}
                 
-                $workerXml = Mock_Invoke-WorkdayRequest_ExampleWorker
-                $response = @(Get-WorkdayWorkerEmail -WorkerXml $workerXml )
+                $worker = Mock_Invoke-WorkdayRequest_ExampleWorker
+                $response = @(Get-WorkdayWorkerEmail -WorkerXml $worker.Xml )
                 $response.Count | Should Be 1
                 $response[0].Type | Should Be 'Work'
                 $response[0].Email | Should Be 'test@example.com'
