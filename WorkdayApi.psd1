@@ -35,7 +35,9 @@ FunctionsToExport = @(
         'Update-WorkdayWorkerPhone',
 
         'Start-WorkdayIntegration',
-        'Get-WorkdayIntegrationEvent'
+        'Get-WorkdayIntegrationEvent',
+
+        'Get-WorkdayDate'
 
 	)
 # VariablesToExport = '*'

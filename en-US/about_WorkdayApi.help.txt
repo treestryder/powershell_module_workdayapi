@@ -51,7 +51,8 @@ This simple Powershell Module has been written to fulfill my employer's Workday 
 
     Name                        Synopsis                                                                                
     ----                        --------                                                                                
-    Export-WorkdayDocument      Exports Workday Documents.                                                              
+    Export-WorkdayDocument      Exports Workday Documents.
+    Get-WorkdayDate             Gets the current time and date from Workday.                                                           
     Get-WorkdayEndpoint         Gets the default Uri value for all or a particular Endpoint.                            
     Get-WorkdayIntegrationEvent Retrieves the status of a Workday Integration.                                          
     Get-WorkdayReport           Returns the XML result from any Workday report, based on its URI.                       
