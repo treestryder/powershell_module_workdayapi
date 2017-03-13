@@ -67,7 +67,8 @@ Update-WorkdayWorkerEmail -WorkerId 123 -WorkEmail test@example.com
     if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
         $current = Get-WorkdayWorkerEmail -WorkerXml $WorkerXml
         $WorkerType = 'WID'
-        $WorkerId = $WorkerXml.Worker.Worker_Reference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty '#text'
+        $workerReference = $WorkerXml.GetElementsByTagName('wd:Worker_Reference') | Select -First 1
+        $WorkerId = $workerReference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty InnerText
     } else {
         $current = Get-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
     }

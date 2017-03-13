@@ -68,7 +68,8 @@ Update-WorkdayWorkerPhone -WorkerId 123 -WorkPhone 1234567890
     if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
         $current = Get-WorkdayWorkerPhone -WorkerXml $WorkerXml
         $WorkerType = 'WID'
-        $WorkerId = $WorkerXml.Worker.Worker_Reference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty '#text'
+        $workerReference = $WorkerXml.GetElementsByTagName('wd:Worker_Reference') | Select -First 1
+        $WorkerId = $workerReference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty InnerText
     } else {
         $current = Get-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password
     }

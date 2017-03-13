@@ -1,7 +1,8 @@
 $WorkdayConfiguration = @{
     Endpoints = @{
         Human_Resources = $null
-        Staffing       = $null
+        Integration     = $null
+        Staffing        = $null
     }
     Credential = $null
 }

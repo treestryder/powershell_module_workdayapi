@@ -1,10 +1,10 @@
 function Remove-WorkdayConfiguration {
 <#
 .SYNOPSIS
-    Removes Workday configuration file from the current users Profile.
+    Removes Workday configuration file from the current user's Profile.
 
 .DESCRIPTION
-    Removes Workday configuration file from the current users Profile.
+    Removes Workday configuration file from the current user's Profile.
 
 .EXAMPLE
     Remove-WorkdayConfiguration

@@ -259,3 +259,53 @@ function Mock_Invoke-WorkdayRequest_ExampleWorker {
 '@
     }
 }
+
+function Mock_Invoke-WorkdayRequest_ExampleIntegration {
+    [pscustomobject][ordered]@{
+        Success    = $true
+        Message  = ''
+        Xml = [xml]@'
+<wd:Launch_Integration_Event_Response xmlns:wd="urn:com.workday/bsvc" wd:version="v26.0" wd:Debug_Mode="0">
+	<wd:Integration_Event>
+		<wd:Integration_Event_Reference wd:Descriptor="Test Descriptor">
+			<wd:ID wd:type="WID">00000000000000000000000000000000</wd:ID>
+			<wd:ID wd:type="Background_Process_Instance_ID">INTEGRATION_ESB_INVOCATION-0-00000</wd:ID>
+		</wd:Integration_Event_Reference>
+		<wd:Integration_Event_Data>
+			<wd:Integration_System_Reference wd:Descriptor="Integration">
+				<wd:ID wd:type="WID">00000000000000000000000000000000</wd:ID>
+			</wd:Integration_System_Reference>
+			<wd:Initiated_DateTime>2016-04-12T15:22:27.342-07:00</wd:Initiated_DateTime>
+		</wd:Integration_Event_Data>
+	</wd:Integration_Event>
+</wd:Launch_Integration_Event_Response>
+
+'@
+    }
+}
+
+# Return a Good example
+function Mock_Invoke-WorkdayRequest_ExampleIntegrationEvent {
+    [pscustomobject][ordered]@{
+        Success    = $true
+        Message  = ''
+        Xml = [xml]@'
+<wd:Get_Integration_Events_Response xmlns:wd="urn:com.workday/bsvc" wd:version="v26.0">
+	<wd:Request_References>
+		<wd:Integration_Event_Reference wd:Descriptor="Test Descriptor">
+		</wd:Integration_Event_Reference>
+	</wd:Request_References>
+	<wd:Response_Data>
+		<wd:Integration_Event>
+			<wd:Integration_Event_Data>
+				<wd:Initiated_DateTime>2016-04-12T15:22:27.342-07:00</wd:Initiated_DateTime>
+				<wd:Integration_Response_Message>Integration Completed.</wd:Integration_Response_Message>
+				<wd:Completed_DateTime>2016-04-12T15:24:38.308-07:00</wd:Completed_DateTime>
+                <wd:Percent_Complete>1</wd:Percent_Complete>
+            </wd:Integration_Event_Data>
+		</wd:Integration_Event>
+	</wd:Response_Data>
+</wd:Get_Integration_Events_Response>
+'@
+    }
+}

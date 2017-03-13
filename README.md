@@ -16,14 +16,16 @@ This simple Powershell Module has been written to fulfill my employer's Workday 
 * Upload Worker Photos.
 * Upload Worker Documents.
 * Run reports.
+* Trigger Integrations and retreive their status.
 * Submit arbitrary API calls.
 * A sample script to push A.D. changes to Workday (samples/Push_AD_to_Workday.ps1).
 
 
 ## Examples ##
     Set-WorkdayCredential
-    Set-WorkdayEndpoint -Endpoint Staffing        -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Staffing/v25.1'
-    Set-WorkdayEndpoint -Endpoint Human_Resources -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v25.1'
+    Set-WorkdayEndpoint -Endpoint Staffing        -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Staffing/v26.0'
+    Set-WorkdayEndpoint -Endpoint Human_Resources -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v26.0'
+    Set-WorkdayEndpoint -Endpoint Integrations -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Integrations/v26.0'
     Save-WorkdayConfiguration
 
     Set-WorkdayWorkerPhone -EmployeeId 123 -WorkPhone 9876543210
@@ -36,7 +38,7 @@ This simple Powershell Module has been written to fulfill my employer's Workday 
     Work/Landline +1 (987) 654-3210 0         True
 
 
-    $response = Invoke-WorkdayRequest -Request '<bsvc:Server_Timestamp_Get xmlns:bsvc="urn:com.workday/bsvc" />' -Uri https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v25.1 
+    $response = Invoke-WorkdayRequest -Request '<bsvc:Server_Timestamp_Get xmlns:bsvc="urn:com.workday/bsvc" />' -Uri https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v26.0
     $response.Server_Timestamp
 
     wd                   version Server_Timestamp_Data        
@@ -44,19 +46,20 @@ This simple Powershell Module has been written to fulfill my employer's Workday 
     urn:com.workday/bsvc v25.1   2015-12-02T12:18:30.841-08:00
 
 
-    Get-Command -Module WorkdayApi | Get-Help | Format-Table Name, Synopsis -AutoSize
+    Get-Command -Module WorkdayApi | sort Name | Get-Help | Format-Table Name, Synopsis -AutoSize
 
     Name                        Synopsis                                                                                
     ----                        --------                                                                                
     Export-WorkdayDocument      Exports Workday Documents.                                                              
     Get-WorkdayEndpoint         Gets the default Uri value for all or a particular Endpoint.                            
+    Get-WorkdayIntegrationEvent Retrieves the status of a Workday Integration.                                          
     Get-WorkdayReport           Returns the XML result from any Workday report, based on its URI.                       
     Get-WorkdayWorker           Gets Worker information as Workday XML.                                                 
     Get-WorkdayWorkerDocument   Gets Workday Worker Documents.                                                          
     Get-WorkdayWorkerEmail      Returns a Worker's email addresses.                                                     
     Get-WorkdayWorkerPhone      Returns a Worker's phone numbers.                                                       
     Invoke-WorkdayRequest       Sends XML requests to Workday API, with proper authentication and receives XML response.
-    Remove-WorkdayConfiguration Removes Workday configuration file from the current users Profile.                      
+    Remove-WorkdayConfiguration Removes Workday configuration file from the current user's Profile.                      
     Save-WorkdayConfiguration   Saves default Workday configuration to a file in the current users Profile.             
     Set-WorkdayCredential       Sets the default Workday API credentials.                                               
     Set-WorkdayEndpoint         Sets the default Uri value for a particular Endpoint.                                   
@@ -64,8 +67,9 @@ This simple Powershell Module has been written to fulfill my employer's Workday 
     Set-WorkdayWorkerEmail      Sets a Worker's email in Workday.                                                       
     Set-WorkdayWorkerPhone      Sets a Worker's phone number in Workday.                                                
     Set-WorkdayWorkerPhoto      Uploads an image file to Workday and set it as a Worker's photo.                        
+    Start-WorkdayIntegration    Starts a Workday Integration.                                                           
     Update-WorkdayWorkerEmail   Updates a Worker's email in Workday, only if it is different.                           
-    Update-WorkdayWorkerPhone   Updates a Worker's phone number in Workday, only if it is different.                    
+    Update-WorkdayWorkerPhone   Updates a Worker's phone number in Workday, only if it is different.                   
 
 
 ## Installation ##

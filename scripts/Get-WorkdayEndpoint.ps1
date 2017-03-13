@@ -27,7 +27,7 @@ Get-WorkdayEndpoint
     [CmdletBinding()]
     param (
         [parameter(Mandatory=$false)]
-        [ValidateSet('Human_Resources', 'Staffing')]
+        [ValidateSet('Human_Resources', 'Integrations', 'Staffing')]
         [string]$Endpoint
     )
 

@@ -16,7 +16,7 @@ function Set-WorkdayEndpoint {
 
 .EXAMPLE
     
-Set-WorkdayEndpoint -Endpoint Staffing -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Staffing/v25.1'
+Set-WorkdayEndpoint -Endpoint Staffing -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Staffing/v26.0'
 
     Demonstrates how to set a single Endpoint value.
 
@@ -24,8 +24,9 @@ Set-WorkdayEndpoint -Endpoint Staffing -Uri 'https://SERVICE.workday.com/ccx/ser
 
 ConvertFrom-Csv @'
 Endpoint,Uri
-Staffing,https://SERVICE.workday.com/ccx/service/TENANT/Staffing/v25.1
-Human_Resources,https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v25.1
+Staffing,https://SERVICE.workday.com/ccx/service/TENANT/Staffing/v26.0
+Human_Resources,https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v26.0
+Integrations,https://SERVICE.workday.com/ccx/service/TENANT/Integrations/v26.0
 '@ | Set-WorkdayEndpoint
 
     Demonstrates how it would be possible to import a CSV file to set these values.
@@ -37,7 +38,7 @@ Human_Resources,https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v
     param (
         [parameter(Mandatory=$true,
             ValueFromPipelineByPropertyName=$true)]
-        [ValidateSet('Human_Resources', 'Staffing')]
+        [ValidateSet('Human_Resources', 'Integrations', 'Staffing')]
         [string]$Endpoint,
         [parameter(Mandatory=$true,
             ValueFromPipelineByPropertyName=$true)]
