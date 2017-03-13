@@ -24,7 +24,6 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
 #>
 function Get-WorkdayDate {
     [CmdletBinding()]
-    [OutputType([PSCustomObject])]
     param (
         [string]$Human_ResourcesUri,
         [string]$Username,
