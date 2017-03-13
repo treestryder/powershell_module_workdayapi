@@ -94,12 +94,12 @@ urn:com.workday/bsvc v25.1   2015-12-02T12:18:30.841-08:00
 
 	$response = $null
     try {
-		$response = Invoke-RestMethod -Method Post -UseBasicParsing -Uri $Uri -Headers $headers -Body $WorkdaySoapEnvelope
+		$response = Invoke-RestMethod -Method Post -Uri $Uri -Headers $headers -Body $WorkdaySoapEnvelope
         $o.Xml = [xml]$response.Envelope.Body.InnerXml
         $o.Message = ''
         $o.Success = $true
 	}
-	catch {
+	catch [System.Net.WebException] {
         $o.Success = $false
 		$reader = New-Object System.IO.StreamReader -ArgumentList $_.Exception.Response.GetResponseStream()
 		$response = $reader.ReadToEnd()
@@ -118,6 +118,11 @@ urn:com.workday/bsvc v25.1   2015-12-02T12:18:30.841-08:00
             $o.Message = $response
         }
 	}
-    
-    Write-Output $o
+    catch {
+        $o.Success = $false
+        $o.Message = $_.ToString()
+    }
+    finally {
+        Write-Output $o
+    }
 }
