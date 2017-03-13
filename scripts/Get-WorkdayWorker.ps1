@@ -111,10 +111,10 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
         return $response
     }
 
-    $referenceId = $response.Xml.Get_Workers_Response.Response_Data.Worker.Worker_Reference.ID | where {$_.type -ne 'WID'}
+    $referenceId = $response.Xml.Get_Workers_Response.Request_References.Worker_Reference.ID | where {$_.type -ne 'WID'}
 
     $worker = [pscustomobject][ordered]@{
-        WorkerWid        = $response.Xml.Get_Workers_Response.Response_Data.Worker.Worker_Reference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty '#text'
+        WorkerWid        = $response.Xml.Get_Workers_Response.Request_References.Worker_Reference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty '#text'
         WorkerDescriptor = $response.Xml.Get_Workers_Response.Request_References.Worker_Reference.Descriptor
         PreferredName    = $response.Xml.Get_Workers_Response.Response_Data.Worker.Worker_Data.Personal_Data.Name_Data.Preferred_Name_Data.Name_Detail_Data.Formatted_Name
         FirstName        = $response.Xml.Get_Workers_Response.Response_Data.Worker.Worker_Data.Personal_Data.Name_Data.Preferred_Name_Data.Name_Detail_Data.First_Name
