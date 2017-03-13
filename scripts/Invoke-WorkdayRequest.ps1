@@ -1,4 +1,4 @@
-function Invoke-WorkdayApiRequest {
+function Invoke-WorkdayRequest {
 	[CmdletBinding()]
 	param (
 		[Parameter(Mandatory = $true)]
@@ -14,7 +14,7 @@ function Invoke-WorkdayApiRequest {
 		[string]$Password
 	)
 
-	$WorkdaySoapEnvelope = [xml] @"
+	$WorkdaySoapEnvelope = [xml] @'
 <soapenv:Envelope xmlns:bsvc="urn:com.workday/bsvc" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
     <soapenv:Header>
         <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
@@ -28,7 +28,7 @@ function Invoke-WorkdayApiRequest {
          <bsvc:RequestNode xmlns:bsvc="urn:com.workday/bsvc" />
     </soapenv:Body>
 </soapenv:Envelope>
-"@
+'@
 
 	$WorkdaySoapEnvelope.Envelope.Header.Security.UsernameToken.Username = $Username
 	$WorkdaySoapEnvelope.Envelope.Header.Security.UsernameToken.Password.InnerText = $Password
@@ -59,6 +59,9 @@ function Invoke-WorkdayApiRequest {
 	if ($response -eq '') {
 		Write-Warning 'Empty Response'
 	} else {
-		$responseXML.Envelope.Body.InnerXml | Write-Output
+        if ($responseXML.Envelope.Body.FirstChild.Name -eq 'SOAP-ENV:Fault') {
+            throw "$($responseXML.Envelope.Body.Fault.faultcode): $($responseXML.Envelope.Body.Fault.faultstring)"
+        }
+		[xml]$responseXML.Envelope.Body.InnerXml | Write-Output
 	}
 }

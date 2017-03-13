@@ -9,7 +9,9 @@ function Get-WorkdayWorker {
 		[ValidateNotNullOrEmpty()]
 		[string]$Username,
 		[Parameter(Mandatory = $true)]
-		[string]$Password
+		[string]$Password,
+        [switch]$IncludePersonal,
+        [switch]$IncludeDefault
 	)
 
 <#
@@ -240,10 +242,32 @@ function Get-WorkdayWorker {
 		<bsvc:ID bsvc:type="Employee_ID">employeeId</bsvc:ID>
 	</bsvc:Worker_Reference>
   </bsvc:Request_References>
+  <bsvc:Response_Group>
+    <bsvc:Include_Reference>false</bsvc:Include_Reference>
+    <bsvc:Include_Personal_Information>false</bsvc:Include_Personal_Information>
+    <bsvc:Include_Employment_Information>false</bsvc:Include_Employment_Information>
+    <bsvc:Include_Compensation>false</bsvc:Include_Compensation>
+    <bsvc:Include_Organizations>false</bsvc:Include_Organizations>
+    <bsvc:Include_Roles>false</bsvc:Include_Roles>
+  </bsvc:Response_Group>
 </bsvc:Get_Workers_Request>
 '@
 
 	$request.Get_Workers_Request.Request_References.Worker_Reference.ID.InnerText = $EmployeeId
+# <bsvc:Include_Personal_Information>true</bsvc:Include_Personal_Information>
 
+# Reference, Personal Data, Employment Data, Compensation Data, Organization Data, and Role Data.
+
+    if ($IncludePersonal -or $IncludeDefault) {
+        $request.Get_Workers_Request.Response_Group.Include_Reference = 'true'
+        $request.Get_Workers_Request.Response_Group.Include_Personal_Information = 'true'
+    }
+
+    if ($IncludeDefault) {
+        $request.Get_Workers_Request.Response_Group.Include_Employment_Information = 'true'
+        $request.Get_Workers_Request.Response_Group.Include_Compensation = 'true'
+        $request.Get_Workers_Request.Response_Group.Include_Organizations = 'true'
+        $request.Get_Workers_Request.Response_Group.Include_Roles = 'true'
+    }
 	Invoke-WorkdayRequest -Request $request -Uri $Uri -Username $Username -Password $Password | Write-Output
 }
