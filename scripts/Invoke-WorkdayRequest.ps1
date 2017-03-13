@@ -56,12 +56,14 @@ function Invoke-WorkdayRequest {
 		$responseXML = [xml]$response
 	}
 	Write-Debug "Response: $($response)"
-	if ($response -eq '') {
+	if ([String]::IsNullOrWhiteSpace($response)) {
 		Write-Warning 'Empty Response'
 	} else {
+        
+        [xml]$responseXML.Envelope.Body.InnerXml | Write-Output
+
         if ($responseXML.Envelope.Body.FirstChild.Name -eq 'SOAP-ENV:Fault') {
-            throw "$($responseXML.Envelope.Body.Fault.faultcode): $($responseXML.Envelope.Body.Fault.faultstring)"
+            Write-Error "$($responseXML.Envelope.Body.Fault.faultcode): $($responseXML.Envelope.Body.Fault.faultstring)"
         }
-		[xml]$responseXML.Envelope.Body.InnerXml | Write-Output
 	}
 }
