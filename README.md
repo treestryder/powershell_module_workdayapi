@@ -1,13 +1,15 @@
-# Workday Powershell Script Module #
+# Workday SOAP API Powershell Script Module #
+
 
 ## Description ##
-Provides simple methods for accessing the Workday API.
+Provides simple methods for accessing the Workday SOAP API.
 
-This simple Powershell Module has been written to fulfill my employer's Workday automation needs. I see this as a prototype, while I experiment with the best way to expose the complexities of the Workday API in a Powershell-y way. Thinking that the community might find it helpful and may even wish to comment or contribute, I have hosted the source here.
+This simple Powershell Module has been written to fulfill my employer's Workday automation needs. I see this as a prototype, while I experiment with the best way to expose the complexities of the Workday API in a Powershell-y way. Thinking that the community might find it helpful and may even wish to comment or contribute, I have hosted the source on Bitbucket (https://bitbucket.org/treestryder/powershell_module_workdayapi/).
+
 
 ## Features ##
 
-* Easy command-line use after setting default configuration and securely saving it to the current user's profile.
+* Easy command-line use, after setting default configuration options and securely saving them to the current user's profile.
 * Get Worker information for one or all workers.
 * Get / Set / Update Worker email.
 * Get / Set / Update Worker phone.
@@ -15,7 +17,9 @@ This simple Powershell Module has been written to fulfill my employer's Workday 
 * Upload Worker Documents.
 * Run reports.
 * Submit arbitrary API calls.
- 
+* A sample script to push A.D. changes to Workday (samples/Push_AD_to_Workday.ps1).
+
+
 ## Examples ##
     Set-WorkdayCredential
     Set-WorkdayEndpoint -Endpoint Staffing        -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Staffing/v25.1'
