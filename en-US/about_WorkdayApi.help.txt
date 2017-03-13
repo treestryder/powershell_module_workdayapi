@@ -25,7 +25,7 @@ This simple Powershell Module has been written to fulfill my employer's Workday 
     Set-WorkdayCredential
     Set-WorkdayEndpoint -Endpoint Staffing        -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Staffing/v26.0'
     Set-WorkdayEndpoint -Endpoint Human_Resources -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v26.0'
-    Set-WorkdayEndpoint -Endpoint Integrations -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Integrations/v26.0'
+    Set-WorkdayEndpoint -Endpoint Integrations    -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Integrations/v26.0'
     Save-WorkdayConfiguration
 
     Set-WorkdayWorkerPhone -EmployeeId 123 -WorkPhone 9876543210
@@ -39,7 +39,7 @@ This simple Powershell Module has been written to fulfill my employer's Workday 
 
 
     $response = Invoke-WorkdayRequest -Request '<bsvc:Server_Timestamp_Get xmlns:bsvc="urn:com.workday/bsvc" />' -Uri https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v26.0
-    $response.Server_Timestamp
+    $response.Xml.Server_TimeStamp
 
     wd                   version Server_Timestamp_Data        
     --                   ------- ---------------------        
