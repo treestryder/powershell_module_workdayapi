@@ -36,23 +36,34 @@ Update-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
 
 #>
 
-	[CmdletBinding()]
+	[CmdletBinding(DefaultParametersetName='Search')]
 	param (
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $true,
+            ParameterSetName="Search")]
 		[ValidateNotNullOrEmpty()]
 		[string]$EmployeeId,
-		[Parameter(Mandatory = $true)]
-        [Alias('OfficePhone')]
-		[string]$WorkPhone,
+        [Parameter(ParameterSetName="Search")]
 		[string]$Human_ResourcesUri,
+        [Parameter(ParameterSetName="Search")]
 		[string]$Username,
+        [Parameter(ParameterSetName="Search")]
 		[string]$Password,
-        [switch]$Passthru
+        [Parameter(Mandatory = $true,
+            ParameterSetName="NoSearch")]
+        [xml]$WorkerXml,
+        [Parameter(Mandatory = $true)]
+        [Alias('OfficePhone')]
+		[string]$WorkPhone
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
-    
-    $current = Get-WorkdayWorkerPhone -EmployeeId $EmployeeId -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
+
+    if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
+        $current = Get-WorkdayWorkerPhone -WorkerXml $WorkerXml
+        $EmployeeId = $WorkerXml.Get_Workers_Response.Response_Data.Worker.Worker_Data.Worker_ID
+    } else {
+        $current = Get-WorkdayWorkerPhone -EmployeeId $EmployeeId -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
+    }
 
     function scrub ([string]$PhoneNumber) { $PhoneNumber -replace '[^\d]','' -replace '^1','' }
 

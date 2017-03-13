@@ -35,23 +35,34 @@ Update-WorkdayWorkerEmail -EmpoyeeId 123 -WorkEmail test@example.com
 
 #>
 
-	[CmdletBinding()]
+	[CmdletBinding(DefaultParametersetName='Search')]
 	param (
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $true,
+            ParameterSetName="Search")]
 		[ValidateNotNullOrEmpty()]
 		[string]$EmployeeId,
-		[Parameter(Mandatory = $true)]
-        [Alias('EmailAddress')]
-		[string]$WorkEmail,
+        [Parameter(ParameterSetName="Search")]
 		[string]$Human_ResourcesUri,
+        [Parameter(ParameterSetName="Search")]
 		[string]$Username,
+        [Parameter(ParameterSetName="Search")]
 		[string]$Password,
-        [switch]$Passthru
+        [Parameter(Mandatory = $true,
+            ParameterSetName="NoSearch")]
+        [xml]$WorkerXml,
+        [Parameter(Mandatory = $true)]
+        [Alias('EmailAddress')]
+		[string]$WorkEmail
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
-    
-    $current = Get-WorkdayWorkerEmail -EmployeeId $EmployeeId -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
+
+    if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
+        $current = Get-WorkdayWorkerEmail -WorkerXml $WorkerXml
+        $EmployeeId = $WorkerXml.Get_Workers_Response.Response_Data.Worker.Worker_Data.Worker_ID
+    } else {
+        $current = Get-WorkdayWorkerEmail -EmployeeId $EmployeeId -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
+    }
 
     $currentWorkEmail = $current | where { $_.Type -eq 'Work' -and $_.Primary } | Select -First 1 -ExpandProperty Email
 

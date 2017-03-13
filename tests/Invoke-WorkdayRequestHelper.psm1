@@ -205,7 +205,7 @@ function Mock_Invoke-WorkdayRequest_ExampleWorker {
 								<wd:ID wd:type="Phone_Device_Type_ID">Landline</wd:ID>
 							</wd:Phone_Device_Type_Reference>
 							<wd:Usage_Data wd:Public="1">
-								<wd:Type_Data wd:Primary="1">
+								<wd:Type_Data wd:Primary="true">
 									<wd:Type_Reference wd:Descriptor="Work">
 										<wd:ID wd:type="WID">00000000000000000000000000000000</wd:ID>
 										<wd:ID wd:type="Communication_Usage_Type_ID">WORK</wd:ID>
@@ -216,7 +216,7 @@ function Mock_Invoke-WorkdayRequest_ExampleWorker {
 						<wd:Email_Address_Data>
 							<wd:Email_Address>test@example.com</wd:Email_Address>
 							<wd:Usage_Data wd:Public="1">
-								<wd:Type_Data wd:Primary="1">
+								<wd:Type_Data wd:Primary="true">
 									<wd:Type_Reference wd:Descriptor="Work">
 										<wd:ID wd:type="WID">1f27f250dfaa4724ab1e1617174281e4</wd:ID>
 										<wd:ID wd:type="Communication_Usage_Type_ID">WORK</wd:ID>

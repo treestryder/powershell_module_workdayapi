@@ -26,31 +26,43 @@
     
 Get-WorkdayWorkerEmail -EmpoyeeId 123
 
-Type          Number            Primary Public
-----          ------            ------- ------
-Home/Landline +1 (123) 456-7890 0        False
-Work/Landline +1 (987) 654-3210 1         True
+WorkerWid        : 00000000000000000000000000000000
+WorkerDescriptor : Example Worker (1)
+Type             : Work
+Email            : test@example.com
+Primary          : True
+Public           : True
 
 #>
 
-	[CmdletBinding()]
+	[CmdletBinding(DefaultParametersetName='Search')]
     [OutputType([PSCustomObject])]
 	param (
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $true,
+            ParameterSetName="Search")]
 		[ValidateNotNullOrEmpty()]
 		[string]$EmployeeId,
+        [Parameter(ParameterSetName="Search")]
 		[string]$Human_ResourcesUri,
+        [Parameter(ParameterSetName="Search")]
 		[string]$Username,
-		[string]$Password
+        [Parameter(ParameterSetName="Search")]
+		[string]$Password,
+        [Parameter(ParameterSetName="NoSearch")]
+        [xml]$WorkerXml
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
-    try {
-        $w = Get-WorkdayWorker -EmployeeId $EmployeeId -IncludePersonal -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
-    }
-    catch {
-        throw
+    if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
+        $w = $WorkerXml
+    } else {
+        try {
+            $w = Get-WorkdayWorker -EmployeeId $EmployeeId -IncludePersonal -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
+        }
+        catch {
+            throw
+        }
     }
 
     $numberTemplate = [pscustomobject][ordered]@{

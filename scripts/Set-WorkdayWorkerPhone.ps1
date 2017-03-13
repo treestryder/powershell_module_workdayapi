@@ -110,6 +110,6 @@ Set-WorkdayWorkerPhone -EmpoyeeId 123 -WorkPhone 1234567890
 
     	Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | where {$Passthru} | Write-Output
 	} else {
-        Write-Warning "Unable to update Work phone number for EmployeeId: $EmployeeId, invalid Phone Number: $WorkPhone"
+        throw "Unable to update Work phone number for EmployeeId: $EmployeeId, invalid Phone Number: $WorkPhone"
     }
 }

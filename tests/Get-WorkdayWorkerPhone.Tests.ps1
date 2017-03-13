@@ -6,9 +6,9 @@ Describe Get-WorkdayWorkerPhone {
     InModuleScope WorkdayApi {
 
         It 'Returns expected phone number information.' {
-        Mock Invoke-WorkdayRequest {
-            Mock_Invoke-WorkdayRequest_ExampleWorker
-        }
+            Mock Invoke-WorkdayRequest {
+                Mock_Invoke-WorkdayRequest_ExampleWorker
+            }
 
             $response = @(Get-WorkdayWorkerPhone -EmployeeId 1)
             $response.Count | Should Be 1
@@ -20,6 +20,5 @@ Describe Get-WorkdayWorkerPhone {
             $response[0].Public | Should Be $true
             Assert-MockCalled Invoke-WorkdayRequest -Exactly 1
         }
-
     }
 }
