@@ -33,7 +33,8 @@ Set-WorkdayWorkerDocument -EmpoyeeId 123 -Path Document.pdf
 
 	[CmdletBinding()]
 	param (
-		[Parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $true,
+            Position=0)]
 		[ValidateNotNullOrEmpty()]
 		[string]$WorkerId,
 		[ValidateSet('WID', 'Contingent_Worker_ID', 'Employee_ID')]
@@ -78,8 +79,7 @@ Set-WorkdayWorkerDocument -EmpoyeeId 123 -Path Document.pdf
     $request.Put_Worker_Document_Request.Worker_Document_Data.Worker_Reference.ID.InnerText = $WorkerId
     if ($WorkerType -eq 'Contingent_Worker_ID') {
         $request.Put_Worker_Document_Request.Worker_Document_Data.Worker_Reference.ID.type = 'Contingent_Worker_ID'
-    }
-    if ($WorkerType -eq 'WID') {
+    } elseif ($WorkerType -eq 'WID') {
         $request.Put_Worker_Document_Request.Worker_Document_Data.Worker_Reference.ID.type = 'WID'
     }
 
