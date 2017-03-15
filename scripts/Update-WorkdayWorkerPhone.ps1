@@ -75,8 +75,8 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
     if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
         $current = Get-WorkdayWorkerPhone -WorkerXml $WorkerXml
         $WorkerType = 'WID'
-        $workerReference = $WorkerXml.GetElementsByTagName('wd:Worker_Reference') | Select -First 1
-        $WorkerId = $workerReference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty InnerText
+        $workerReference = $WorkerXml.GetElementsByTagName('wd:Worker_Reference') | Select-Object -First 1
+        $WorkerId = $workerReference.ID | where {$_.type -eq 'WID'} | Select-Object -ExpandProperty InnerText
     } else {
         $current = Get-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
     }
@@ -88,37 +88,41 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
     $scrubbedCurrentNumber = $null
     $scrubbedCurrentExtension = $null
     $currentMatch = $current |
-     where {
+     Where-Object {
         $_.UsageType -eq $UsageType -and
-        $_.DeviceType -eq $DeviceType -and
-        $_.Primary -ne $Secondary -and
-        $_.Public -ne $Private
-    } | Select -First 1
+        $_.DeviceType -eq $DeviceType
+        $_.Primary
+    } | Select-Object -First 1
     if ($currentMatch -ne $null) {
         $scrubbedCurrentNumber = scrub $currentMatch.Number
         $scrubbedCurrentExtension = scrub $currentMatch.Extension
     }
     
-    $msg = "Current [$scrubbedCurrentNumber $scrubbedCurrentExtension] {0} Proposed [$scrubbedProposedNumber $scrubbedProposedExtention]"
+    $msg = "Current [$scrubbedCurrentNumber] ext [$scrubbedCurrentExtension] {0} Proposed [$scrubbedProposedNumber] ext [$scrubbedProposedExtention]"
     $output = [pscustomobject][ordered]@{
         Success = $true
         Message = $msg -f 'matched'
         Xml     = $null
     }
     if (
-        $scrubbedCurrentNumber -ne $scrubbedProposedNumber -or
-        $scrubbedCurrentExtension -ne $scrubbedProposedExtention
+        $currentMatch -ne $null -and (
+            $scrubbedCurrentNumber -ne $scrubbedProposedNumber -or
+            $scrubbedCurrentExtension -ne $scrubbedProposedExtention -or
+            $currentMatch.Primary -eq -not $Secondary -or
+            $currentMatch.Public -eq -not $Private
+        )
     ) {
         $params = $PSBoundParameters
         $null = $params.Remove('WorkerXml')
         $null = $params.Remove('WorkerId')
         $null = $params.Remove('WorkerType')
-        #  Set-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password -Number:$Number -Extension:$Extension -UsageType:$UsageType -DeviceType:$DeviceType -Private:$Private -Secondary:$Secondary
+        Write-Debug $params
         $output = Set-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType @params
         if ($output.Success) {
             $output.Message = $msg -f 'changed to'
         }
     }
     
+    Write-Verbose $output.Message
     Write-Output $output
 }

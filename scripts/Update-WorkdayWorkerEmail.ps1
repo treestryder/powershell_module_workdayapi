@@ -67,26 +67,32 @@ Update-WorkdayWorkerEmail -WorkerId 123 -WorkEmail test@example.com
     if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
         $current = Get-WorkdayWorkerEmail -WorkerXml $WorkerXml
         $WorkerType = 'WID'
-        $workerReference = $WorkerXml.GetElementsByTagName('wd:Worker_Reference') | Select -First 1
-        $WorkerId = $workerReference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty InnerText
+        $workerReference = $WorkerXml.GetElementsByTagName('wd:Worker_Reference') | Select-Object -First 1
+        $WorkerId = $workerReference.ID | Where-Object {$_.type -eq 'WID'} | Select-Object -ExpandProperty InnerText
     } else {
         $current = Get-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
     }
 
-    $currentWorkEmail = $current | where { $_.Type -eq 'Work' -and $_.Primary } | Select -First 1 -ExpandProperty Email
+    $currentWork = $current | Where-Object { $_.Type -eq 'Work' -and $_.Primary } | Select-Object -First 1
 
-    Write-Verbose "Current: $currentWorkEmail Proposed: $WorkEmail"
-
+    $msg = "Current [$($currentWork.Email)] {0} Proposed [$WorkEmail]"
     $output = [pscustomobject][ordered]@{
         Success = $true
-        Message = "No change necessary for current Workday email [$currentWorkEmail]."
+        Message = $msg -f 'matched'
         Xml     = $null
     }
-    if ($currentWorkEmail -ne $WorkEmail) {
+    if (
+        $currentWork -ne $null -and (
+            $currentWork.Email -ne $WorkEmail -or
+            $currentWork.Public -ne $true
+        )
+    ) {
         $output = Set-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -WorkEmail $WorkEmail -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
         if ($output.Success) {
-            $output.Message = "Email changed at Workday from [$currentWorkEmail] to [$WorkEmail]."
+            $output.Message = $msg -f 'changed to'
         }
     }
+
+    Write-Verbose $output.Message
     Write-Output $output
 }
