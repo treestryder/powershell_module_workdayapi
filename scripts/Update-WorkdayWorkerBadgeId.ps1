@@ -87,11 +87,10 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
     }        
 
     $msg = '{{0}} Current [{0} {1:g} to {2:g}] Proposed [{3} {4:g} to {5:g}]' -f $current.Id, $current.Issued_Date, $current.Expiration_Date, $BadgeId, $IssuedDate, $ExpirationDate
-    Write-Debug $msg
 
     $output = [pscustomobject][ordered]@{
         Success = $false
-        Message = $null
+        Message = $msg -f 'Matched'
         Xml     = $null
     }
 
@@ -106,20 +105,13 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
         $null = $params.Remove('WorkerType')
         $o = Set-WorkdayWorkerBadgeId -WorkerId $WorkerId -WorkerType $WorkerType @params
         
-        if ($o -ne $null -and $o.Success) {
+        if ($o.Success) {
             $output.Success = $true
             $output.Message = $msg -f 'Changed'
             $output.Xml = $o.Xml
         }
-        else {
-            $output.Success = $true
-            $output.Message = $msg -f 'FAILED'
-            $output.Xml = try {$o.Xml} catch {''}
-        }
     }
-    else {
-        $output.Success = $true
-        $output.Message = $msg -f 'Matched'
-    }
+
+    Write-Verbose $output.Message
     Write-Output $output
 }

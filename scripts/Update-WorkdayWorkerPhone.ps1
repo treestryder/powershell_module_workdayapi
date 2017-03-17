@@ -90,8 +90,8 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
     $currentMatch = $current |
      Where-Object {
         $_.UsageType -eq $UsageType -and
-        $_.DeviceType -eq $DeviceType
-        $_.Primary
+        $_.DeviceType -eq $DeviceType -and
+        $_.Primary -eq -not $Secondary
     } | Select-Object -First 1
     if ($currentMatch -ne $null) {
         $scrubbedCurrentNumber = scrub $currentMatch.Number
@@ -108,8 +108,8 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
         $currentMatch -ne $null -and (
             $scrubbedCurrentNumber -ne $scrubbedProposedNumber -or
             $scrubbedCurrentExtension -ne $scrubbedProposedExtention -or
-            $currentMatch.Primary -eq -not $Secondary -or
-            $currentMatch.Public -eq -not $Private
+            $currentMatch.Primary -ne -not $Secondary -or
+            $currentMatch.Public -ne -not $Private
         )
     ) {
         $params = $PSBoundParameters

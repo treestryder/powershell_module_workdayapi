@@ -15,7 +15,13 @@ Describe Update-WorkdayWorkerEmail {
             }
         }
 
-        Mock Set-WorkdayWorkerEmail {}
+        Mock Set-WorkdayWorkerEmail {
+            [pscustomobject][ordered]@{
+                Success = $true
+                Message = 'Success'
+                Xml = '<x>Success</x>'
+            }
+        }
 
         Context DifferentEmail {
             It 'Calls Set-WorkdayWorkerEmail when a new number is presented.' {

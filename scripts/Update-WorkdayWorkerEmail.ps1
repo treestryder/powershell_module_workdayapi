@@ -75,10 +75,10 @@ Update-WorkdayWorkerEmail -WorkerId 123 -WorkEmail test@example.com
 
     $currentWork = $current | Where-Object { $_.Type -eq 'Work' -and $_.Primary } | Select-Object -First 1
 
-    $msg = "Current [$($currentWork.Email)] {0} Proposed [$WorkEmail]"
+    $msg = "{0} Current [$($currentWork.Email)] Proposed [$WorkEmail]"
     $output = [pscustomobject][ordered]@{
         Success = $true
-        Message = $msg -f 'matched'
+        Message = $msg -f 'Matched'
         Xml     = $null
     }
     if (
@@ -89,7 +89,7 @@ Update-WorkdayWorkerEmail -WorkerId 123 -WorkEmail test@example.com
     ) {
         $output = Set-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -WorkEmail $WorkEmail -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
         if ($output.Success) {
-            $output.Message = $msg -f 'changed to'
+            $output.Message = $msg -f 'Changed'
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿Get-Module WorkdayApi | Remove-Module -Force
 Import-Module "$PsScriptRoot\..\WorkdayApi.psd1" -Force
+Import-Module "$PsScriptRoot\Invoke-WorkdayRequestHelper.psm1" -Force -DisableNameChecking
 
 Describe Update-WorkdayWorkerPhone {
     InModuleScope WorkdayApi {
@@ -17,7 +18,13 @@ Describe Update-WorkdayWorkerPhone {
             }
         }
 
-        Mock Set-WorkdayWorkerPhone {}
+        Mock Set-WorkdayWorkerPhone {
+             [pscustomobject][ordered]@{
+                Success = $true
+                Message = 'Success'
+                Xml = '<x>Success</x>'
+            }
+        }
 
         Context DifferentNumber {
             It 'Calls Set-WorkdayWorkerPhone when a new number is presented.' {
@@ -34,7 +41,8 @@ Describe Update-WorkdayWorkerPhone {
 
         Context SameNumber {
             It 'Skips calling Set-WorkdayWorkerPhone when a duplicate number is presented.' {
-                $response = Update-WorkdayWorkerPhone -WorkerId 1 -Number '1-517-123-4567' -Extension '4321'
+                $response = Update-WorkdayWorkerPhone -WorkerId 1 -Number '15171234567' -Extension '4321'
+                Assert-MockCalled Get-WorkdayWorkerPhone -Exactly 1
                 Assert-MockCalled Set-WorkdayWorkerPhone -Exactly 0
             }
         }

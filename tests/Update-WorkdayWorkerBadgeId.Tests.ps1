@@ -18,7 +18,13 @@ Describe Update-WorkdayWorkerBadgeId {
              }
         }
 
-        Mock Set-WorkdayWorkerBadgeId {}
+        Mock Set-WorkdayWorkerBadgeId {
+             [pscustomobject][ordered]@{
+                Success = $true
+                Message = 'Success'
+                Xml = '<x>Success</x>'
+            }
+        }
 
         Context Different {
 
