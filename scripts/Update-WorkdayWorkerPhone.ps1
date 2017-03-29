@@ -121,7 +121,7 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
         $null = $params.Remove('WorkerType')
         Write-Debug $params
         $o = Set-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType @params
-        if ($output.Success) {
+        if ($o -ne $null -and $o.Success) {
             $output.Success = $true
             $output.Message = $msg -f 'Changed'
             $output.Xml = $o.Xml
