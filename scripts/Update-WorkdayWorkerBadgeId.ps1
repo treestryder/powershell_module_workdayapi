@@ -65,40 +65,34 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
-    if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
-        $otherIds = Get-WorkdayWorkerOtherId -WorkerXml $WorkerXml
-        $WorkerType = 'WID'
-        $workerReference = $WorkerXml.GetElementsByTagName('wd:Worker_Reference') | Select -First 1
-        $WorkerId = $workerReference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty InnerText
-    } else {
-        $otherIds = Get-WorkdayWorkerOtherId -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
-    }
-
-    $current = $otherIds | Where-Object {$_.Type -eq 'Custom_ID/Badge_ID'} | select -First 1
-    
-    if ($current -eq $null) {
-            $current = [pscustomobject][ordered]@{
-                 Type       = 'Custom_ID/Badge_ID'
-                 Id         = 'New'
-                 Descriptor = $null
-                 Issued_Date = Get-Date
-                 Expiration_Date = Get-Date
-             }
-    }        
-
-    $msg = '{{0}} Current [{0} {1:g} to {2:g}] Proposed [{3} {4:g} to {5:g}]' -f $current.Id, $current.Issued_Date, $current.Expiration_Date, $BadgeId, $IssuedDate, $ExpirationDate
-
     $output = [pscustomobject][ordered]@{
         Success = $false
         Message = $msg -f 'Failed'
         Xml     = $null
     }
 
-    $idSame = $current.Id -eq $BadgeId
-    $issueDateSame = [math]::Abs(($current.Issued_Date - $IssuedDate).Days) -eq 0
-    $expireDateSame = [math]::Abs(($current.Expiration_Date - $ExpirationDate).Days) -eq 0
+    if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
+        $otherIds = Get-WorkdayWorkerOtherId -WorkerXml $WorkerXml
+        $WorkerType = 'WID'
+        $workerReference = $WorkerXml.GetElementsByTagName('wd:Worker_Reference') | Select-Object -First 1
+        $WorkerId = $workerReference.ID | Where-Object {$_.type -eq 'WID'} | Select-Object -ExpandProperty InnerText
+    } else {
+        $otherIds = Get-WorkdayWorkerOtherId -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
+    }
 
-    if ( $idSame -and $issueDateSame -and $expireDateSame ) {
+    $current = $otherIds | Where-Object {$_.Type -eq 'Custom_ID/Badge_ID'} | Select-Object -First 1
+
+    $msg = '{{0}} Current [blank] Proposed [{0} {1:g} to {2:g}]' -f $BadgeId, $IssuedDate, $ExpirationDate
+    if ($current -ne $null) {
+        $msg = '{{0}} Current [{0} {1:g} to {2:g}] Proposed [{3} {4:g} to {5:g}]' -f $current.Id, $current.Issued_Date, $current.Expiration_Date, $BadgeId, $IssuedDate, $ExpirationDate    
+    }        
+
+    if ( 
+        $current -ne $null -and
+        $current.Id -eq $BadgeId -and
+        [math]::Abs(($current.Issued_Date - $IssuedDate).Days) -eq 0 -and
+        [math]::Abs(($current.Expiration_Date - $ExpirationDate).Days) -eq 0
+    ) {
         $output.Message = $msg -f 'Matched'
         $output.Success = $true
     } else {

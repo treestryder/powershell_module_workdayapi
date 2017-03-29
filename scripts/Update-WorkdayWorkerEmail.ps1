@@ -90,12 +90,11 @@ Update-WorkdayWorkerEmail -WorkerId 123 -Email test@example.com
         Xml     = $null
     }
     if (
-        $currentEmail -eq $null -or (
-            $currentEmail.Email -eq $Email -and
-            $currentEmail.UsageType -eq $UsageType -and
-            (-not $currentEmail.Primary) -eq $Secondary -and
-            (-not $currentEmail.Public) -eq $Private
-        )
+        $currentEmail -ne $null -and
+        $currentEmail.Email -eq $Email -and
+        $currentEmail.UsageType -eq $UsageType -and
+        (-not $currentEmail.Primary) -eq $Secondary -and
+        (-not $currentEmail.Public) -eq $Private
     ) {
         $output.Message = $msg -f 'Matched'
         $output.Success = $true

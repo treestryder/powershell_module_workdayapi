@@ -76,7 +76,7 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
         $current = Get-WorkdayWorkerPhone -WorkerXml $WorkerXml
         $WorkerType = 'WID'
         $workerReference = $WorkerXml.GetElementsByTagName('wd:Worker_Reference') | Select-Object -First 1
-        $WorkerId = $workerReference.ID | where {$_.type -eq 'WID'} | Select-Object -ExpandProperty InnerText
+        $WorkerId = $workerReference.ID | Where-Object {$_.type -eq 'WID'} | Select-Object -ExpandProperty InnerText
     } else {
         $current = Get-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
     }
@@ -105,12 +105,11 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
         Xml     = $null
     }
     if (
-        $currentMatch -eq $null -or (
-            $scrubbedCurrentNumber -eq $scrubbedProposedNumber -and
-            $scrubbedCurrentExtension -eq $scrubbedProposedExtention -and
-            (-not $currentMatch.Primary) -eq $Secondary -and
-            (-not $currentMatch.Public) -eq $Private
-        )
+        $currentMatch -ne $null -and
+        $scrubbedCurrentNumber -eq $scrubbedProposedNumber -and
+        $scrubbedCurrentExtension -eq $scrubbedProposedExtention -and
+        (-not $currentMatch.Primary) -eq $Secondary -and
+        (-not $currentMatch.Public) -eq $Private
     ) {
         $output.Message = $msg -f 'Matched'
         $output.Success = $true
