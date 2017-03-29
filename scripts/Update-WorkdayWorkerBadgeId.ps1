@@ -90,15 +90,18 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
 
     $output = [pscustomobject][ordered]@{
         Success = $false
-        Message = $msg -f 'Matched'
+        Message = $msg -f 'Failed'
         Xml     = $null
     }
 
-    $idDifferent = $current.Id -ne $BadgeId
-    $issueDateDifferent = [math]::Abs(($current.Issued_Date - $IssuedDate).Days) -gt 0
-    $expireDateDifferent = [math]::Abs(($current.Expiration_Date - $ExpirationDate).Days) -gt 0
+    $idSame = $current.Id -eq $BadgeId
+    $issueDateSame = [math]::Abs(($current.Issued_Date - $IssuedDate).Days) -eq 0
+    $expireDateSame = [math]::Abs(($current.Expiration_Date - $ExpirationDate).Days) -eq 0
 
-    if ( $idDifferent -or $issueDateDifferent -or $expireDateDifferent ) {
+    if ( $idSame -and $issueDateSame -and $expireDateSame ) {
+        $output.Message = $msg -f 'Matched'
+        $output.Success = $true
+    } else {
         $params = $PSBoundParameters
         $null = $params.Remove('WorkerXml')
         $null = $params.Remove('WorkerId')

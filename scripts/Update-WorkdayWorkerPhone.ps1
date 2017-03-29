@@ -91,35 +91,40 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
      Where-Object {
         $_.UsageType -eq $UsageType -and
         $_.DeviceType -eq $DeviceType -and
-        $_.Primary -eq -not $Secondary
+        (-not $_.Primary) -eq $Secondary
     } | Select-Object -First 1
     if ($currentMatch -ne $null) {
         $scrubbedCurrentNumber = scrub $currentMatch.Number
         $scrubbedCurrentExtension = scrub $currentMatch.Extension
     }
     
-    $msg = "Current [$scrubbedCurrentNumber] ext [$scrubbedCurrentExtension] {0} Proposed [$scrubbedProposedNumber] ext [$scrubbedProposedExtention]"
+    $msg = "{0} Current [$scrubbedCurrentNumber] ext [$scrubbedCurrentExtension] Proposed [$scrubbedProposedNumber] ext [$scrubbedProposedExtention]"
     $output = [pscustomobject][ordered]@{
-        Success = $true
-        Message = $msg -f 'matched'
+        Success = $false
+        Message = $msg -f 'Failed'
         Xml     = $null
     }
     if (
-        $currentMatch -ne $null -and (
-            $scrubbedCurrentNumber -ne $scrubbedProposedNumber -or
-            $scrubbedCurrentExtension -ne $scrubbedProposedExtention -or
-            $currentMatch.Primary -ne -not $Secondary -or
-            $currentMatch.Public -ne -not $Private
+        $currentMatch -eq $null -or (
+            $scrubbedCurrentNumber -eq $scrubbedProposedNumber -and
+            $scrubbedCurrentExtension -eq $scrubbedProposedExtention -and
+            (-not $currentMatch.Primary) -eq $Secondary -and
+            (-not $currentMatch.Public) -eq $Private
         )
     ) {
+        $output.Message = $msg -f 'Matched'
+        $output.Success = $true
+    } else {
         $params = $PSBoundParameters
         $null = $params.Remove('WorkerXml')
         $null = $params.Remove('WorkerId')
         $null = $params.Remove('WorkerType')
         Write-Debug $params
-        $output = Set-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType @params
+        $o = Set-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType @params
         if ($output.Success) {
-            $output.Message = $msg -f 'changed to'
+            $output.Success = $true
+            $output.Message = $msg -f 'Changed'
+            $output.Xml = $o.Xml
         }
     }
     

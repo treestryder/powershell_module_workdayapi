@@ -85,21 +85,26 @@ Update-WorkdayWorkerEmail -WorkerId 123 -Email test@example.com
 
     $msg = "{0} Current [$($currentEmail.Email)] Proposed [$Email]"
     $output = [pscustomobject][ordered]@{
-        Success = $true
-        Message = $msg -f 'Matched'
+        Success = $false
+        Message = $msg -f 'Failed'
         Xml     = $null
     }
     if (
-        $currentEmail -ne $null -and (
-            $currentEmail.Email -ne $Email -or
-            $currentEmail.UsageType -ne $UsageType -or
-            (-not $currentEmail.Primary) -ne $Secondary -or
-            (-not $currentEmail.Public) -ne $Private
+        $currentEmail -eq $null -or (
+            $currentEmail.Email -eq $Email -and
+            $currentEmail.UsageType -eq $UsageType -and
+            (-not $currentEmail.Primary) -eq $Secondary -and
+            (-not $currentEmail.Public) -eq $Private
         )
     ) {
-        $output = Set-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -Email $Email -UsageType:$UsageType -Private:$Private -Secondary:$Secondary -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
+        $output.Message = $msg -f 'Matched'
+        $output.Success = $true
+    } else {
+        $o = Set-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -Email $Email -UsageType:$UsageType -Private:$Private -Secondary:$Secondary -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
         if ($output.Success) {
+            $output.Success = $true
             $output.Message = $msg -f 'Changed'
+            $output.Xml = $o.Xml
         }
     }
 
