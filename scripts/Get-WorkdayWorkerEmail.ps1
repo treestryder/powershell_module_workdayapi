@@ -70,15 +70,15 @@ Work work@example.com                True   True
     }
 
     $numberTemplate = [pscustomobject][ordered]@{
-        Type             = $null
+        UsageType        = $null
         Email            = $null
         Primary          = $null
         Public           = $null
     }
 
-    $WorkerXml.GetElementsByTagName('wd:Email_Address_Data') | foreach {
+    $WorkerXml.GetElementsByTagName('wd:Email_Address_Data') | ForEach-Object {
         $o = $numberTemplate.PsObject.Copy()
-        $o.Type = $_.Usage_Data.Type_Data.Type_Reference.Descriptor
+        $o.UsageType = $_.Usage_Data.Type_Data.Type_Reference.Descriptor
         $o.Email = $_.Email_Address
         $o.Primary = [System.Xml.XmlConvert]::ToBoolean( $_.Usage_Data.Type_Data.Primary )
         $o.Public = [System.Xml.XmlConvert]::ToBoolean( $_.Usage_Data.Public )

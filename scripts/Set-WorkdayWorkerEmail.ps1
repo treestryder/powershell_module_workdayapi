@@ -45,7 +45,12 @@ Set-WorkdayWorkerEmail -WorkerId 123 -WorkEmail worker@example.com
 		[string]$WorkerType = 'Employee_ID',
 		[Parameter(Mandatory = $true)]
 		[ValidatePattern('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$')]
-		[string]$WorkEmail,
+        [Alias('EmailAddress')]
+		[string]$Email,
+		[ValidateSet('HOME','WORK')]
+        [string]$UsageType = 'WORK',
+        [switch]$Private,
+        [switch]$Secondary,
 		[string]$Human_ResourcesUri,
 		[string]$Username,
 		[string]$Password
@@ -59,7 +64,7 @@ Set-WorkdayWorkerEmail -WorkerId 123 -WorkEmail worker@example.com
 		<bsvc:Auto_Complete>true</bsvc:Auto_Complete>
 		<bsvc:Run_Now>true</bsvc:Run_Now>
 		<bsvc:Comment_Data>
-			<bsvc:Comment>Work Email set by Set-WorkdayWorkerEmail</bsvc:Comment>
+			<bsvc:Comment>Email set by Set-WorkdayWorkerEmail</bsvc:Comment>
 		</bsvc:Comment_Data>
 	</bsvc:Business_Process_Parameters>
     <bsvc:Maintain_Contact_Information_Data>
@@ -90,8 +95,14 @@ Set-WorkdayWorkerEmail -WorkerId 123 -WorkEmail worker@example.com
         $request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Reference.ID.type = 'WID'
     }
 
-	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Email_Address_Data.Email_Address = $WorkEmail
+	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Email_Address_Data.Email_Address = $Email
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Effective_Date = (Get-Date).ToString( 'yyyy-MM-dd' )
+	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Email_Address_Data.Usage_Data.Type_Data.Type_Reference.ID.'#text' = $UsageType
+
+	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Email_Address_Data.Usage_Data.Type_Data.Primary =
+		if ($Secondary) {'0'} else {'1'}
+	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Email_Address_Data.Usage_Data.Public =
+		if ($Private) {'0'} else {'1'}
 
 	Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
 }

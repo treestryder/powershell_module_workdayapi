@@ -16,7 +16,7 @@
     The type of ID that the WorkerId represents. Valid values
     are 'WID', 'Contingent_Worker_ID' and 'Employee_ID'.
 
-.PARAMETER WorkEmail
+.PARAMETER Email
     Sets the Workday primary, public, Work email for a Worker. This cmdlet does not
     currently support other email types. Also excepts the alias EmailAddress.
 
@@ -34,7 +34,7 @@
 
 .EXAMPLE
     
-Update-WorkdayWorkerEmail -WorkerId 123 -WorkEmail test@example.com
+Update-WorkdayWorkerEmail -WorkerId 123 -Email test@example.com
 
 #>
 
@@ -59,7 +59,11 @@ Update-WorkdayWorkerEmail -WorkerId 123 -WorkEmail test@example.com
         [xml]$WorkerXml,
         [Parameter(Mandatory = $true)]
         [Alias('EmailAddress')]
-		[string]$WorkEmail
+		[string]$Email,
+		[ValidateSet('HOME','WORK')]
+        [string]$UsageType = 'WORK',
+        [switch]$Private,
+        [switch]$Secondary
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
@@ -73,21 +77,27 @@ Update-WorkdayWorkerEmail -WorkerId 123 -WorkEmail test@example.com
         $current = Get-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
     }
 
-    $currentWork = $current | Where-Object { $_.Type -eq 'Work' -and $_.Primary } | Select-Object -First 1
+    $currentEmail = $current |
+        Where-Object {
+            $_.UsageType -eq $UsageType -and
+            (-not $_.Primary) -eq $Secondary
+        } | Select-Object -First 1
 
-    $msg = "{0} Current [$($currentWork.Email)] Proposed [$WorkEmail]"
+    $msg = "{0} Current [$($currentEmail.Email)] Proposed [$Email]"
     $output = [pscustomobject][ordered]@{
         Success = $true
         Message = $msg -f 'Matched'
         Xml     = $null
     }
     if (
-        $currentWork -ne $null -and (
-            $currentWork.Email -ne $WorkEmail -or
-            $currentWork.Public -ne $true
+        $currentEmail -ne $null -and (
+            $currentEmail.Email -ne $Email -or
+            $currentEmail.UsageType -ne $UsageType -or
+            (-not $currentEmail.Primary) -ne $Secondary -or
+            (-not $currentEmail.Public) -ne $Private
         )
     ) {
-        $output = Set-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -WorkEmail $WorkEmail -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
+        $output = Set-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -Email $Email -UsageType:$UsageType -Private:$Private -Secondary:$Secondary -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
         if ($output.Success) {
             $output.Message = $msg -f 'Changed'
         }

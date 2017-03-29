@@ -63,7 +63,7 @@ function Main {
                     $o.WorkEmailStatus = 'No EmailAddress in AD.'
                 } else {
                     try {
-                        $response = Update-WorkdayWorkerEmail -WorkerXml $worker.Xml -WorkEmail $email
+                        $response = Update-WorkdayWorkerEmail -WorkerXml $worker.Xml -Email $email -UsageType WORK
                         $o.WorkEmailStatus = $response.Message
                     }
                     catch {
@@ -71,8 +71,10 @@ function Main {
                     }
                 }
 
+                $mobileSecondary = $true
                 if ([string]::IsNullOrWhiteSpace($phone)) {
                     $o.WorkPhoneStatus = 'No OfficePhone in AD.'
+                    $mobileSecondary = $false
                 } else {
                     try {
                         $response = Update-WorkdayWorkerPhone -WorkerXml $worker.Xml -Number $phone -UsageType WORK -DeviceType Landline
@@ -87,7 +89,7 @@ function Main {
                     $o.MobilePhoneStatus = 'No MobilePhone in AD.'
                 } else {
                     try {
-                        $response = Update-WorkdayWorkerPhone -WorkerXml $worker.Xml -Number $mobile -UsageType WORK -DeviceType Cell -Secondary
+                        $response = Update-WorkdayWorkerPhone -WorkerXml $worker.Xml -Number $mobile -UsageType WORK -DeviceType Cell -Secondary:$mobileSecondary
                         $o.MobilePhoneStatus = $response.Message
                     }
                     catch {

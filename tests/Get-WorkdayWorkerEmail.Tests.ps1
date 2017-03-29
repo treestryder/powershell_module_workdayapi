@@ -13,7 +13,7 @@ Describe Get-WorkdayWorkerEmail {
 
                 $response = @(Get-WorkdayWorkerEmail -WorkerId 1)
                 $response.Count | Should Be 1
-                $response[0].Type | Should Be 'Work'
+                $response[0].UsageType | Should Be 'Work'
                 $response[0].Email | Should Be 'test@example.com'
                 $response[0].Primary | Should Be $true
                 $response[0].Public | Should Be $true
@@ -28,7 +28,7 @@ Describe Get-WorkdayWorkerEmail {
                 $worker = Mock_Invoke-WorkdayRequest_ExampleWorker
                 $response = @(Get-WorkdayWorkerEmail -WorkerXml $worker.Xml )
                 $response.Count | Should Be 1
-                $response[0].Type | Should Be 'Work'
+                $response[0].UsageType | Should Be 'Work'
                 $response[0].Email | Should Be 'test@example.com'
                 $response[0].Primary | Should Be $true
                 $response[0].Public | Should Be $true
