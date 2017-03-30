@@ -5,7 +5,7 @@ Example script to push Active Directory values to Workday, when they differ.
 This version starts with requesting Workers from Workday.
 
 .Example
-.\Sync_AD_to_Workday2.ps1 -Path output\results.csv
+.\Sync_AD_to_Workday.ps1 -Path output\results.csv
 #>
 
 # Requires -Module WorkdayApi
