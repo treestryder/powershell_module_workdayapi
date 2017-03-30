@@ -97,7 +97,6 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
     # Default = Reference, Personal Data, Employment Data, Compensation Data, Organization Data, and Role Data.
 
     if ($IncludePersonal) {
-        $request.Get_Workers_Request.Response_Group.Include_Reference = 'true'
         $request.Get_Workers_Request.Response_Group.Include_Personal_Information = 'true'
     }
 
@@ -130,65 +129,4 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
         $more = $response.Success -and $nextPage -lt $response.xml.Get_Workers_Response.Response_Results.Total_Pages
     }
 
-}
-
-function ConvertFrom-WorkdayWorkerXml {
-<#
-.Synopsis
-   Converts Workday Worker XML into a custom object.
-#>
-    [CmdletBinding()]
-    [OutputType([pscustomobject])]
-    Param (
-        # Param1 help description
-        [Parameter(Mandatory=$true,
-            ValueFromPipeline=$true,
-            ValueFromPipelineByPropertyName=$true,
-            Position=0)]
-        $Xml
-    )
-
-    Begin {
-        $WorkerObjectTemplate = [pscustomobject][ordered]@{
-            WorkerWid             = $null
-            WorkerDescriptor      = $null
-            PreferredName         = $null
-            FirstName             = $null
-            LastName              = $null
-            WorkerType            = $null
-            WorkerId              = $null
-            OtherId               = $null
-            Phone                 = $null
-            Email                 = $null
-            XML                   = $null
-        }
-        $WorkerObjectTemplate.PsObject.TypeNames.Insert(0, "Workday.Worker")
-    }
-
-    Process {
-        foreach ($x in $Xml) {
-            $o = $WorkerObjectTemplate.PsObject.Copy()
-
-            $referenceId = $x.Worker_Reference.ID | where {$_.type -ne 'WID'}
-
-            $o.WorkerWid        = $x.Worker_Reference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty '#text'
-            $o.WorkerDescriptor = $x.Worker_Reference.Descriptor
-            $o.PreferredName    = $x.Worker_Data.Personal_Data.Name_Data.Preferred_Name_Data.Name_Detail_Data.Formatted_Name
-            $o.FirstName        = $x.Worker_Data.Personal_Data.Name_Data.Preferred_Name_Data.Name_Detail_Data.First_Name
-            $o.LastName         = $x.Worker_Data.Personal_Data.Name_Data.Preferred_Name_Data.Name_Detail_Data.Last_Name
-            $o.WorkerType       = $referenceId.type
-            $o.WorkerId         = $referenceId.'#text'
-            $o.OtherId          = $null
-            $o.Phone            = $null
-            $o.Email            = $null
-            $o.XML              = [XML]$x.OuterXml
-
-            if ($IncludePersonal) {
-                $o.Phone   = @(Get-WorkdayWorkerPhone -WorkerXml $x.OuterXml)
-                $o.Email   = @(Get-WorkdayWorkerEmail -WorkerXml $x.OuterXml)
-                $o.OtherId = @(Get-WorkdayWorkerOtherId -WorkerXml $x.OuterXml)
-            }
-            Write-Output $o
-        }
-    }
 }
