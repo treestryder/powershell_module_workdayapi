@@ -13,13 +13,14 @@ This version starts with requesting Workers from Workday.
 [CmdletBinding()]
 param (
     [string]$Path,
+    [switch]$MatchExtensionAttribute1,
     [int]$Limit = 0
 )
 Import-Module WorkdayApi
 
 function Main {
     $count = 0
-    $ldapProperties = 'userPrincipalName', 'mail', 'telephoneNumber', 'mobile'
+    $ldapProperties = 'userPrincipalName', 'mail', 'telephoneNumber', 'mobile','extensionAttribute1'
 
     Write-Verbose 'Requesting Workday Workers.'
     
@@ -28,6 +29,7 @@ function Main {
         $count++
         if ($Limit -gt 0 -and $count -ge $Limit) { return }
         $out = $outputTemplate.PsObject.Copy()
+        $out.Success = $true
         $out.WorkerType = $worker.WorkerType
         $out.WorkerId   = $worker.WorkerId
         $out.UserPrincipalName = $worker.UserId
@@ -42,6 +44,18 @@ function Main {
         Write-Verbose ('{0} {1}' -f $worker.WorkerDescriptor, $adStatus)
         if ($AdUser.Count -ne 1) {
             $out.UserPrincipalName = $adStatus
+            # It is OK if no AD user is not found. It is not OK if more than one is found.
+            if ($AdUser.Count -gt 1) {
+                $out.Success = $false
+            }
+            Write-Output $out
+            continue
+        }
+
+        # We keep the worker ID in extensionAttribute1.
+        if ($MatchExtensionAttribute1 -and $worker.WorkerId -ne $AdUser.extensionAttribute1) {
+            $out.UserPrincipalName = 'Workday WorkerId [{0}] did not match AD ExtensionAttribute1 [{1}] for UserPrincipalName [{2}].' -f $worker.WorkerId, $AdUser.extensionAttribute1, $worker.UserId
+            $out.Success = $false
             Write-Output $out
             continue
         }
@@ -56,6 +70,7 @@ function Main {
             }
             catch {
                 $out.WorkEmailStatus = "Error: $_"
+                $out.Success = $false
             }
         }
 
@@ -72,6 +87,7 @@ function Main {
             }
             catch {
                 $out.WorkPhoneStatus = "Error: $_"
+                $out.Success = $false
             }
         }
 
@@ -86,6 +102,7 @@ function Main {
             }
             catch {
                 $out.WorkPhoneStatus = "Error: $_"
+                $out.Success = $false
             }
         }
 
@@ -100,6 +117,7 @@ $outputTemplate = [pscustomobject][ordered]@{
         WorkEmailStatus     = $null
         WorkPhoneStatus     = $null
         MobilePhoneStatus   = $null
+        Success             = $null
 }
 
 function Add-UsCountryCode {
