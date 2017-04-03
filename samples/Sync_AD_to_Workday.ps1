@@ -165,6 +165,7 @@ if ([string]::IsNullOrWhiteSpace($Path)) {
     Main | Write-Output
 }
 else {
-    Write-Host "Writing results to: $Path"
-    Main | Export-Csv -Path $Path -NoTypeInformation
+    $expandedPath = $Path -f (Get-Date)
+    Write-Host "Writing results to: $expandedPath"
+    Main | Export-Csv -Path $expandedPath -NoTypeInformation
 }
