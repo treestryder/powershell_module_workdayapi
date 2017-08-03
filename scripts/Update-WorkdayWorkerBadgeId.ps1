@@ -29,10 +29,6 @@
     Password used to authenticate with Workday. If empty, the value stored
     using Set-WorkdayCredential will be used.
 
-.EXAMPLE
-    
-Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
-
 #>
 
 	[CmdletBinding()]
@@ -60,7 +56,8 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
         [Parameter(Mandatory = $true)]
         [datetime]$IssuedDate,
         [Parameter(Mandatory = $true)]
-        [datetime]$ExpirationDate
+        [datetime]$ExpirationDate,
+        [switch]$WhatIf
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
@@ -95,6 +92,9 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
     ) {
         $output.Message = $msg -f 'Matched'
         $output.Success = $true
+    } elseif ($WhatIf) {
+        $output.Success = $true
+        $output.Message = $msg -f 'Would have changed'
     } else {
         $params = $PSBoundParameters
         $null = $params.Remove('WorkerXml')
