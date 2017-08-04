@@ -1,9 +1,9 @@
 @{
 RootModule = 'WorkdayApi.psm1'
-ModuleVersion = '1.3.1'
+ModuleVersion = '1.3.2'
 GUID = 'bd4390dc-a8ad-4bce-8d69-f53ccf8e4163'
 Author = 'Nathan Hartley'
-Copyright = '(c) 2015 . All rights reserved.'
+Copyright = '(c) 2017 . All rights reserved.'
 Description = 'Provides a means to access the Workday SOAP API in a Powershell friendly manner.'
 PowerShellVersion = '3.0'
 FunctionsToExport = @(
