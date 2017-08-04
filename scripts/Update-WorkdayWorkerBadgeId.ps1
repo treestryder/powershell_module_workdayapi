@@ -53,10 +53,8 @@
 		[Parameter(Mandatory = $true)]
 		[ValidatePattern('^[0-9]+$')]
 		[string]$BadgeId,
-        [Parameter(Mandatory = $true)]
-        [datetime]$IssuedDate,
-        [Parameter(Mandatory = $true)]
-        [datetime]$ExpirationDate,
+        $IssuedDate,
+        $ExpirationDate,
         [switch]$WhatIf
 	)
 
@@ -78,23 +76,87 @@
     }
 
     $current = $otherIds | Where-Object {$_.Type -eq 'Custom_ID/Badge_ID'} | Select-Object -First 1
+    
+    # Throw an error for an invalid date, default to the current value when no date is specified.
+    $issueCurrentDisplay = ''
+    $expirationCurrentDisplay = ''
+    $issueProposedDisplay = $IssuedDate
+    $expirationProposedDisplay = $ExpirationDate
+    $IssuedDateMatched = $true
+    $expirationDateMatched = $true
+    if ($IssuedDate -ne $null) {
+        try {
+            $d = Get-Date $IssuedDate -ErrorAction Stop
+            $IssuedDate = $d
+            $issueProposedDisplay = $IssuedDate.ToString('g')
+        }
+        catch {
+            throw "Invalid IssueDate [$IssuedDate]"
+        }
+    }
 
-    $msg = '{{0}} Current [blank] Proposed [{0} {1:g} to {2:g}]' -f $BadgeId, $IssuedDate, $ExpirationDate
+    if ($ExpirationDate -ne $null) {
+        try {
+            $d = Get-Date $ExpirationDate -ErrorAction Stop
+            $ExpirationDate = $d
+            $expirationProposedDisplay = $ExpirationDate.ToString('g')
+        }
+        catch {
+            throw "Invalid ExpirationDate [$ExpirationDate]"
+        }
+    }
+
     if ($current -ne $null) {
-        $msg = '{{0}} Current [{0} {1:g} to {2:g}] Proposed [{3} {4:g} to {5:g}]' -f $current.Id, $current.Issued_Date, $current.Expiration_Date, $BadgeId, $IssuedDate, $ExpirationDate    
+
+        $issueCurrentDisplay = $current.Issue_Date
+        try {
+            $d = Get-Date $current.Issued_Date -ErrorAction Stop
+            $issueCurrentDisplay = $d.ToString('g')
+            if ($IssuedDate -is [datetime]){
+                $IssuedDateMatched = ($d - $IssuedDate).Days -eq 0
+            }
+            else {
+                $IssuedDate = $d
+                $issueProposedDisplay = $issueCurrentDisplay
+            }
+        }
+        catch {
+            $IssuedDateMatched = $false
+        }
+
+        $expirationCurrentDisplay = $current.Expiration_Date
+        try {
+            $d = Get-Date $current.Expiration_Date -ErrorAction Stop
+            $expirationCurrentDisplay = $d.ToString('g')
+            if ($ExpirationDate -is [datetime]){
+                $ExpirationDateMatched = ($d - $ExpirationDate).Days -eq 0
+            }
+            else {
+                $ExpirationDate = $d
+                $expirationProposedDisplay = $expirationCurrentDisplay
+            }
+        }
+        catch {
+            $ExpirationDateMatched = $false
+        }
+    }
+
+    $msg = '{{0}} Current [] Proposed [{0} from {1} to {2}]' -f $BadgeId, $issueProposedDisplay, $expirationProposedDisplay
+    if ($current -ne $null) {
+        $msg = '{{0}} Current [{0} valid from {1} to {2}] Proposed [{3} valid from {4} to {5}]' -f $current.Id, $issueCurrentDisplay, $expirationCurrentDisplay, $BadgeId, $issueProposedDisplay, $expirationProposedDisplay
     }        
 
     if ( 
         $current -ne $null -and
         $current.Id -eq $BadgeId -and
-        [math]::Abs(($current.Issued_Date - $IssuedDate).Days) -eq 0 -and
-        [math]::Abs(($current.Expiration_Date - $ExpirationDate).Days) -eq 0
+        $IssuedDateMatched -and
+        $ExpirationDateMatched
     ) {
         $output.Message = $msg -f 'Matched'
         $output.Success = $true
     } elseif ($WhatIf) {
         $output.Success = $true
-        $output.Message = $msg -f 'Would have changed'
+        $output.Message = $msg -f 'Would change'
     } else {
         $params = $PSBoundParameters
         $null = $params.Remove('WorkerXml')

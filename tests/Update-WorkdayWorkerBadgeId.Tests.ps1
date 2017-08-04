@@ -13,8 +13,8 @@ Describe Update-WorkdayWorkerBadgeId {
                  Type       = 'Custom_ID/Badge_ID'
                  Id         = 1
                  Descriptor = $null
-                 Issued_Date = Get-Date -Year 2000 -Month 1 -Day 1
-                 Expiration_Date = Get-Date -Year 2001 -Month 1 -Day 1
+                 Issued_Date = Get-Date '2000-01-01'
+                 Expiration_Date = Get-Date '2001-01-01'
              }
         }
 
@@ -50,8 +50,30 @@ Describe Update-WorkdayWorkerBadgeId {
             }
 
             It 'Calls Set-WorkdayWorkerBadgeId when there is a new Badge ID.' {
-                $response = Update-WorkdayWorkerBadgeId -WorkerId 0 -BadgeId 1 -IssuedDate '1/1/2000' -ExpirationDate '1/1/2001' -debug
+                $response = Update-WorkdayWorkerBadgeId -WorkerId 0 -BadgeId 1 -IssuedDate '1/1/2000' -ExpirationDate '1/1/2001'
                 Assert-MockCalled Set-WorkdayWorkerBadgeId -Exactly 5
+            }
+
+            It 'Should default to the current IssuedDate value when a date is not passed.' {
+                $expected = 'Changed Current [1 valid from 1/1/2000 12:00 AM to 1/1/2001 12:00 AM] Proposed [1 valid from 1/1/2003 12:00 AM to 1/1/2001 12:00 AM]'
+                $response = Update-WorkdayWorkerBadgeId -WorkerId 1 -BadgeId 1 -IssuedDate '1/1/2003'
+                $response.Message | Should Be $expected
+                Assert-MockCalled Set-WorkdayWorkerBadgeId -Exactly 6
+            }
+
+            It 'Should default to the current Expiration value when a date is not passed.' {
+                $expected = 'Changed Current [1 valid from 1/1/2000 12:00 AM to 1/1/2001 12:00 AM] Proposed [1 valid from 1/1/2000 12:00 AM to 1/1/2003 12:00 AM]'
+                $response = Update-WorkdayWorkerBadgeId -WorkerId 1 -BadgeId 1 -ExpirationDate '1/1/2003'
+                $response.Message | Should Be $expected
+                Assert-MockCalled Set-WorkdayWorkerBadgeId -Exactly 7
+            }
+
+            It 'Throws an exception when an invalid IssueDate is passed.' {
+                {Update-WorkdayWorkerBadgeId -WorkerId 1 -BadgeId 1 -IssuedDate 'bad' -ExpirationDate '1/1/2001'} | Should Throw
+            }
+
+            It 'Throws an exception when an invalid ExpirationDate is passed.' {
+                {Update-WorkdayWorkerBadgeId -WorkerId 1 -BadgeId 1 -IssuedDate '1/1/2000' -ExpirationDate 'bad'} | Should Throw
             }
 
         }

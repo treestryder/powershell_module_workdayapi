@@ -15,10 +15,8 @@ function Set-WorkdayWorkerBadgeId {
 		[Parameter(Mandatory = $true)]
 		[ValidatePattern('^[0-9]+$')]
 		[string]$BadgeId,
-    [Parameter(Mandatory = $true)]
-    [datetime]$IssuedDate,
-    [Parameter(Mandatory = $true)]
-    [datetime]$ExpirationDate,
+    $IssuedDate,
+    $ExpirationDate,
 		[string]$Human_ResourcesUri,
 		[string]$Username,
 		[string]$Password
@@ -47,8 +45,8 @@ function Set-WorkdayWorkerBadgeId {
           <bsvc:ID_Type_Reference bsvc:Descriptor="Badge ID">
             <bsvc:ID bsvc:type="Custom_ID_Type_ID">Badge_ID</bsvc:ID>
           </bsvc:ID_Type_Reference>
-          <bsvc:Issued_Date>2014-06-09+00:00</bsvc:Issued_Date>
-          <bsvc:Expiration_Date>2008-11-15</bsvc:Expiration_Date>
+          <bsvc:Issued_Date></bsvc:Issued_Date>
+          <bsvc:Expiration_Date></bsvc:Expiration_Date>
         </bsvc:Custom_ID_Data>
       </bsvc:Custom_ID>
     </bsvc:Custom_Identification_Data>
@@ -65,9 +63,27 @@ function Set-WorkdayWorkerBadgeId {
         $request.Change_Other_IDs_Request.Change_Other_IDs_Data.Worker_Reference.ID.type = 'WID'
     }
 
-$request.Change_Other_IDs_Request.Change_Other_IDs_Data.Custom_Identification_Data.Custom_ID.Custom_ID_Data.ID = $BadgeId
-$request.Change_Other_IDs_Request.Change_Other_IDs_Data.Custom_Identification_Data.Custom_ID.Custom_ID_Data.Issued_Date = $IssuedDate.ToString('o')
-$request.Change_Other_IDs_Request.Change_Other_IDs_Data.Custom_Identification_Data.Custom_ID.Custom_ID_Data.Expiration_Date = $ExpirationDate.ToString('yyyy-MM-dd')
+  $request.Change_Other_IDs_Request.Change_Other_IDs_Data.Custom_Identification_Data.Custom_ID.Custom_ID_Data.ID = $BadgeId
+
+  # Deal with the potential for blank or invalid incoming or current date values.
+  if ($IssuedDate -ne $null) {
+    try {
+      $d = Get-Date $IssuedDate -ErrorAction Stop
+      $request.Change_Other_IDs_Request.Change_Other_IDs_Data.Custom_Identification_Data.Custom_ID.Custom_ID_Data.Issued_Date = $d.ToString('o')
+    }
+    catch {
+      throw "Invalid IssueDate [$IssuedDate]"
+    }
+  }
+  if ($ExpirationDate -ne $null) {
+    try {
+      $d = Get-Date $ExpirationDate -ErrorAction Stop
+      $request.Change_Other_IDs_Request.Change_Other_IDs_Data.Custom_Identification_Data.Custom_ID.Custom_ID_Data.Expiration_Date = $d.ToString('yyyy-MM-dd')
+    }
+    catch {
+      throw "Invalid ExpirationDate [$ExpirationDate]"
+    }
+  }
 
 	Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
 }
