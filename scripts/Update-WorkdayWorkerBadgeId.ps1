@@ -78,20 +78,23 @@
     $current = $otherIds | Where-Object {$_.Type -eq 'Custom_ID/Badge_ID'} | Select-Object -First 1
     
     # Throw an error for an invalid date, default to the current value when no date is specified.
-    $issueCurrentDisplay = ''
-    $expirationCurrentDisplay = ''
-    $issueProposedDisplay = $IssuedDate
+    $currentIdDisplay = $null
+    $issuedCurrentDisplay = $null
+    $expirationCurrentDisplay = $null
+    $issuedProposedDisplay = $IssuedDate
     $expirationProposedDisplay = $ExpirationDate
-    $IssuedDateMatched = $true
+    # Defaults to not matching.
+    $idMatched = $false
+    $issuedDateMatched = $true
     $expirationDateMatched = $true
     if ($IssuedDate -ne $null) {
         try {
             $d = Get-Date $IssuedDate -ErrorAction Stop
             $IssuedDate = $d
-            $issueProposedDisplay = $IssuedDate.ToString('g')
+            $issuedProposedDisplay = $IssuedDate.ToString('g')
         }
         catch {
-            throw "Invalid IssueDate [$IssuedDate]"
+            throw "Invalid IssuedDate [$IssuedDate]"
         }
     }
 
@@ -107,50 +110,53 @@
     }
 
     if ($current -ne $null) {
+        $currentIdDisplay = $current.Id
+        $idMatched = $current.Id -eq $BadgeId
 
-        $issueCurrentDisplay = $current.Issue_Date
-        try {
-            $d = Get-Date $current.Issued_Date -ErrorAction Stop
-            $issueCurrentDisplay = $d.ToString('g')
-            if ($IssuedDate -is [datetime]){
-                $IssuedDateMatched = ($d - $IssuedDate).Days -eq 0
+        $issuedCurrentDisplay = $current.Issued_Date
+        if (-not [string]::IsNullOrWhiteSpace($current.Issued_Date)) {
+            try {
+                $d = Get-Date $current.Issued_Date -ErrorAction Stop
+                $issuedCurrentDisplay = $d.ToString('g')
+                if ($IssuedDate -is [datetime]){
+                    $IssuedDateMatched = ($d - $IssuedDate).Days -eq 0
+                }
+                else {
+                    $IssuedDate = $d
+                    $issuedProposedDisplay = $issuedCurrentDisplay
+                }
             }
-            else {
-                $IssuedDate = $d
-                $issueProposedDisplay = $issueCurrentDisplay
+            catch {
+                $IssuedDateMatched = $false
             }
-        }
-        catch {
-            $IssuedDateMatched = $false
         }
 
         $expirationCurrentDisplay = $current.Expiration_Date
-        try {
-            $d = Get-Date $current.Expiration_Date -ErrorAction Stop
-            $expirationCurrentDisplay = $d.ToString('g')
-            if ($ExpirationDate -is [datetime]){
-                $ExpirationDateMatched = ($d - $ExpirationDate).Days -eq 0
+        if (-not [string]::IsNullOrWhiteSpace($current.Expiration_Date)) {
+            try {
+                $d = Get-Date $current.Expiration_Date -ErrorAction Stop
+                $expirationCurrentDisplay = $d.ToString('g')
+                if ($ExpirationDate -is [datetime]){
+                    $ExpirationDateMatched = ($d - $ExpirationDate).Days -eq 0
+                }
+                else {
+                    $ExpirationDate = $d
+                    $expirationProposedDisplay = $expirationCurrentDisplay
+                }
             }
-            else {
-                $ExpirationDate = $d
-                $expirationProposedDisplay = $expirationCurrentDisplay
+            catch {
+                $ExpirationDateMatched = $false
             }
-        }
-        catch {
-            $ExpirationDateMatched = $false
         }
     }
 
-    $msg = '{{0}} Current [] Proposed [{0} from {1} to {2}]' -f $BadgeId, $issueProposedDisplay, $expirationProposedDisplay
-    if ($current -ne $null) {
-        $msg = '{{0}} Current [{0} valid from {1} to {2}] Proposed [{3} valid from {4} to {5}]' -f $current.Id, $issueCurrentDisplay, $expirationCurrentDisplay, $BadgeId, $issueProposedDisplay, $expirationProposedDisplay
-    }        
+    $msg = '{{0}} Current [{0} valid from {1} to {2}] Proposed [{3} valid from {4} to {5}]' -f $currentIdDisplay, $issuedCurrentDisplay, $expirationCurrentDisplay, $BadgeId, $issuedProposedDisplay, $expirationProposedDisplay
 
+    Write-Debug "idMatched=$idMatched; issuedDateMatched=$issuedDateMatched; expirationDateMatched=$expirationDateMatched"
     if ( 
-        $current -ne $null -and
-        $current.Id -eq $BadgeId -and
-        $IssuedDateMatched -and
-        $ExpirationDateMatched
+        $idMatched -and
+        $issuedDateMatched -and
+        $expirationDateMatched
     ) {
         $output.Message = $msg -f 'Matched'
         $output.Success = $true

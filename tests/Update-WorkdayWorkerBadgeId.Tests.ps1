@@ -86,6 +86,11 @@ Describe Update-WorkdayWorkerBadgeId {
                 Assert-MockCalled Set-WorkdayWorkerBadgeId -Exactly 0
             }
 
+            It 'Skips calling Set-WorkdayWorkerBadgeId when no changes and no dates passed.' {
+                $response = Update-WorkdayWorkerBadgeId -WorkerId 1 -BadgeId 1
+                Assert-MockCalled Get-WorkdayWorkerOtherId -Exactly 2
+                Assert-MockCalled Set-WorkdayWorkerBadgeId -Exactly 0
+            }
         }
     }
 }
