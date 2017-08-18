@@ -38,7 +38,7 @@ function Set-WorkdayWorkerBadgeId {
     <bsvc:Worker_Reference>
       <bsvc:ID bsvc:type="Employee_ID">Employee_ID</bsvc:ID>
     </bsvc:Worker_Reference>
-    <bsvc:Custom_Identification_Data bsvc:Replace_All="false">
+    <bsvc:Custom_Identification_Data bsvc:Replace_All="true">
       <bsvc:Custom_ID bsvc:Delete="false">
         <bsvc:Custom_ID_Data>
           <bsvc:ID>string</bsvc:ID>
