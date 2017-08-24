@@ -1,10 +1,10 @@
-﻿function Get-WorkdayWorkerOtherId {
+﻿function Get-WorkdayWorkerNationalId {
 <#
 .SYNOPSIS
-    Returns a Worker's Id information.
+    Returns a Worker's National Id information.
 
 .DESCRIPTION
-    Returns a Worker's Id information as custom Powershell objects.
+    Returns a Worker's National Id information as custom Powershell objects.
 
 .PARAMETER WorkerId
     The Worker's Id at Workday.
@@ -27,11 +27,11 @@
 
 .EXAMPLE
     
-Get-WorkdayWorkerOtherId -WorkerId 123
+Get-WorkdayWorkerNationalId -WorkerId 123
 
 Type                Id        Descriptor           
 ----                --        ----------           
-Badge_ID            1         Badge ID             
+USA-SSN             000000000 000-00-0000 (USA-SSN)
 
 #>
 
@@ -64,7 +64,7 @@ Badge_ID            1         Badge ID
     }
 
     if ($WorkerXml -eq $null) {
-        Write-Warning 'Unable to get Other Id information, Worker not found.'
+        Write-Warning 'Unable to get National Id information, Worker not found.'
         return
     }
 
@@ -72,20 +72,16 @@ Badge_ID            1         Badge ID
         Type       = $null
         Id         = $null
         Descriptor = $null
-        Issued_Date = $null
-        Expiration_Date = $null
         WID = $null
     }
 
-    $WorkerXml.GetElementsByTagName('wd:Custom_ID') | ForEach-Object {
+    $WorkerXml.GetElementsByTagName('wd:National_ID') | ForEach-Object {
         $o = $numberTemplate.PsObject.Copy()
-        $typeXml = $_.Custom_ID_Data.ID_Type_Reference.ID | Where-Object {$_.type -eq 'Custom_ID_Type_ID'}
-        $o.Type = '{0}' -f $typeXml.'#text'
-        $o.Id = $_.Custom_ID_Data.ID
-        $o.Descriptor = $_.Custom_ID_Data.ID_Type_Reference.Descriptor
-        $o.Issued_Date = try { Get-Date $_.Custom_ID_Data.Issued_Date -ErrorAction Stop } catch {}
-        $o.Expiration_Date = try { Get-Date $_.Custom_ID_Data.Expiration_Date -ErrorAction Stop } catch {}
-        $o.WID = $_.Custom_ID_Shared_Reference.ID | Where-Object {$_.type -eq 'WID'} | Select-Object -ExpandProperty '#text'
+        $typeXml = $_.National_ID_Data.ID_Type_Reference.ID | Where-Object {$_.type -eq 'National_ID_Type_Code'}
+        $o.Type = $typeXml.'#text'
+        $o.Id = $_.National_ID_Data.ID
+        $o.Descriptor = $_.National_ID_Reference.Descriptor
+        $o.WID = $_.National_ID_Reference.ID | Where-Object {$_.type -eq 'WID'} | Select-Object -ExpandProperty '#text'
         Write-Output $o
     }
 

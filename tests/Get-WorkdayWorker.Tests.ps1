@@ -31,7 +31,8 @@ Describe Get-WorkdayWorker {
             $response[0].WorkerDescriptor | Should Be 'Example Worker (1)'
             $response[0].Phone.Count | Should Be 1
             $response[0].Email.Count | Should Be 1
-            @($response[0].OtherId).Count | Should Be 2
+            @($response[0].NationalId).Count | Should Be 1
+            @($response[0].OtherId).Count | Should Be 1
             $response[0].XML -is [XML] | Should Be $true
             Assert-MockCalled Invoke-WorkdayRequest -Exactly 2
 

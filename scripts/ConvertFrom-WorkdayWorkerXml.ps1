@@ -23,6 +23,7 @@ function ConvertFrom-WorkdayWorkerXml {
             WorkerType            = $null
             WorkerId              = $null
             UserId                = $null
+            NationalId            = $null
             OtherId               = $null
             Phone                 = $null
             Email                 = $null
@@ -55,6 +56,7 @@ function ConvertFrom-WorkdayWorkerXml {
                 if ($IncludePersonal) {
                     $o.Phone   = @(Get-WorkdayWorkerPhone -WorkerXml $x.OuterXml)
                     $o.Email   = @(Get-WorkdayWorkerEmail -WorkerXml $x.OuterXml)
+                    $o.NationalId = @(Get-WorkdayWorkerNationalId -WorkerXml $x.OuterXml)
                     $o.OtherId = @(Get-WorkdayWorkerOtherId -WorkerXml $x.OuterXml)
                     $o.UserId  = $x.Worker_Data.User_ID
                 }

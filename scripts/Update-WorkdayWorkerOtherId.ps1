@@ -1,4 +1,4 @@
-﻿function Update-WorkdayWorkerBadgeId {
+﻿function Update-WorkdayWorkerOtherId {
 <#
 .SYNOPSIS
     Updates a Worker's phone number in Workday, only if it is different.
@@ -51,8 +51,13 @@
             ParameterSetName="NoSearch")]
         [xml]$WorkerXml,
 		[Parameter(Mandatory = $true)]
-		[ValidatePattern('^[0-9]+$')]
-		[string]$BadgeId,
+        [ValidateNotNullOrEmpty()]
+		[string]$Type,
+		[Parameter(Mandatory = $true)]
+		[ValidateNotNullOrEmpty()]
+		[string]$Id,
+        [ValidatePattern ('^[a-fA-F0-9\-]{1,32}$')]
+		$WID,
         $IssuedDate,
         $ExpirationDate,
         [switch]$WhatIf
@@ -75,9 +80,14 @@
         $otherIds = Get-WorkdayWorkerOtherId -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
     }
 
-    $current = $otherIds | Where-Object {$_.Type -eq 'Custom_ID/Badge_ID'} | Select-Object -First 1
+    Write-Debug "OtherIds: $otherIds"
+
+    $current = $otherIds | Where-Object {$PSBoundParameters.ContainsKey('WID') -and $_.WID -eq $WID} | Select-Object -First 1
+    # Default to the first of the requsted type.
+    if ($current -eq $null) {
+        $current = $otherIds | Where-Object {$_.Type -eq $Type} | Select-Object -First 1
+    }
     
-    # Throw an error for an invalid date, default to the current value when no date is specified.
     $currentIdDisplay = $null
     $issuedCurrentDisplay = $null
     $expirationCurrentDisplay = $null
@@ -87,6 +97,7 @@
     $idMatched = $false
     $issuedDateMatched = $true
     $expirationDateMatched = $true
+    # Throw an error for an invalid date, default to the current value when no date is specified.
     if ($IssuedDate -ne $null) {
         try {
             $d = Get-Date $IssuedDate -ErrorAction Stop
@@ -110,8 +121,10 @@
     }
 
     if ($current -ne $null) {
+        Write-Debug "Current: $current"
         $currentIdDisplay = $current.Id
-        $idMatched = $current.Id -eq $BadgeId
+        $idMatched = $current.Id -eq $Id
+        $WID = $current.Wid
 
         $issuedCurrentDisplay = $current.Issued_Date
         if (-not [string]::IsNullOrWhiteSpace($current.Issued_Date)) {
@@ -150,7 +163,7 @@
         }
     }
 
-    $msg = '{{0}} Current [{0} valid from {1} to {2}] Proposed [{3} valid from {4} to {5}]' -f $currentIdDisplay, $issuedCurrentDisplay, $expirationCurrentDisplay, $BadgeId, $issuedProposedDisplay, $expirationProposedDisplay
+    $msg = '{{0}} Current [{0} valid from {1} to {2}] Proposed [{3} valid from {4} to {5}]' -f $currentIdDisplay, $issuedCurrentDisplay, $expirationCurrentDisplay, $Id, $issuedProposedDisplay, $expirationProposedDisplay
 
     Write-Debug "idMatched=$idMatched; issuedDateMatched=$issuedDateMatched; expirationDateMatched=$expirationDateMatched"
     if ( 
@@ -164,16 +177,22 @@
         $output.Success = $true
         $output.Message = $msg -f 'Would change'
     } else {
-        $params = $PSBoundParameters
-        $null = $params.Remove('WorkerXml')
-        $null = $params.Remove('WorkerId')
-        $null = $params.Remove('WorkerType')
-        $o = Set-WorkdayWorkerBadgeId -WorkerId $WorkerId -WorkerType $WorkerType @params
+        $params = @{
+            WorkerId = $WorkerId
+            WorkerType = $WorkerType
+            Type = $Type
+            Id = $Id
+        }
+        if (-not [string]::IsNullOrWhiteSpace($WID)) {
+            $params['WID'] = $WID
+        }
+
+        $response = Set-WorkdayWorkerOtherId @params -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password -IssuedDate:$IssuedDate -ExpirationDate:$ExpirationDate
+        $output.Xml = $response.Xml
         
-        if ($o -ne $null -and $o.Success) {
+        if ($response -ne $null -and $response.Success) {
             $output.Success = $true
             $output.Message = $msg -f 'Changed'
-            $output.Xml = $o.Xml
         }
     }
 
