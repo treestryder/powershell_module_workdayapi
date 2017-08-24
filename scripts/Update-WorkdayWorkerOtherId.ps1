@@ -188,11 +188,16 @@
         }
 
         $response = Set-WorkdayWorkerOtherId @params -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password -IssuedDate:$IssuedDate -ExpirationDate:$ExpirationDate
-        $output.Xml = $response.Xml
-        
+
         if ($response -ne $null -and $response.Success) {
             $output.Success = $true
             $output.Message = $msg -f 'Changed'
+            $output.Xml = $response.Xml
+        }
+        elseif ($response -ne $null -and -not $response.Success) {
+            $output.Success = $false
+            $output.Message = $response.Message
+            $output.Xml = $response.Xml
         }
     }
 
