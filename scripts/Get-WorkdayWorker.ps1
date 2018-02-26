@@ -20,6 +20,12 @@ function Get-WorkdayWorker {
     Adds Employment_Information, Compensation, Organizations and Roles
     values to the response.
 
+.PARAMETER Passthru
+    Outputs Invoke-WorkdayRequest object, rather than a custom Worker object.
+
+.PARAMETER Force
+    Also returns inactive worker(s).
+
 .PARAMETER Human_ResourcesUri
     Human_Resources Endpoint Uri for the request. If not provided, the value
     stored with Set-WorkdayEndpoint -Endpoint Human_Resources is used.
@@ -57,7 +63,6 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
         [switch]$IncludePersonal,
         [switch]$IncludeWork,
         [switch]$IncludeDocuments,
-        # Outputs raw XML, rather than a custom object.
         [switch]$Passthru,
         [switch]$Force
 	)
