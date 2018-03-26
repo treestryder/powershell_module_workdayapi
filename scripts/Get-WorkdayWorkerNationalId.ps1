@@ -26,11 +26,11 @@
     using Set-WorkdayCredential will be used.
 
 .EXAMPLE
-    
+
 Get-WorkdayWorkerNationalId -WorkerId 123
 
-Type                Id        Descriptor           
-----                --        ----------           
+Type                Id        Descriptor
+----                --        ----------
 USA-SSN             000000000 000-00-0000 (USA-SSN)
 
 #>
@@ -53,13 +53,15 @@ USA-SSN             000000000 000-00-0000 (USA-SSN)
         [Parameter(ParameterSetName="Search")]
 		[string]$Password,
         [Parameter(ParameterSetName="NoSearch")]
-        [xml]$WorkerXml
+        [xml]$WorkerXml,
+        [Alias("Force")]
+        [switch]$IncludeInactive
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
     if ($PsCmdlet.ParameterSetName -eq 'Search') {
-        $response = Get-WorkdayWorker -WorkerId $WorkerId -WorkerType $WorkerType -IncludePersonal -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
+        $response = Get-WorkdayWorker -WorkerId $WorkerId -WorkerType $WorkerType -IncludePersonal -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -IncludeInactive:$IncludeInactive -ErrorAction Stop
         $WorkerXml = $response.Xml
     }
 

@@ -29,7 +29,7 @@
     using Set-WorkdayCredential will be used.
 
 .EXAMPLE
-    
+
 Get-WorkdayWorkerDocument -WorkerId 123
 
 #>
@@ -53,13 +53,15 @@ Get-WorkdayWorkerDocument -WorkerId 123
 		[string]$Password,
         [Parameter(ParameterSetName="NoSearch")]
         [xml]$DocumentXml,
-        [string]$Path
+        [string]$Path,
+        [Alias("Force")]
+        [switch]$IncludeInactive
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
     if ($PsCmdlet.ParameterSetName -eq 'Search') {
-        $response = Get-WorkdayWorker -WorkerId $WorkerId -WorkerType $WorkerType -IncludeDocuments -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
+        $response = Get-WorkdayWorker -WorkerId $WorkerId -WorkerType $WorkerType -IncludeDocuments -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -IncludeInactive:$IncludeInactive -ErrorAction Stop
         $DocumentXml = $response.Xml
     }
 

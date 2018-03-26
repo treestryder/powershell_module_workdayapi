@@ -33,7 +33,7 @@ function Get-WorkdayWorker {
     using Set-WorkdayCredential will be used.
 
 .EXAMPLE
-    
+
 Get-WorkdayWorker -WorkerId 123 -IncludePersonal
 
 #>
@@ -59,7 +59,8 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
         [switch]$IncludeDocuments,
         # Outputs raw XML, rather than a custom object.
         [switch]$Passthru,
-        [switch]$Force
+        [Alias("Force")]
+        [switch]$IncludeInactive
 	)
 
     begin {
@@ -120,7 +121,7 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
             $request.Get_Workers_Request.Response_Group.Include_Worker_Documents = 'true'
         }
 
-        if ($Force) {
+        if ($IncludeInactive) {
             $request.Get_Workers_Request.Request_Criteria.Exclude_Inactive_Workers = 'false'
         }
 

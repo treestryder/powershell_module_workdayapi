@@ -7,7 +7,7 @@
     Updates a Worker's phone number in Workday, only if it is different.
     Change requests are always recorded in Workday's audit log even when
     the number is the same. Unlike Set-WorkdayWorkerPhone, this cmdlet
-    first checks the current phone number before requesting a change. 
+    first checks the current phone number before requesting a change.
 
 .PARAMETER WorkerId
     The Worker's Id at Workday.
@@ -60,7 +60,9 @@
 		$WID,
         $IssuedDate,
         $ExpirationDate,
-        [switch]$WhatIf
+        [switch]$WhatIf,
+        [Alias("Force")]
+        [switch]$IncludeInactive
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
@@ -77,7 +79,7 @@
         $workerReference = $WorkerXml.GetElementsByTagName('wd:Worker_Reference') | Select-Object -First 1
         $WorkerId = $workerReference.ID | Where-Object {$_.type -eq 'WID'} | Select-Object -ExpandProperty InnerText
     } else {
-        $otherIds = Get-WorkdayWorkerOtherId -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
+        $otherIds = Get-WorkdayWorkerOtherId -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password -IncludeInactive:$IncludeInactive
     }
 
     Write-Debug "OtherIds: $otherIds"
@@ -87,7 +89,7 @@
     if ($current -eq $null) {
         $current = $otherIds | Where-Object {$_.Type -eq $Type} | Select-Object -First 1
     }
-    
+
     $currentIdDisplay = $null
     $issuedCurrentDisplay = $null
     $expirationCurrentDisplay = $null
@@ -166,7 +168,7 @@
     $msg = '{{0}} Current [{0} valid from {1} to {2}] Proposed [{3} valid from {4} to {5}]' -f $currentIdDisplay, $issuedCurrentDisplay, $expirationCurrentDisplay, $Id, $issuedProposedDisplay, $expirationProposedDisplay
 
     Write-Debug "idMatched=$idMatched; issuedDateMatched=$issuedDateMatched; expirationDateMatched=$expirationDateMatched"
-    if ( 
+    if (
         $idMatched -and
         $issuedDateMatched -and
         $expirationDateMatched

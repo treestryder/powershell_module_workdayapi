@@ -26,7 +26,7 @@
     using Set-WorkdayCredential will be used.
 
 .EXAMPLE
-    
+
 Get-WorkdayWorkerPhone -WorkerId 123
 
 Type          Number            Primary Public
@@ -54,12 +54,14 @@ Work/Landline +1 (555) 765-4321    True   True
         [Parameter(ParameterSetName='Search')]
 		[string]$Password,
         [Parameter(ParameterSetName='NoSearch')]
-        [xml]$WorkerXml
+        [xml]$WorkerXml,
+        [Alias("Force")]
+        [switch]$IncludeInactive
 	)
 
     if ($PsCmdlet.ParameterSetName -eq 'Search') {
         if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
-        $response = Get-WorkdayWorker -WorkerId $WorkerId -WorkerType $WorkerType -IncludePersonal -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
+        $response = Get-WorkdayWorker -WorkerId $WorkerId -WorkerType $WorkerType -IncludePersonal -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -IncludeInactive:$IncludeInactive -ErrorAction Stop
         $WorkerXml = $response.Xml
     }
 
@@ -70,7 +72,7 @@ Work/Landline +1 (555) 765-4321    True   True
 
     $numberTemplate = [pscustomobject][ordered]@{
         UsageType = $null
-        DeviceType = $null        
+        DeviceType = $null
         Number  = $null
         Extension = $null
         Primary = $null
