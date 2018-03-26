@@ -85,9 +85,9 @@ Get-WorkdayWorkerDocument -WorkerId 123
         New-Item -Path $Path -ItemType Directory | Out-Null
     }
 
-    $DocumentXml.GetElementsByTagName('wd:Worker_Document_Detail_Data') | foreach {
+    $DocumentXml.GetElementsByTagName('wd:Worker_Document_Detail_Data') | ForEach-Object {
         $o = $fileTemplate.PsObject.Copy()
-        $categoryXml = $_.Document_Category_Reference.ID | where {$_.type -match 'Document_Category__Workday_Owned__ID|Document_Category_ID'}
+        $categoryXml = $_.Document_Category_Reference.ID | Where-Object {$_.type -match 'Document_Category__Workday_Owned__ID|Document_Category_ID'}
         $o.Category = '{0}/{1}' -f $categoryXml.type, $categoryXml.'#text'
         $o.FileName = $_.Filename
         $o.Base64 = $_.File
