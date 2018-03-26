@@ -25,13 +25,13 @@ function Invoke-WorkdayRequest {
     using Set-WorkdayCredential will be used.
 
 .EXAMPLE
-    
+
 $response = Invoke-WorkdayRequest -Request '<bsvc:Server_Timestamp_Get xmlns:bsvc="urn:com.workday/bsvc" />' -Uri https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v25.1
 
 $response.Server_Timestamp
 
-wd                   version Server_Timestamp_Data        
---                   ------- ---------------------        
+wd                   version Server_Timestamp_Data
+--                   ------- ---------------------
 urn:com.workday/bsvc v25.1   2015-12-02T12:18:30.841-08:00
 
 .INPUTS
@@ -53,7 +53,7 @@ urn:com.workday/bsvc v25.1   2015-12-02T12:18:30.841-08:00
 		[string]$Username,
 		[string]$Password
 	)
-    
+
     if ($WorkdayConfiguration.Credential -is [PSCredential]) {
         if ([string]::IsNullOrWhiteSpace($Username)) { $Username = $WorkdayConfiguration.Credential.Username }
         if ([string]::IsNullOrWhiteSpace($Password)) { $Password = $WorkdayConfiguration.Credential.GetNetworkCredential().Password }
@@ -79,12 +79,12 @@ urn:com.workday/bsvc v25.1   2015-12-02T12:18:30.841-08:00
 	$WorkdaySoapEnvelope.Envelope.Header.Security.UsernameToken.Password.InnerText = $Password
 	$WorkdaySoapEnvelope.Envelope.Body.InnerXml = $Request.OuterXml
 
-	Write-Debug "Request: $($WorkdaySoapEnvelope.OuterXml)"
+	Write-Debug "Request: `n`r $(Format-XML -Text $($WorkdaySoapEnvelope.OuterXml))"
 	$headers= @{
 		'Content-Type' = 'text/xml;charset=UTF-8'
 	}
-	
-    
+
+
      $o = [pscustomobject][ordered]@{
         Success    = $false
         Message  = 'Unknown Error'
@@ -106,7 +106,7 @@ urn:com.workday/bsvc v25.1   2015-12-02T12:18:30.841-08:00
 		$reader.Close()
         try {
            $xml = [xml]$response
-           $o.Xml = [xml]$xml.Envelope.Body.InnerXml 
+           $o.Xml = [xml]$xml.Envelope.Body.InnerXml
 
             # Put the first Workday Exception into the Message property.
             if ($o.Xml.InnerXml.StartsWith('<SOAP-ENV:Fault ')) {

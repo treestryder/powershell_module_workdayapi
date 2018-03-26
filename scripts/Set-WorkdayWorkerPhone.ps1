@@ -30,7 +30,7 @@ function Set-WorkdayWorkerPhone {
     using Set-WorkdayCredential will be used.
 
 .EXAMPLE
-    
+
 Set-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
 
 #>
@@ -115,7 +115,7 @@ Set-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
 	 $DeviceType
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Usage_Data.Type_Data.Type_Reference.ID.'#text' =
 	 $UsageType
-	
+
 	if ($Private) {
 		$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Usage_Data.Public = '0'
 	}
@@ -140,6 +140,6 @@ Set-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Phone_Data.Phone_Extension =
 	 $Extension
 
-	Write-Debug $request.OuterXml
+	Write-Debug "Request: `n`r $(Format-XML -Text $request.OuterXml)"
     Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
 }
