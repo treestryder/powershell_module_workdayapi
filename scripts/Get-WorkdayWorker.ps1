@@ -50,7 +50,7 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
         [Parameter(Position=0,
                    ValueFromPipelineByPropertyName=$true,
                    ParameterSetName='IndividualWorker')]
-		[ValidatePattern ('^[a-fA-F0-9\-]{1,32}$')]
+		[ValidatePattern ('^$|^[a-fA-F0-9\-]{1,32}$')]
         [string]$WorkerId,
         [Parameter(Position=1,
                    ValueFromPipelineByPropertyName=$true,

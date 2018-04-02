@@ -7,11 +7,12 @@ Copyright = '(c) 2017 . All rights reserved.'
 Description = 'Provides a means to access the Workday SOAP API in a Powershell friendly manner.'
 PowerShellVersion = '3.0'
 FunctionsToExport = @(
-        'ConvertFrom-WorkdayWorkerXml'
+        'ConvertFrom-WorkdayWorkerXml',
 		'Export-WorkdayDocument',
+        'Get-WorkdayToAdData',
+        'Get-WorkdayReport',
+        'Get-WorkdayWorker',
         'Invoke-WorkdayRequest',
-		'Get-WorkdayReport',
-		'Get-WorkdayWorker',
         'Remove-WorkdayConfiguration',
 		'Set-WorkdayWorkerPhoto',
 
@@ -22,7 +23,7 @@ FunctionsToExport = @(
 
         'Get-WorkdayWorkerEmail',
 		'Set-WorkdayWorkerEmail',
-        'Update-WorkdayWorkerEmail'
+        'Update-WorkdayWorkerEmail',
 
         'Get-WorkdayWorkerDocument',
         'Set-WorkdayWorkerDocument',
