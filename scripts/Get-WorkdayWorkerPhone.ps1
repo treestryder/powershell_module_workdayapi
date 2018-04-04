@@ -79,8 +79,8 @@ Work/Landline +1 (555) 765-4321    True   True
 
     $WorkerXml.GetElementsByTagName('wd:Phone_Data') | foreach {
         $o = $numberTemplate.PsObject.Copy()
-        $o.UsageType = $_.Usage_Data.Type_Data.Type_Reference.Descriptor
-        $o.DeviceType = $_.Phone_Device_Type_Reference.Descriptor
+        $o.UsageType = $_.SelectSingleNode('wd:Usage_Data/wd:Type_Data/wd:Type_Reference/wd:ID[@wd:type="Communication_Usage_Type_ID"]', $NM).InnerText
+        $o.DeviceType = $_.SelectSingleNode('wd:Phone_Device_Type_Reference/wd:ID[@wd:type="Phone_Device_Type_ID"]', $NM).InnerText
         $international = $_ | select -ExpandProperty 'International_Phone_Code' -ErrorAction SilentlyContinue
         $areaCode = $_ | select -ExpandProperty 'Area_Code' -ErrorAction SilentlyContinue
         $phoneNumber = $_ | select -ExpandProperty 'Phone_Number' -ErrorAction SilentlyContinue

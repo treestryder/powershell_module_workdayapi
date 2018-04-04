@@ -44,7 +44,7 @@ function Get-WorkdayToAdData {
             if ($PassThru) {
                 $o = Add-Member -InputObject $o -MemberType NoteProperty -Name Worker -Value $w -PassThru
             }
-            $o.'ADD or CHANGE' = 'ADD'
+            $o.'ADD or CHANGE' = ''
             $o.'Employee or Contingent Worker Number' = $w.WorkerId
             $o.'First Name' = $w.Xml.Worker.Worker_Data.Personal_Data.Name_Data.Legal_Name_Data.Name_Detail_Data.First_Name
             $o.'Last Name' = $w.Xml.Worker.Worker_Data.Personal_Data.Name_Data.Legal_Name_Data.Name_Detail_Data.Last_Name
@@ -53,8 +53,7 @@ function Get-WorkdayToAdData {
             $o.'User Name' = $w.Xml.Worker.Worker_Data.User_ID
             $o.'Work Phone' = $w.Phone | where { $_.UsageType -like 'Work' -and $_.Primary -and $_.Public } | select -ExpandProperty Number -First 1
             $o.'Badge ID' = $w.OtherID | where { $_.Type -eq 'Badge_ID' } | select -ExpandProperty Id -First 1
-            $title = $w.Xml.Worker.Worker_Data.Employment_Data.Worker_Job_Data.Position_Data.Job_Profile_Summary_Data.Job_Profile_Name
-            $o.'Job Title' = $title.SubString($title.IndexOf('-') +1 )
+            $o.'Job Title' = $w.JobProfileName  -replace '^.+?-',''
             $o.'Employee or Contingent Worker Type' = $w.Xml.Worker.Worker_Data.Employment_Data.Worker_Job_Data.Position_Data.Worker_Type_Reference.ID | where { $_.type -eq 'Employee_Type_ID' } | select -ExpandProperty '#text' -First 1
             $o.'Worker Type' = if ($w.Xml.Worker.Worker_Reference.ID | where { $_.type -eq 'Employee_ID' } ) {'Employee'} else {'Contingent Worker'}
             $o.'Worker SubType' = $w.Xml.Worker.Worker_Data.Employment_Data.Worker_Job_Data.Position_Data.Worker_Type_Reference.Descriptor
@@ -64,8 +63,8 @@ function Get-WorkdayToAdData {
             # Could not find Subdepartment.
             # <xsl:value-of select="ws:Additional_Information/ws:SubDepartment" /> 
             $o.'Sub Department' = 'Unimplemented'
-            $o.'Location (Building)' = $w.Xml.Worker.Worker_Data.Employment_Data.Worker_Job_Data.Position_Data.Business_Site_Summary_Data.Name
-            $o.'Location(Workspace)' = $w.xml.Worker.Worker_Data.Employment_Data.Worker_Job_Data.Position_Data.Work_Space__Reference.Descriptor
+            $o.'Location (Building)' = $w.Location
+            $o.'Location(Workspace)' = $w.Workspace
             $supervisorDescriptor = $w.Xml.Worker.Worker_Data.Employment_Data.Worker_Job_Data.Position_Data.Manager_as_of_last_detected_manager_change_Reference.Descriptor
             $o.'Supervisor Name' = if ($supervisorDescriptor -match '(^.+)\s\(') {
                 $Matches[1]
@@ -74,6 +73,7 @@ function Get-WorkdayToAdData {
                 $supervisorDescriptor
             }
             $o.'Supervisor Employee Id' = $w.Xml.Worker.Worker_Data.Employment_Data.Worker_Job_Data.Position_Data.Manager_as_of_last_detected_manager_change_Reference.ID | where { $_.type -eq 'Employee_ID' } | select -ExpandProperty '#text' -First 1
+            # Have not found Matrix Manager.
             $o.'Matrix Manager Name (for Team Members)' = $null
             $hireDate = $w.Xml.Worker.Worker_Data.Employment_Data.Worker_Status_Data.Hire_Date
             $o.'Hire Date' = if ($hireDate.length -ge 10) { $hireDate.Substring(0,10) }
