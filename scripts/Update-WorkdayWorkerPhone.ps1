@@ -110,7 +110,6 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
         Public = -not $Private
         Success = $false
         Message = $msg -f 'Failed'
-        Xml     = $null
     }
     if (
         $currentMatch -ne $null -and
@@ -121,17 +120,23 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
     ) {
         $output.Message = $msg -f 'Matched'
         $output.Success = $true
-    } else {
+    }
+    else {
         $params = $PSBoundParameters
         $null = $params.Remove('WorkerXml')
         $null = $params.Remove('WorkerId')
         $null = $params.Remove('WorkerType')
         Write-Debug $params
         $o = Set-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType @params
-        if ($o -ne $null -and $o.Success) {
-            $output.Success = $true
-            $output.Message = $msg -f 'Changed'
-            $output.Xml = $o.Xml
+        if ($o -ne $null) {
+            if ($o.Success) {
+                $output.Success = $true
+                $output.Message = $msg -f 'Changed'
+            }
+            else {
+                $output.Success = $false
+                $output.Message = $o.Message
+            }
         }
     }
     

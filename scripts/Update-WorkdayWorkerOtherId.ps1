@@ -171,7 +171,6 @@
         ExpirationDate = $ExpirationDate
         Success = $false
         Message = $msg -f 'Failed'
-        Xml     = $null
     }
 
     if ( 
@@ -195,17 +194,16 @@
             $params['WID'] = $WID
         }
 
-        $response = Set-WorkdayWorkerOtherId @params -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password -IssuedDate:$IssuedDate -ExpirationDate:$ExpirationDate
-
-        if ($response -ne $null -and $response.Success) {
-            $output.Success = $true
-            $output.Message = $msg -f 'Changed'
-            $output.Xml = $response.Xml
-        }
-        elseif ($response -ne $null -and -not $response.Success) {
-            $output.Success = $false
-            $output.Message = $response.Message
-            $output.Xml = $response.Xml
+        $o = Set-WorkdayWorkerOtherId @params -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password -IssuedDate:$IssuedDate -ExpirationDate:$ExpirationDate
+        if ($o -ne $null) {
+            if ($o.Success) {
+                $output.Success = $true
+                $output.Message = $msg -f 'Changed'
+            }
+            else {
+                $output.Success = $false
+                $output.Message = $o.Message
+            }
         }
     }
 
