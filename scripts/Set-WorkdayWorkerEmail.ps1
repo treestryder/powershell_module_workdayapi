@@ -13,9 +13,20 @@ function Set-WorkdayWorkerEmail {
     The type of ID that the WorkerId represents. Valid values
     are 'WID', 'Contingent_Worker_ID' and 'Employee_ID'.
 
-.PARAMETER WorkEmail
-    Sets the Workday primary Work email for a Worker. This cmdlet does not
-    currently support other email types.
+.PARAMETER Email
+	Email address.
+
+.PARAMETER UsageType
+	Currently supports HOME and WORK.
+
+.PARAMETER Secondary
+	By default, this will set one non-Primary email address of the same UsageType. To set more than one, use the -Append switch. At some point this command may need to allow specifying a specific email WID to update.
+
+.PARAMETER Append
+	When used with the Secondary switch, this will add the specified Email as a non-Primary email of the same UsageType.
+
+.PARAMETER Private
+	Marks the email as not Public in Workday.
 
 .PARAMETER Human_ResourcesUri
     Human_Resources Endpoint Uri for the request. If not provided, the value
@@ -32,6 +43,12 @@ function Set-WorkdayWorkerEmail {
 .EXAMPLE
     
 Set-WorkdayWorkerEmail -WorkerId 123 -WorkEmail worker@example.com
+
+.NOTES
+	When setting a primary email, by default, Workday deletes ALL non-primary addresses of the same type.
+	When using Do_Not_Replace_All="true", Workday will append non-primary addresses, rather than update a current address.
+	For this behavior, use the -Append switch, with the -Secondary switch.
+	Otherwise use the -Secondary switch.
 
 #>
 
@@ -50,7 +67,8 @@ Set-WorkdayWorkerEmail -WorkerId 123 -WorkEmail worker@example.com
 		[ValidateSet('HOME','WORK')]
         [string]$UsageType = 'WORK',
         [switch]$Private,
-        [switch]$Secondary,
+		[switch]$Secondary,
+		[switch]$Append,
 		[string]$Human_ResourcesUri,
 		[string]$Username,
 		[string]$Password
@@ -73,7 +91,7 @@ Set-WorkdayWorkerEmail -WorkerId 123 -WorkEmail worker@example.com
 		</bsvc:Worker_Reference>
 		<bsvc:Effective_Date>Effective_Date</bsvc:Effective_Date>
 		<bsvc:Worker_Contact_Information_Data>
-			<bsvc:Email_Address_Data>
+			<bsvc:Email_Address_Data bsvc:Do_Not_Replace_All="true">
 				<bsvc:Email_Address>Email_Address</bsvc:Email_Address>
 				<bsvc:Usage_Data bsvc:Public="true">
 					<bsvc:Type_Data bsvc:Primary="true">
@@ -99,10 +117,17 @@ Set-WorkdayWorkerEmail -WorkerId 123 -WorkEmail worker@example.com
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Effective_Date = (Get-Date).ToString( 'yyyy-MM-dd' )
 	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Email_Address_Data.Usage_Data.Type_Data.Type_Reference.ID.'#text' = $UsageType
 
-	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Email_Address_Data.Usage_Data.Type_Data.Primary =
-		if ($Secondary) {'0'} else {'1'}
-	$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Email_Address_Data.Usage_Data.Public =
-		if ($Private) {'0'} else {'1'}
+	if ($Secondary) {
+		$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Email_Address_Data.Usage_Data.Type_Data.Primary = 'false'
+		if (-not $Append) {
+			$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Email_Address_Data.Do_Not_Replace_All = 'false'
+		}
+	}
+
+	if ($Private) {
+		$request.Maintain_Contact_Information_for_Person_Event_Request.Maintain_Contact_Information_Data.Worker_Contact_Information_Data.Email_Address_Data.Usage_Data.Public = 'false'
+	}
 
 	Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
+
 }

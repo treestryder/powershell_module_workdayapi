@@ -100,6 +100,14 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
     
     $msg = "{0} Current [$scrubbedCurrentNumber] ext [$scrubbedCurrentExtension] Proposed [$scrubbedProposedNumber] ext [$scrubbedProposedExtention]"
     $output = [pscustomobject][ordered]@{
+        WorkerId = $WorkerId
+        WorkerType = $WorkerType
+        Number = $Number
+		Extension = $Extension
+		UsageType = $UsageType
+		DeviceType = $DeviceType
+        Primary = -not $Secondary
+        Public = -not $Private
         Success = $false
         Message = $msg -f 'Failed'
         Xml     = $null

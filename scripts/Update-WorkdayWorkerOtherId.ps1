@@ -65,12 +65,6 @@
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
-    $output = [pscustomobject][ordered]@{
-        Success = $false
-        Message = $msg -f 'Failed'
-        Xml     = $null
-    }
-
     if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
         $otherIds = Get-WorkdayWorkerOtherId -WorkerXml $WorkerXml
         $WorkerType = 'WID'
@@ -166,6 +160,20 @@
     $msg = '{{0}} Current [{0} valid from {1} to {2}] Proposed [{3} valid from {4} to {5}]' -f $currentIdDisplay, $issuedCurrentDisplay, $expirationCurrentDisplay, $Id, $issuedProposedDisplay, $expirationProposedDisplay
 
     Write-Debug "idMatched=$idMatched; issuedDateMatched=$issuedDateMatched; expirationDateMatched=$expirationDateMatched"
+    
+    $output = [pscustomobject][ordered]@{
+        WorkerId = $WorkerId
+        WorkerType = $WorkerType
+        Type = $Type
+		Id = $Id
+        WID = $WID
+        IssueDate = $IssuedDate
+        ExpirationDate = $ExpirationDate
+        Success = $false
+        Message = $msg -f 'Failed'
+        Xml     = $null
+    }
+
     if ( 
         $idMatched -and
         $issuedDateMatched -and

@@ -1,6 +1,6 @@
 @{
 RootModule = 'WorkdayApi.psm1'
-ModuleVersion = '2.0.1'
+ModuleVersion = '2.1.0'
 GUID = 'bd4390dc-a8ad-4bce-8d69-f53ccf8e4163'
 Author = 'Nathan Hartley'
 Copyright = '(c) 2017 . All rights reserved.'
@@ -45,8 +45,5 @@ FunctionsToExport = @(
         'Get-WorkdayDate'
 
 	)
-# VariablesToExport = '*'
-# AliasesToExport = '*'
-# PrivateData = ''
 }
 

@@ -36,6 +36,11 @@
     
 Update-WorkdayWorkerEmail -WorkerId 123 -Email test@example.com
 
+.NOTES
+    The Set-WorkdayWorkerEmail switch -Append is not supported, as the -Secondary
+    switch assumes there is only one non-primary email address. At some point
+    it may be nessesary to implement a means to update a specific email WID.
+
 #>
 
 	[CmdletBinding(DefaultParametersetName='Search')]
@@ -85,6 +90,12 @@ Update-WorkdayWorkerEmail -WorkerId 123 -Email test@example.com
 
     $msg = "{0} Current [$($currentEmail.Email)] Proposed [$Email]"
     $output = [pscustomobject][ordered]@{
+        WorkerId = $WorkerId
+        WorkerType = $WorkerType
+        Email = $Email
+        UsageType = $UsageType
+        Primary = -not $Secondary
+        Public = -not $Private
         Success = $false
         Message = $msg -f 'Failed'
         Xml     = $null
