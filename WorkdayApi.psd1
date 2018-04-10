@@ -1,6 +1,6 @@
 @{
 RootModule = 'WorkdayApi.psm1'
-ModuleVersion = '2.1.0'
+ModuleVersion = '2.1.1'
 GUID = 'bd4390dc-a8ad-4bce-8d69-f53ccf8e4163'
 Author = 'Nathan Hartley'
 Copyright = '(c) 2017 . All rights reserved.'
@@ -12,6 +12,7 @@ FunctionsToExport = @(
         'Get-WorkdayToAdData',
         'Get-WorkdayReport',
         'Get-WorkdayWorker',
+        'Get-WorkdayWorkerByIdLookupTable',
         'Invoke-WorkdayRequest',
         'Remove-WorkdayConfiguration',
 		'Set-WorkdayWorkerPhoto',
@@ -19,7 +20,7 @@ FunctionsToExport = @(
         'Get-WorkdayEndpoint',
         'Set-WorkdayCredential',
         'Set-WorkdayEndpoint',
-        'Save-WorkdayConfiguration'
+        'Save-WorkdayConfiguration',
 
         'Get-WorkdayWorkerEmail',
 		'Set-WorkdayWorkerEmail',

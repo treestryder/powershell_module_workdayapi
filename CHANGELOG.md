@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.1.1 - 2018-04-10
+
+### Breaking Changes
+
+- None
+
+### Non-Breaking Changes
+- Added Get-WorkdayWorkerByIdLookupTable.
+- New sample script Update_Email_By_WorkerID.ps1. 
+
 ## 2.1.0 - 2018-04-09
 
 ### Breaking Changes
