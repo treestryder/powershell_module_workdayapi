@@ -63,6 +63,7 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
         [switch]$IncludePersonal,
         [switch]$IncludeWork,
         [switch]$IncludeDocuments,
+        [DateTime]$AsOfEntryDateTime = (Get-Date),
         [switch]$Passthru,
         [switch]$Force
 	)
@@ -73,17 +74,15 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
 
     process {
     	$request = [xml]@'
-<bsvc:Get_Workers_Request xmlns:bsvc="urn:com.workday/bsvc">
+<bsvc:Get_Workers_Request bsvc:version="v30.0" xmlns:bsvc="urn:com.workday/bsvc">
   <bsvc:Request_References bsvc:Skip_Non_Existing_Instances="false">
 	<bsvc:Worker_Reference>
-		<bsvc:ID bsvc:type="Employee_ID">employeeId</bsvc:ID>
+		<bsvc:ID bsvc:type="Employee_ID">?EmployeeId?</bsvc:ID>
 	</bsvc:Worker_Reference>
   </bsvc:Request_References>
-  <bsvc:Request_Criteria>
-    <bsvc:Exclude_Inactive_Workers>true</bsvc:Exclude_Inactive_Workers>
-  </bsvc:Request_Criteria>
   <bsvc:Response_Filter>
     <bsvc:Page>Page</bsvc:Page>
+    <bsvc:As_Of_Entry_DateTime>?DateTime?</bsvc:As_Of_Entry_DateTime>
   </bsvc:Response_Filter>
   <bsvc:Response_Group>
     <bsvc:Include_Reference>true</bsvc:Include_Reference>
@@ -97,6 +96,8 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
 </bsvc:Get_Workers_Request>
 '@
 
+        $request.Get_Workers_Request.Response_Filter.As_Of_Entry_DateTime = $AsOfEntryDateTime.ToString('o')
+
         if ([string]::IsNullOrWhiteSpace($WorkerId)) {
             $null = $request.Get_Workers_Request.RemoveChild($request.Get_Workers_Request.Request_References)
         } else {
@@ -109,7 +110,6 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
         }
 
         # Default = Reference, Personal Data, Employment Data, Compensation Data, Organization Data, and Role Data.
-
         if ($IncludePersonal) {
             $request.Get_Workers_Request.Response_Group.Include_Personal_Information = 'true'
         }
@@ -128,7 +128,7 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
         if ($Force) {
             $request.Get_Workers_Request.Request_Criteria.Exclude_Inactive_Workers = 'false'
         }
-
+       
         $more = $true
         $nextPage = 0
         while ($more) {
