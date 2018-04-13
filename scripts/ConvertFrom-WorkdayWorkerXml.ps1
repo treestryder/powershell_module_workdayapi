@@ -46,7 +46,7 @@ function ConvertFrom-WorkdayWorkerXml {
                 $referenceId = $x.Worker_Reference.ID | Where-Object {$_.type -ne 'WID'}
 
                 $o.WorkerWid        = $x.Worker_Reference.ID | Where-Object {$_.type -eq 'WID'} | Select-Object -ExpandProperty '#text'
-                $o.WorkerDescriptor = $x.Worker_Reference.Descriptor
+                $o.WorkerDescriptor = $x.Worker_Descriptor
                 $o.PreferredName    = $x.Worker_Data.Personal_Data.Name_Data.Preferred_Name_Data.Name_Detail_Data.Formatted_Name
                 $o.FirstName        = $x.Worker_Data.Personal_Data.Name_Data.Preferred_Name_Data.Name_Detail_Data.First_Name
                 $o.LastName         = $x.Worker_Data.Personal_Data.Name_Data.Preferred_Name_Data.Name_Detail_Data.Last_Name

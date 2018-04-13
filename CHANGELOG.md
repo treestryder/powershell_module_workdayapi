@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.1.2 - 2018-04-13
+
+### Breaking Changes
+
+- None
+
+### Non-Breaking Changes
+- Corrected two Get-WorkdayWorker bugs.
+
 ## 2.1.1 - 2018-04-10
 
 ### Breaking Changes
