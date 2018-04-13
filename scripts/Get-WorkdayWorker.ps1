@@ -84,6 +84,9 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
     <bsvc:Page>Page</bsvc:Page>
     <bsvc:As_Of_Entry_DateTime>?DateTime?</bsvc:As_Of_Entry_DateTime>
   </bsvc:Response_Filter>
+  <bsvc:Request_Criteria>
+    <bsvc:Exclude_Inactive_Workers>true</bsvc:Exclude_Inactive_Workers>
+  </bsvc:Request_Criteria>
   <bsvc:Response_Group>
     <bsvc:Include_Reference>true</bsvc:Include_Reference>
     <bsvc:Include_Personal_Information>false</bsvc:Include_Personal_Information>
