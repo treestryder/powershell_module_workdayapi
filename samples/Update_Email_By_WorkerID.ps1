@@ -5,7 +5,7 @@
     Updates Worker Email Addresses, given a file with WorkerID and Email.
 
 .PARAMETER InputFile
-    Path to input CSV file. The CSV should look like this:
+    Path to input CSV file. The CSV should look like this (with or without the header):
         WorkerID,Email
         1,email1@example.com
         2,email2@example.com    
@@ -50,19 +50,30 @@ param (
     [switch]$Secondary
 )
 
+Write-Verbose "Downloading and building Worker lookup table."
+$Workers = Get-WorkdayWorkerByIdLookupTable
+
 function Main {
 
-    Write-Verbose "Downloading and building Worker lookup table."
-    $Workers = Get-WorkdayWorkerByIdLookupTable
-
     Write-Verbose "Processing input file: $InputFile"
+    $arguments = @{
+        Path = $InputFile
+    }
+    
+    # Add a header argument, if the first line starts with a number.
+    $firstLine = Get-Content -Path $InputFile -TotalCount 1
+    if ($firstLine -match '^"?\d') {
+        $arguments['Header'] = 'WorkerID','Email'
+    }
+    
     if ($ResultsFile -eq $null) {
-        Import-Csv -Path $InputFile | UpdateEmail    
+        Import-Csv @arguments | UpdateEmail    
     }
     else {
         $ResultsFile = $ResultsFile -f (Get-Date)
         CreateDirectoryIfNeeded $ResultsFile
-        Import-Csv -Path $InputFile | UpdateEmail | Export-Csv -Path $ResultsFile -NoTypeInformation
+        Import-Csv @arguments | UpdateEmail | Export-Csv -Path $ResultsFile -NoTypeInformation
+        Write-Verbose "Result file: $ResultsFile"
     }
     
     if ($ArchiveFile -ne $null) {

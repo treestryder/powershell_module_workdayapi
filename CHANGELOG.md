@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.1.3 - 2018-04-13
+
+### Breaking Changes
+
+- None
+
+### Non-Breaking Changes
+- Update_Email_By_WorkerID.ps1 will now also read an input file without a header.
+
 ## 2.1.2 - 2018-04-13
 
 ### Breaking Changes
