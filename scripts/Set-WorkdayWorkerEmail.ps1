@@ -77,7 +77,7 @@ Set-WorkdayWorkerEmail -WorkerId 123 -WorkEmail worker@example.com
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
 	$request = [xml]@'
-<bsvc:Maintain_Contact_Information_for_Person_Event_Request bsvc:Add_Only="false" xmlns:bsvc="urn:com.workday/bsvc">
+<bsvc:Maintain_Contact_Information_for_Person_Event_Request bsvc:version="v30.0" bsvc:Add_Only="false" xmlns:bsvc="urn:com.workday/bsvc">
 	<bsvc:Business_Process_Parameters>
 		<bsvc:Auto_Complete>true</bsvc:Auto_Complete>
 		<bsvc:Run_Now>true</bsvc:Run_Now>

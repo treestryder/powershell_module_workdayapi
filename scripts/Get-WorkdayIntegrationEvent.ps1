@@ -58,7 +58,7 @@ function Get-WorkdayIntegrationEvent {
     if ([string]::IsNullOrWhiteSpace($Integrations_ResourcesUri)) { $Integrations_ResourcesUri = $WorkdayConfiguration.Endpoints['Integrations'] }
 
     $request = [XML]@'
-<bsvc:Get_Integration_Events_Request xmlns:bsvc="urn:com.workday/bsvc">
+<bsvc:Get_Integration_Events_Request bsvc:version="v30.0" xmlns:bsvc="urn:com.workday/bsvc">
   <bsvc:Request_References>
     <bsvc:Integration_Event_Reference>
       <bsvc:ID bsvc:type="WID">wid</bsvc:ID>
