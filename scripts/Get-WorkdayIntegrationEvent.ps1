@@ -41,6 +41,8 @@ function Get-WorkdayIntegrationEvent {
     Currently only designed for use when waiting for an Integration to complete and retrieving its status.
     Start-WorkdayIntegration -Wait
 
+    TODO: Update request to current specifications. https://community.workday.com/sites/default/files/file-hosting/productionapi/Integrations/v30.0/Launch_Integration.html
+
 #>
 
 	[CmdletBinding(DefaultParametersetName='Search')]
@@ -58,7 +60,7 @@ function Get-WorkdayIntegrationEvent {
     if ([string]::IsNullOrWhiteSpace($Integrations_ResourcesUri)) { $Integrations_ResourcesUri = $WorkdayConfiguration.Endpoints['Integrations'] }
 
     $request = [XML]@'
-<bsvc:Get_Integration_Events_Request bsvc:version="v30.0" xmlns:bsvc="urn:com.workday/bsvc">
+<bsvc:Get_Integration_Events_Request bsvc:version="v27.0" xmlns:bsvc="urn:com.workday/bsvc">
   <bsvc:Request_References>
     <bsvc:Integration_Event_Reference>
       <bsvc:ID bsvc:type="WID">wid</bsvc:ID>
