@@ -46,7 +46,7 @@
     if ([string]::IsNullOrWhiteSpace($StaffingUri)) { $StaffingUri = $WorkdayConfiguration.Endpoints['Staffing'] }
 
 	$request = [xml]@'
-<bsvc:Get_Worker_Documents_Request xmlns:bsvc="urn:com.workday/bsvc">
+<bsvc:Get_Worker_Documents_Request bsvc:version="v30.0" xmlns:bsvc="urn:com.workday/bsvc">
   <bsvc:Request_References>
     <bsvc:Worker_Document_Reference>
       <bsvc:ID bsvc:type="WID">string</bsvc:ID>

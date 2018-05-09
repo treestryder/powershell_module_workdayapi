@@ -4,7 +4,7 @@
 ## Description ##
 Provides simple methods for accessing the Workday SOAP API.
 
-This simple Powershell Module has been written to fulfill my employer's Workday automation needs. I see this as a prototype, while I experiment with the best way to expose the complexities of the Workday API in a Powershell-y way. Thinking that the community might find it helpful and may even wish to comment or contribute, I have hosted the source on Bitbucket (https://bitbucket.org/treestryder/powershell_module_workdayapi/).
+This simple Powershell Module has been written to fulfill my employer's Workday automation needs. I see this as a prototype, while I experiment with the best way to expose the complexities of the Workday API in a Powershell-y way. Thinking that the community might find it helpful and may even wish to comment or contribute, I have hosted the source on GitHub  (https://github.com/treestryder/powershell_module_workdayapi).
 
 
 ## Features ##
@@ -82,3 +82,8 @@ To install...
 
 * Download the files.
 * Execute the script Install-WorkdayModule.ps1
+
+## Fine Print ##
+Please use with caution. This module could cause baldness, could warp time and space, could kill your puppy or, could do nothing at all. I am sharing what I am using as a starting point for a community developed solution.
+
+Any and all contributions are more than welcome and appreciated. 

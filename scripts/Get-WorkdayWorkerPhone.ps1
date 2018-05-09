@@ -81,11 +81,13 @@ Work/Landline +1 (555) 765-4321    True   True
 
     $WorkerXml.GetElementsByTagName('wd:Phone_Data') | ForEach-Object {
         $o = $numberTemplate.PsObject.Copy()
-        $o.UsageType = $_.Usage_Data.Type_Data.Type_Reference.Descriptor
-        $o.DeviceType = $_.Phone_Device_Type_Reference.Descriptor
+
+        $o.UsageType = $_.SelectSingleNode('wd:Usage_Data/wd:Type_Data/wd:Type_Reference/wd:ID[@wd:type="Communication_Usage_Type_ID"]', $NM).InnerText
+        $o.DeviceType = $_.SelectSingleNode('wd:Phone_Device_Type_Reference/wd:ID[@wd:type="Phone_Device_Type_ID"]', $NM).InnerText
         $international = $_ | Select-Object -ExpandProperty 'International_Phone_Code' -ErrorAction SilentlyContinue
         $areaCode = $_ | Select-Object -ExpandProperty 'Area_Code' -ErrorAction SilentlyContinue
         $phoneNumber = $_ | Select-Object -ExpandProperty 'Phone_Number' -ErrorAction SilentlyContinue
+
         $o.Number = '{0} ({1}) {2}' -f $international, $areaCode, $phoneNumber
         $o.Extension = $_ | Select-Object -ExpandProperty 'Phone_Extension' -ErrorAction SilentlyContinue
         $o.Primary = [System.Xml.XmlConvert]::ToBoolean( $_.Usage_Data.Type_Data.Primary )

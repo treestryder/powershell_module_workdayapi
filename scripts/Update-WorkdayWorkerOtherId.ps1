@@ -67,12 +67,6 @@
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
-    $output = [pscustomobject][ordered]@{
-        Success = $false
-        Message = $msg -f 'Failed'
-        Xml     = $null
-    }
-
     if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
         $otherIds = Get-WorkdayWorkerOtherId -WorkerXml $WorkerXml
         $WorkerType = 'WID'
@@ -168,7 +162,20 @@
     $msg = '{{0}} Current [{0} valid from {1} to {2}] Proposed [{3} valid from {4} to {5}]' -f $currentIdDisplay, $issuedCurrentDisplay, $expirationCurrentDisplay, $Id, $issuedProposedDisplay, $expirationProposedDisplay
 
     Write-Debug "idMatched=$idMatched; issuedDateMatched=$issuedDateMatched; expirationDateMatched=$expirationDateMatched"
-    if (
+    
+    $output = [pscustomobject][ordered]@{
+        WorkerId = $WorkerId
+        WorkerType = $WorkerType
+        Type = $Type
+		Id = $Id
+        WID = $WID
+        IssueDate = $IssuedDate
+        ExpirationDate = $ExpirationDate
+        Success = $false
+        Message = $msg -f 'Failed'
+    }
+
+    if ( 
         $idMatched -and
         $issuedDateMatched -and
         $expirationDateMatched
@@ -189,17 +196,16 @@
             $params['WID'] = $WID
         }
 
-        $response = Set-WorkdayWorkerOtherId @params -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password -IssuedDate:$IssuedDate -ExpirationDate:$ExpirationDate
-
-        if ($response -ne $null -and $response.Success) {
-            $output.Success = $true
-            $output.Message = $msg -f 'Changed'
-            $output.Xml = $response.Xml
-        }
-        elseif ($response -ne $null -and -not $response.Success) {
-            $output.Success = $false
-            $output.Message = $response.Message
-            $output.Xml = $response.Xml
+        $o = Set-WorkdayWorkerOtherId @params -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password -IssuedDate:$IssuedDate -ExpirationDate:$ExpirationDate
+        if ($o -ne $null) {
+            if ($o.Success) {
+                $output.Success = $true
+                $output.Message = $msg -f 'Changed'
+            }
+            else {
+                $output.Success = $false
+                $output.Message = $o.Message
+            }
         }
     }
 

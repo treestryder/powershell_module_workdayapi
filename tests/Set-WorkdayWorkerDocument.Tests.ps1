@@ -14,7 +14,7 @@ Describe Set-WorkdayWorkerDocument {
 
         It 'Creates the expected request XML.' {
             $expectedResponse = @'
-<bsvc:Put_Worker_Document_Request bsvc:Add_Only="false" xmlns:bsvc="urn:com.workday/bsvc"><bsvc:Worker_Document_Data><bsvc:Filename>DifferentFileName.txt</bsvc:Filename><!--Optional:--><bsvc:Comment>Test Comment</bsvc:Comment><bsvc:File>VGVzdCBGaWxlDQo=</bsvc:File><bsvc:Document_Category_Reference><bsvc:ID bsvc:type="WID">TestId</bsvc:ID></bsvc:Document_Category_Reference><bsvc:Worker_Reference><bsvc:ID bsvc:type="WID">1</bsvc:ID></bsvc:Worker_Reference><bsvc:Content_Type>text/plain</bsvc:Content_Type></bsvc:Worker_Document_Data></bsvc:Put_Worker_Document_Request>
+<bsvc:Put_Worker_Document_Request bsvc:version="v30.0" bsvc:Add_Only="false" xmlns:bsvc="urn:com.workday/bsvc"><bsvc:Worker_Document_Data><bsvc:Filename>DifferentFileName.txt</bsvc:Filename><!--Optional:--><bsvc:Comment>Test Comment</bsvc:Comment><bsvc:File>VGVzdCBGaWxlDQo=</bsvc:File><bsvc:Document_Category_Reference><bsvc:ID bsvc:type="WID">TestId</bsvc:ID></bsvc:Document_Category_Reference><bsvc:Worker_Reference><bsvc:ID bsvc:type="WID">1</bsvc:ID></bsvc:Worker_Reference><bsvc:Content_Type>text/plain</bsvc:Content_Type></bsvc:Worker_Document_Data></bsvc:Put_Worker_Document_Request>
 '@
             $arguments = @{
                 WorkerId = 1
