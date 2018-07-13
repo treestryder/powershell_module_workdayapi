@@ -24,7 +24,7 @@
         ResultsFile = 'c:\path\for\results\Update-WorkdayWorkerPhotosSince_{0:yyyy-MM-dd}.csv'
     }
 
-    .\samples\Update-WorkdayWorkerPhotosSince.ps1
+    .\samples\Update-WorkdayWorkerPhotosSince.ps1 @parameters
 
 #>
 [CmdletBinding()] 
