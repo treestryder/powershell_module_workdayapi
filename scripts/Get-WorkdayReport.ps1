@@ -15,7 +15,10 @@ function Get-WorkdayReport {
 
 .PARAMETER Password
     Password used to authenticate with Workday. If empty, the value stored
-    using Set-WorkdayCredential will be used.
+	using Set-WorkdayCredential will be used.
+
+.NOTES
+	TODO: Create a parameter that accepts a report name, rather than parsing a Uri.
 
 #>
 
@@ -29,7 +32,7 @@ function Get-WorkdayReport {
 		[string]$Password
 	)
 
-	if ($Uri -match '\/([a-z0-9_]+)(\?|$)') {
+	if ($Uri -match '\/([a-z0-9-_]+)(\?|$)') {
 		$reportName = $Matches[1]
 	} else {
 		throw "A valid report name was not found in the Uri: $Uri"
