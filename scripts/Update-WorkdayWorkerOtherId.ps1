@@ -89,8 +89,8 @@
     $expirationProposedDisplay = $ExpirationDate
     # Defaults to not matching.
     $idMatched = $false
-    $issuedDateMatched = $true
-    $expirationDateMatched = $true
+    $issuedDateMatched = $false
+    $expirationDateMatched = $false
     # Throw an error for an invalid date, default to the current value when no date is specified.
     if ($null -ne $IssuedDate) {
         try {
