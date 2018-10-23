@@ -1,13 +1,13 @@
 ﻿function Update-WorkdayWorkerOtherId {
 <#
 .SYNOPSIS
-    Updates a Worker's phone number in Workday, only if it is different.
+    Updates a Worker's Other ID data in Workday, only if it is different.
 
 .DESCRIPTION
-    Updates a Worker's phone number in Workday, only if it is different.
+    Updates a Worker's Other ID data in Workday, only if it is different.
     Change requests are always recorded in Workday's audit log even when
-    the number is the same. Unlike Set-WorkdayWorkerPhone, this cmdlet
-    first checks the current phone number before requesting a change. 
+    the values are the same. Unlike Set-WorkdayWorkerOtherId, this cmdlet
+    first checks the current value before requesting a change. 
 
 .PARAMETER WorkerId
     The Worker's Id at Workday.
@@ -78,7 +78,7 @@
 
     $current = $otherIds | Where-Object {$PSBoundParameters.ContainsKey('WID') -and $_.WID -eq $WID} | Select-Object -First 1
     # Default to the first of the requsted type.
-    if ($current -eq $null) {
+    if ($null -eq $current) {
         $current = $otherIds | Where-Object {$_.Type -eq $Type} | Select-Object -First 1
     }
     
@@ -92,7 +92,7 @@
     $issuedDateMatched = $true
     $expirationDateMatched = $true
     # Throw an error for an invalid date, default to the current value when no date is specified.
-    if ($IssuedDate -ne $null) {
+    if ($null -ne $IssuedDate) {
         try {
             $d = Get-Date $IssuedDate -ErrorAction Stop
             $IssuedDate = $d
@@ -103,7 +103,7 @@
         }
     }
 
-    if ($ExpirationDate -ne $null) {
+    if ($null -ne $ExpirationDate) {
         try {
             $d = Get-Date $ExpirationDate -ErrorAction Stop
             $ExpirationDate = $d
@@ -114,7 +114,7 @@
         }
     }
 
-    if ($current -ne $null) {
+    if ($null -ne $current) {
         Write-Debug "Current: $current"
         $currentIdDisplay = $current.Id
         $idMatched = $current.Id -eq $Id
@@ -195,7 +195,7 @@
         }
 
         $o = Set-WorkdayWorkerOtherId @params -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password -IssuedDate:$IssuedDate -ExpirationDate:$ExpirationDate
-        if ($o -ne $null) {
+        if ($null -ne $o) {
             if ($o.Success) {
                 $output.Success = $true
                 $output.Message = $msg -f 'Changed'

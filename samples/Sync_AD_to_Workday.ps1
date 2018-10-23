@@ -12,8 +12,11 @@ This version starts with requesting Workers from Workday.
 
 [CmdletBinding()]
 param (
+    # Path to a Results file.
     [string]$Path,
+    # A special validation to ensure the worker ID matches the value in AD extensionAttribute1.
     [switch]$MatchExtensionAttribute1,
+    # Specifies how many workers to process. Used primarily for testing.
     [int]$Limit = 0
 )
 Import-Module WorkdayApi
@@ -35,7 +38,7 @@ function Main {
         $out.UserPrincipalName = $worker.UserId
 
         $adUser = @()
-        if ($worker.UserId -ne $null) {
+        if ($null -ne $worker.UserId) {
             $LDAPFilter = '(&(objectCategory=person)(objectClass=user)(userPrincipalName={0}))' -f $worker.UserId
             $adUser = @(Get-DsAdUsers -LDAPFilter $LDAPFilter -Properties $ldapProperties)
         }
