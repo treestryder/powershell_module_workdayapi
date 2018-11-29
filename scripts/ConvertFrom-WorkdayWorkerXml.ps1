@@ -33,6 +33,9 @@ function ConvertFrom-WorkdayWorkerXml {
             WorkSpace             = $null
             WorkerTypeReference   = $null
             Manager               = $null
+            Company               = $null
+            BusinessUnit          = $null
+            Supervisory           = $null
             XML                   = $null
         }
         $WorkerObjectTemplate.PsObject.TypeNames.Insert(0, "Workday.Worker")
@@ -61,7 +64,7 @@ function ConvertFrom-WorkdayWorkerXml {
                 $o.UserId  = $x.Worker_Data.User_ID
 
                 $workerJobData = $x.SelectSingleNode('//wd:Worker_Job_Data', $NM)
-                if ($workerJobData -ne $null) {
+                if ($null -ne $workerJobData) {
                     $o.BusinessTitle = $workerJobData.Position_Data.Business_Title
                     $o.JobProfileName = $workerJobData.Position_Data.Job_Profile_Summary_Data.Job_Profile_Name
                     $o.Location = $workerJobData.SelectNodes('wd:Position_Data/wd:Business_Site_Summary_Data/wd:Location_Reference/wd:ID[@wd:type="Location_ID"]', $NM).InnerText
@@ -70,6 +73,9 @@ function ConvertFrom-WorkdayWorkerXml {
                     $o.Manager = $workerJobData.Position_Data.Manager_as_of_last_detected_manager_change_Reference.ID |
                         Where-Object {$_.type -ne 'WID'} |
                             Select-Object @{Name='WorkerType';Expression={$_.type}}, @{Name='WorkerID';Expression={$_.'#text'}}
+                    $o.Company = $workerJobData.SelectNodes('wd:Position_Organizations_Data/wd:Position_Organization_Data/wd:Organization_Data[wd:Organization_Type_Reference/wd:ID[@wd:type="Organization_Type_ID" and . = "COMPANY"]]', $NM) | Select-Object -ExpandProperty Organization_Name -First 1
+                    $o.BusinessUnit = $workerJobData.SelectNodes('wd:Position_Organizations_Data/wd:Position_Organization_Data/wd:Organization_Data[wd:Organization_Type_Reference/wd:ID[@wd:type="Organization_Type_ID" and . = "BUSINESS_UNIT"]]', $NM) | Select-Object -ExpandProperty Organization_Name -First 1
+                    $o.Supervisory = $workerJobData.SelectNodes('wd:Position_Organizations_Data/wd:Position_Organization_Data/wd:Organization_Data[wd:Organization_Type_Reference/wd:ID[@wd:type="Organization_Type_ID" and . = "SUPERVISORY"]]', $NM) | Select-Object -ExpandProperty Organization_Name -First 1                          
                 }
 
                 Write-Output $o

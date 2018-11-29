@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.1.4 - 2018-11-29
+
+### Breaking Changes
+
+- None
+
+### Non-Breaking Changes
+- Get-WorkdayWorker now returns Company, BusinessUnit (Department) and Supervisory (still looking for Sub-Department).
+
 ## 2.1.3 - 2018-04-13
 
 ### Breaking Changes
