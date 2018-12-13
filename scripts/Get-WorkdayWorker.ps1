@@ -20,6 +20,12 @@ function Get-WorkdayWorker {
     Adds Employment_Information, Compensation, Organizations and Roles
     values to the response.
 
+.PARAMETER Passthru
+    Outputs Invoke-WorkdayRequest object, rather than a custom Worker object.
+
+.PARAMETER IncludeInactive
+    Also returns inactive worker(s). Alias is Force
+
 .PARAMETER Human_ResourcesUri
     Human_Resources Endpoint Uri for the request. If not provided, the value
     stored with Set-WorkdayEndpoint -Endpoint Human_Resources is used.
@@ -44,7 +50,7 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
         [Parameter(Position=0,
                    ValueFromPipelineByPropertyName=$true,
                    ParameterSetName='IndividualWorker')]
-		[ValidatePattern ('^[a-fA-F0-9\-]{1,32}$')]
+		[ValidatePattern ('^$|^[a-fA-F0-9\-]{1,32}$')]
         [string]$WorkerId,
         [Parameter(Position=1,
                    ValueFromPipelineByPropertyName=$true,
@@ -57,6 +63,7 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
         [switch]$IncludePersonal,
         [switch]$IncludeWork,
         [switch]$IncludeDocuments,
+        [DateTime]$AsOfEntryDateTime = (Get-Date),
         # Outputs raw XML, rather than a custom object.
         [switch]$Passthru,
         [Alias("Force")]
@@ -69,18 +76,19 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
 
     process {
     	$request = [xml]@'
-<bsvc:Get_Workers_Request xmlns:bsvc="urn:com.workday/bsvc">
+<bsvc:Get_Workers_Request bsvc:version="v30.0" xmlns:bsvc="urn:com.workday/bsvc">
   <bsvc:Request_References bsvc:Skip_Non_Existing_Instances="false">
 	<bsvc:Worker_Reference>
-		<bsvc:ID bsvc:type="Employee_ID">employeeId</bsvc:ID>
+		<bsvc:ID bsvc:type="Employee_ID">?EmployeeId?</bsvc:ID>
 	</bsvc:Worker_Reference>
   </bsvc:Request_References>
+  <bsvc:Response_Filter>
+    <bsvc:Page>Page</bsvc:Page>
+    <bsvc:As_Of_Entry_DateTime>?DateTime?</bsvc:As_Of_Entry_DateTime>
+  </bsvc:Response_Filter>
   <bsvc:Request_Criteria>
     <bsvc:Exclude_Inactive_Workers>true</bsvc:Exclude_Inactive_Workers>
   </bsvc:Request_Criteria>
-  <bsvc:Response_Filter>
-    <bsvc:Page>Page</bsvc:Page>
-  </bsvc:Response_Filter>
   <bsvc:Response_Group>
     <bsvc:Include_Reference>true</bsvc:Include_Reference>
     <bsvc:Include_Personal_Information>false</bsvc:Include_Personal_Information>
@@ -92,6 +100,8 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
   </bsvc:Response_Group>
 </bsvc:Get_Workers_Request>
 '@
+
+        $request.Get_Workers_Request.Response_Filter.As_Of_Entry_DateTime = $AsOfEntryDateTime.ToString('o')
 
         if ([string]::IsNullOrWhiteSpace($WorkerId)) {
             $null = $request.Get_Workers_Request.RemoveChild($request.Get_Workers_Request.Request_References)
@@ -105,7 +115,6 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
         }
 
         # Default = Reference, Personal Data, Employment Data, Compensation Data, Organization Data, and Role Data.
-
         if ($IncludePersonal) {
             $request.Get_Workers_Request.Response_Group.Include_Personal_Information = 'true'
         }

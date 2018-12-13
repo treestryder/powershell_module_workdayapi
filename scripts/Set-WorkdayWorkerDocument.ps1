@@ -62,7 +62,7 @@ Set-WorkdayWorkerDocument -WorkerId 123 -Path Document.pdf
     if ([string]::IsNullOrWhiteSpace($StaffingUri)) { $StaffingUri = $WorkdayConfiguration.Endpoints['Staffing'] }
 
 	$request = [xml]@'
-<bsvc:Put_Worker_Document_Request bsvc:Add_Only="false" xmlns:bsvc="urn:com.workday/bsvc">
+<bsvc:Put_Worker_Document_Request bsvc:version="v30.0" bsvc:Add_Only="false" xmlns:bsvc="urn:com.workday/bsvc">
   <bsvc:Worker_Document_Data>
     <bsvc:Filename>Filename</bsvc:Filename>
     <!--Optional:-->

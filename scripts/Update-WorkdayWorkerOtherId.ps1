@@ -1,13 +1,13 @@
 ﻿function Update-WorkdayWorkerOtherId {
 <#
 .SYNOPSIS
-    Updates a Worker's phone number in Workday, only if it is different.
+    Updates a Worker's Other ID data in Workday, only if it is different.
 
 .DESCRIPTION
-    Updates a Worker's phone number in Workday, only if it is different.
+    Updates a Worker's Other ID data in Workday, only if it is different.
     Change requests are always recorded in Workday's audit log even when
-    the number is the same. Unlike Set-WorkdayWorkerPhone, this cmdlet
-    first checks the current phone number before requesting a change.
+    the values are the same. Unlike Set-WorkdayWorkerOtherId, this cmdlet
+    first checks the current value before requesting a change.
 
 .PARAMETER WorkerId
     The Worker's Id at Workday.
@@ -67,12 +67,6 @@
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
-    $output = [pscustomobject][ordered]@{
-        Success = $false
-        Message = $msg -f 'Failed'
-        Xml     = $null
-    }
-
     if ($PsCmdlet.ParameterSetName -eq 'NoSearch') {
         $otherIds = Get-WorkdayWorkerOtherId -WorkerXml $WorkerXml
         $WorkerType = 'WID'
@@ -97,8 +91,8 @@
     $expirationProposedDisplay = $ExpirationDate
     # Defaults to not matching.
     $idMatched = $false
-    $issuedDateMatched = $true
-    $expirationDateMatched = $true
+    $issuedDateMatched = $false
+    $expirationDateMatched = $false
     # Throw an error for an invalid date, default to the current value when no date is specified.
     if ($IssuedDate -ne $null) {
         try {
@@ -168,6 +162,19 @@
     $msg = '{{0}} Current [{0} valid from {1} to {2}] Proposed [{3} valid from {4} to {5}]' -f $currentIdDisplay, $issuedCurrentDisplay, $expirationCurrentDisplay, $Id, $issuedProposedDisplay, $expirationProposedDisplay
 
     Write-Debug "idMatched=$idMatched; issuedDateMatched=$issuedDateMatched; expirationDateMatched=$expirationDateMatched"
+    
+    $output = [pscustomobject][ordered]@{
+        WorkerId = $WorkerId
+        WorkerType = $WorkerType
+        Type = $Type
+		Id = $Id
+        WID = $WID
+        IssueDate = $IssuedDate
+        ExpirationDate = $ExpirationDate
+        Success = $false
+        Message = $msg -f 'Failed'
+    }
+
     if (
         $idMatched -and
         $issuedDateMatched -and
@@ -189,17 +196,17 @@
             $params['WID'] = $WID
         }
 
-        $response = Set-WorkdayWorkerOtherId @params -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password -IssuedDate:$IssuedDate -ExpirationDate:$ExpirationDate
+        $o = Set-WorkdayWorkerOtherId @params -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password -IssuedDate:$IssuedDate -ExpirationDate:$ExpirationDate
 
-        if ($response -ne $null -and $response.Success) {
-            $output.Success = $true
-            $output.Message = $msg -f 'Changed'
-            $output.Xml = $response.Xml
-        }
-        elseif ($response -ne $null -and -not $response.Success) {
-            $output.Success = $false
-            $output.Message = $response.Message
-            $output.Xml = $response.Xml
+        if ($null -ne $o) {
+            if ($o.Success) {
+                $output.Success = $true
+                $output.Message = $msg -f 'Changed'
+            }
+            else {
+                $output.Success = $false
+                $output.Message = $o.Message
+            }
         }
     }
 

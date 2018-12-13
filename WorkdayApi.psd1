@@ -1,6 +1,6 @@
 @{
 RootModule = 'WorkdayApi.psm1'
-ModuleVersion = '2.0.1'
+ModuleVersion = '2.2.1'
 GUID = 'bd4390dc-a8ad-4bce-8d69-f53ccf8e4163'
 Author = 'Nathan Hartley'
 Copyright = '(c) 2017 . All rights reserved.'
@@ -9,9 +9,11 @@ PowerShellVersion = '3.0'
 FunctionsToExport = @(
         'ConvertFrom-WorkdayWorkerXml',
 		'Export-WorkdayDocument',
+        'Get-WorkdayToAdData',
+        'Get-WorkdayReport',
+        'Get-WorkdayWorker',
+        'Get-WorkdayWorkerByIdLookupTable',
         'Invoke-WorkdayRequest',
-		'Get-WorkdayReport',
-		'Get-WorkdayWorker',
         'Remove-WorkdayConfiguration',
 		'Set-WorkdayWorkerPhoto',
 

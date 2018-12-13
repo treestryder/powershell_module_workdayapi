@@ -81,8 +81,11 @@ Work work@example.com                True   True
 
     $WorkerXml.GetElementsByTagName('wd:Email_Address_Data') | ForEach-Object {
         $o = $numberTemplate.PsObject.Copy()
+        $o.UsageType = $_.SelectSingleNode('wd:Usage_Data/wd:Type_Data/wd:Type_Reference/wd:ID[@wd:type="Communication_Usage_Type_ID"]', $NM).InnerText
+<#
         $UsageXML = $_.Usage_Data.Type_Data.Type_Reference.ID |Where-Object {$_.type -match 'Communication_Usage_Type_ID'}
-        $o.UsageType = $UsageXML.'#text'
+        $o.UsageType = $UsageXML.'#text' 
+#>
         $o.Email = $_.Email_Address
         $o.Primary = [System.Xml.XmlConvert]::ToBoolean( $_.Usage_Data.Type_Data.Primary )
         $o.Public = [System.Xml.XmlConvert]::ToBoolean( $_.Usage_Data.Public )

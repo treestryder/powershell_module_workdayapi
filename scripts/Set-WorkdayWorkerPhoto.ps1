@@ -54,7 +54,7 @@ Set-WorkdayWorkerPhoto -EmpoyeeId 123 -Path Photo.jpg
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
 	$request = [xml]@'
-<bsvc:Put_Worker_Photo_Request xmlns:bsvc="urn:com.workday/bsvc">
+<bsvc:Put_Worker_Photo_Request bsvc:version="v30.1" xmlns:bsvc="urn:com.workday/bsvc">
     <bsvc:Worker_Reference>
         <bsvc:ID bsvc:type="Employee_ID">employeeId</bsvc:ID>
     </bsvc:Worker_Reference>
