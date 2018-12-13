@@ -39,7 +39,20 @@ urn:com.workday/bsvc v25.1   2015-12-02T12:18:30.841-08:00
 
 .OUTPUTS
     Workday XML
-#>
+
+.NOTES
+    TODO: Wrap the password and possibly other values in CDATA tags, if the XML setter is not already handling special characters.
+
+    TODO: Better error handling. Right not, when Workday returns an error in the XML, it also sets the HTTP status as 500.
+          The following exception was thrown, when an invalid username was sent to Workday:
+You cannot call a method on a null-valued expression.
+At C:\Program Files\WindowsPowerShell\Modules\WorkdayApi\scripts\Invoke-WorkdayRequest.ps1:104 char:3
++         $reader = New-Object System.IO.StreamReader -ArgumentList $_. ...
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [], RuntimeException
+    + FullyQualifiedErrorId : InvokeMethodOnNull
+
+    #>
 
 	[CmdletBinding()]
     [OutputType([XML])]
