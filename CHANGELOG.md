@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2.2.2 - 2018-12-13
+
 - Bug fix: Update-WorkdayWorkerOtherId now behaves as expected, when a date is not passed.
 
 ## 2.2.1 - 2018-11-30
