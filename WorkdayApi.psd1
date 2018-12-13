@@ -1,6 +1,6 @@
 @{
 RootModule = 'WorkdayApi.psm1'
-ModuleVersion = '2.2.1'
+ModuleVersion = '2.2.2'
 GUID = 'bd4390dc-a8ad-4bce-8d69-f53ccf8e4163'
 Author = 'Nathan Hartley'
 Copyright = '(c) 2017 . All rights reserved.'

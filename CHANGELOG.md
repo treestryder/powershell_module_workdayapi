@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.2 - 2018-12-13
+- Bug fix: Update-WorkdayWorkerOtherId now behaves as expected, when a date is not passed.
+
 ## 2.2.1 - 2018-11-30
 
 - Bug fix: When not requesting individual workers, Get-WorkdayWorker was returning the last set of values on each page of Workers, due to not anchoring XML XPath queries with "./" in ConvertFrom-WorkdayWorkerXml.
