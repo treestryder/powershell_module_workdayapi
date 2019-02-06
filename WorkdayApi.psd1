@@ -6,6 +6,7 @@ Author = 'Nathan Hartley'
 Copyright = '(c) 2017 . All rights reserved.'
 Description = 'Provides a means to access the Workday SOAP API in a Powershell friendly manner.'
 PowerShellVersion = '3.0'
+RequiredModules = @('BetterTLS')
 FunctionsToExport = @(
         'ConvertFrom-WorkdayWorkerXml',
 		'Export-WorkdayDocument',
