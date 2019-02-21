@@ -14,7 +14,7 @@ Describe Set-WorkdayWorkerPhoto {
 
         It 'Creates the expected request XML.' {
             $expectedResponse = @'
-<bsvc:Put_Worker_Photo_Request xmlns:bsvc="urn:com.workday/bsvc"><bsvc:Worker_Reference><bsvc:ID bsvc:type="WID">1</bsvc:ID></bsvc:Worker_Reference><bsvc:Worker_Photo_Data><bsvc:Filename>TestFile.txt</bsvc:Filename><bsvc:File>VGVzdCBGaWxlDQo=</bsvc:File></bsvc:Worker_Photo_Data></bsvc:Put_Worker_Photo_Request>
+<bsvc:Put_Worker_Photo_Request bsvc:version="v30.0" xmlns:bsvc="urn:com.workday/bsvc"><bsvc:Worker_Reference><bsvc:ID bsvc:type="WID">1</bsvc:ID></bsvc:Worker_Reference><bsvc:Worker_Photo_Data><bsvc:Filename>TestFile.txt</bsvc:Filename><bsvc:File>VGVzdCBGaWxlDQo=</bsvc:File></bsvc:Worker_Photo_Data></bsvc:Put_Worker_Photo_Request>
 '@
             $arguments = @{
                 WorkerId = 1

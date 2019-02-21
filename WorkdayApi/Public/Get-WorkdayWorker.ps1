@@ -133,7 +133,7 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
         if ($IncludeInactive) {
             $request.Get_Workers_Request.Request_Criteria.Exclude_Inactive_Workers = 'false'
         }
-
+       
         $more = $true
         $nextPage = 0
         while ($more) {

@@ -122,7 +122,8 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
     ) {
         $output.Message = $msg -f 'Matched'
         $output.Success = $true
-    } else {
+    }
+    else {
         $params = $PSBoundParameters
         $null = $params.Remove('WorkerXml')
         $null = $params.Remove('WorkerId')

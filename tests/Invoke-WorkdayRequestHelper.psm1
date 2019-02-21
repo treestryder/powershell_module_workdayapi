@@ -1,4 +1,10 @@
 ﻿
+
+Set-WorkdayEndpoint -Endpoint Staffing        -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Staffing'
+Set-WorkdayEndpoint -Endpoint Human_Resources -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources'
+Set-WorkdayEndpoint -Endpoint Integrations    -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Integrations'
+
+
 # Echo Request
 function Mock_Invoke-WorkdayRequest_Echo {
     param (
