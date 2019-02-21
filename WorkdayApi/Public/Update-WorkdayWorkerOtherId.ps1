@@ -103,6 +103,8 @@
         catch {
             throw "Invalid IssuedDate [$IssuedDate]"
         }
+    } else {
+        $issuedProposedDisplay = 'current IssuedDate'
     }
 
     if ($ExpirationDate -ne $null) {
@@ -114,6 +116,8 @@
         catch {
             throw "Invalid ExpirationDate [$ExpirationDate]"
         }
+    } else {
+        $expirationProposedDisplay = 'current ExpirationDate'
     }
 
     if ($current -ne $null) {
@@ -121,41 +125,33 @@
         $currentIdDisplay = $current.Id
         $idMatched = $current.Id -eq $Id
         $WID = $current.Wid
+        $issuedCurrentDisplay = if ($current.Issued_Date -is [DateTime]) { $current.Issued_Date.ToString('g') }
+        $expirationCurrentDisplay = if ($current.Expiration_Date -is [DateTime]) { $current.Expiration_Date.ToString('g') }
 
-        $issuedCurrentDisplay = $current.Issued_Date
-        if (-not [string]::IsNullOrWhiteSpace($current.Issued_Date)) {
-            try {
-                $d = Get-Date $current.Issued_Date -ErrorAction Stop
-                $issuedCurrentDisplay = $d.ToString('g')
-                if ($IssuedDate -is [datetime]){
-                    $IssuedDateMatched = ($d - $IssuedDate).Days -eq 0
-                }
-                else {
-                    $IssuedDate = $d
-                    $issuedProposedDisplay = $issuedCurrentDisplay
-                }
-            }
-            catch {
-                $IssuedDateMatched = $false
+        # Is a date change requested?
+        if ($IssuedDate -is [datetime]) {
+            $issuedProposedDisplay = $IssuedDate.ToString('g')
+            # Is there a date to compare?
+            if ($current.Issued_Date -is [datetime]) {
+                # Do the dates match?
+                $IssuedDateMatched = ($current.Issued_Date - $IssuedDate).Days -eq 0
             }
         }
+        else {
+            $IssuedDateMatched = $true
+        }
 
-        $expirationCurrentDisplay = $current.Expiration_Date
-        if (-not [string]::IsNullOrWhiteSpace($current.Expiration_Date)) {
-            try {
-                $d = Get-Date $current.Expiration_Date -ErrorAction Stop
-                $expirationCurrentDisplay = $d.ToString('g')
-                if ($ExpirationDate -is [datetime]){
-                    $ExpirationDateMatched = ($d - $ExpirationDate).Days -eq 0
-                }
-                else {
-                    $ExpirationDate = $d
-                    $expirationProposedDisplay = $expirationCurrentDisplay
-                }
+        # Is a date change requested?
+        if ($ExpirationDate -is [datetime]) {
+            $expirationProposedDisplay = $ExpirationDate.ToString('g')
+            # Is there a date to compare?
+            if ($current.Expiration_Date -is [datetime]) {
+                # Do the dates match?
+                $ExpirationDateMatched = ($current.Expiration_Date - $ExpirationDate).Days -eq 0
             }
-            catch {
-                $ExpirationDateMatched = $false
-            }
+        }
+        else {
+            $ExpirationDateMatched = $true
         }
     }
 
@@ -197,7 +193,6 @@
         }
 
         $o = Set-WorkdayWorkerOtherId @params -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password -IssuedDate:$IssuedDate -ExpirationDate:$ExpirationDate
-
         if ($null -ne $o) {
             if ($o.Success) {
                 $output.Success = $true

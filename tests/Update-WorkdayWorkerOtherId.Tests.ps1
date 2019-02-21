@@ -55,16 +55,16 @@ Describe Update-WorkdayWorkerOtherId {
                 Assert-MockCalled Set-WorkdayWorkerOtherId -Exactly 5
             }
 
-            It 'Should default to the current IssuedDate value when a date is not passed.' {
-                $expected = 'Changed Current [1 valid from 1/1/2000 12:00 AM to 1/1/2001 12:00 AM] Proposed [1 valid from 1/1/2003 12:00 AM to 1/1/2001 12:00 AM]'
-                $response = Update-WorkdayWorkerOtherId -WorkerId 1 -Type 'Badge_ID' -Id 1 -IssuedDate '1/1/2003'
+            It 'Should default to the current IssueDate value when a date is not passed.' {
+                $expected = 'Changed Current [1 valid from 1/1/2000 12:00 AM to 1/1/2001 12:00 AM] Proposed [1 valid from current IssuedDate to 1/1/2003 12:00 AM]'
+                $response = Update-WorkdayWorkerOtherId -WorkerId 1 -Type 'Badge_ID' -Id 1 -ExpirationDate '1/1/2003'
                 $response.Message | Should Be $expected
                 Assert-MockCalled Set-WorkdayWorkerOtherId -Exactly 6
             }
 
             It 'Should default to the current Expiration value when a date is not passed.' {
-                $expected = 'Changed Current [1 valid from 1/1/2000 12:00 AM to 1/1/2001 12:00 AM] Proposed [1 valid from 1/1/2000 12:00 AM to 1/1/2003 12:00 AM]'
-                $response = Update-WorkdayWorkerOtherId -WorkerId 1 -Type 'Badge_ID' -Id 1 -ExpirationDate '1/1/2003'
+                $expected = 'Changed Current [1 valid from 1/1/2000 12:00 AM to 1/1/2001 12:00 AM] Proposed [1 valid from 1/1/2003 12:00 AM to current ExpirationDate]'
+                $response = Update-WorkdayWorkerOtherId -WorkerId 1 -Type 'Badge_ID' -Id 1 -IssuedDate '1/1/2003'
                 $response.Message | Should Be $expected
                 Assert-MockCalled Set-WorkdayWorkerOtherId -Exactly 7
             }
@@ -82,13 +82,13 @@ Describe Update-WorkdayWorkerOtherId {
         Context Same {
 
             It 'Skips calling Set-WorkdayWorkerOtherId when no changes found.' {
-                $response = Update-WorkdayWorkerOtherId -WorkerId 1 -Type 'Badge_ID' -Id 1 -IssuedDate '1/1/2000' -ExpirationDate '1/1/2001'
+                $null = Update-WorkdayWorkerOtherId -WorkerId 1 -Type 'Badge_ID' -Id 1 -IssuedDate '1/1/2000' -ExpirationDate '1/1/2001'
                 Assert-MockCalled Get-WorkdayWorkerOtherId -Exactly 1
                 Assert-MockCalled Set-WorkdayWorkerOtherId -Exactly 0
             }
 
             It 'Skips calling Set-WorkdayWorkerOtherId when no changes and no dates passed.' {
-                $response = Update-WorkdayWorkerOtherId -WorkerId 1 -Type 'Badge_ID' -Id 1
+                $null = Update-WorkdayWorkerOtherId -WorkerId 1 -Type 'Badge_ID' -Id 1
                 Assert-MockCalled Get-WorkdayWorkerOtherId -Exactly 2
                 Assert-MockCalled Set-WorkdayWorkerOtherId -Exactly 0
             }

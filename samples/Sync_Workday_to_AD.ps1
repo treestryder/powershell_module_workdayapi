@@ -6,6 +6,50 @@ This version starts with requesting Workers from Workday.
 
 .Example
 .\Sync_AD_to_Workday.ps1 -Path output\results.csv
+
+.NOTES
+
+Properties in AD True Up file: Active Status	Employee ID	Legal Name - First Name	Legal Name - Last Name	Worker Type	Employee Type	Manager ID	User Name	Business Title	Location	Work Space from Worker Primary Job	Workspace	Division	SubDivision	Cost Center
+
+Properties used:
+Employee ID
+Business Title
+Location
+Division
+SubDivision
+Workspace
+Manager ID
+~Employee Type
+
+
+	if ([string]::IsNullOrWhiteSpace($In.'Business Title')) {
+		$adUser.Title       = $null
+		$adUser.Description = $null
+	} else {
+		$Title = $In.'Business Title' -replace '^TM-|^ST-',''
+		$adUser.Title       = $Title
+		$adUser.Description = $Title
+	}
+	$adUser.Office = if ([string]::IsNullOrWhiteSpace($In.'Location')) { $null } else {$In.'Location'}
+	$adUser.Department = if ([string]::IsNullOrWhiteSpace($In.'Division')) { $null } else {$In.'Division'}
+	$adUser.extensionattribute4 = if ([string]::IsNullOrWhiteSpace($In.'SubDivision')) { $null } else {$In.'SubDivision'}
+	$adUser.extensionattribute5 = if ([string]::IsNullOrWhiteSpace($In.'Workspace')) { $null } else {$In.'Workspace'}
+    $adUser.extensionattribute7 = if ([string]::IsNullOrWhiteSpace($In.'Employee Type')) { $null } else {$In.'Employee Type'.Replace(' ','_')}
+
+	# Get Manager.
+	$manager = $null
+	If ([string]::IsNullOrWhiteSpace($In.'Manager ID') -eq $false) {
+		$manager = try {
+			Get-ADUser -Filter "ExtensionAttribute1 -eq '$($In.'Manager ID')'" -ErrorAction Stop |
+			 Select-Object -First 1 -ExpandProperty DistinguishedName
+		} catch {}
+    }
+    
+
+    public void CommitChanges (); https://docs.microsoft.com/en-us/dotnet/api/system.directoryservices.directoryentry.commitchanges?view=netframework-4.7.2
+
+    $properties = 'title','description','physicalDeliveryOfficeName','department','extensionattribute4','extensionattribute5','extensionattribute7'
+    
 #>
 
 # Requires -Module WorkdayApi
@@ -47,7 +91,7 @@ function Main {
         Write-Verbose ('{0} {1}' -f $worker.WorkerDescriptor, $adStatus)
         if ($AdUser.Count -ne 1) {
             $out.UserPrincipalName = $adStatus
-            # It is OK if no AD user is not found. It is not OK if more than one is found.
+            # It is OK if an AD user is not found. It is not OK if more than one is found.
             if ($AdUser.Count -gt 1) {
                 $out.Success = $false
             }
