@@ -7,7 +7,13 @@ $WorkdayConfiguration = @{
     Credential = $null
 }
 
-$WorkdayConfigurationFile = Join-Path $env:LOCALAPPDATA WorkdayConfiguration.clixml
+$WorkdayConfigurationFile = $(
+    If (($env:OS -eq 'Windows_NT') -Or ($PSVersionTable.platform -eq 'Win32NT')){
+        Join-Path $env:LOCALAPPDATA WorkdayConfiguration.clixml
+    }ElseIf(($PSVersionTable.platform -eq 'Unix')){
+        Join-Path ~/.workdayapi/ 'WorkdayConfiguration.clixml'
+    })
+
 if (Test-Path $WorkdayConfigurationFile) {
     $WorkdayConfiguration = Import-Clixml $WorkdayConfigurationFile
 }
