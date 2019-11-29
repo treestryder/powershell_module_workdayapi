@@ -1,6 +1,11 @@
 ﻿[CmdletBinding()]
 param (
-    [string]$InstallPath = (Join-Path $env:ProgramFiles 'WindowsPowerShell\Modules\WorkdayApi'),
+    [string]$InstallPath = $(
+        If (($env:OS -eq 'Windows_NT') -Or ($PSVersionTable.platform -eq 'Win32NT')){
+            Join-Path $env:ProgramFiles 'WindowsPowerShell\Modules\WorkdayApi'
+        }ElseIf(($PSVersionTable.platform -eq 'Unix')){
+            Join-Path ~/.local/share/ 'powershell/Modules/WorkdayApi'
+        }),
     [switch]$Force
 )
 
