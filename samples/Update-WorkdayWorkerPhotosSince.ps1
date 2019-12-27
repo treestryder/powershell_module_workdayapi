@@ -27,7 +27,7 @@
     .\samples\Update-WorkdayWorkerPhotosSince.ps1 @parameters
 
 #>
-[CmdletBinding()] 
+[CmdletBinding()]
 param (
     [Parameter(Mandatory=$true)]
     [ValidateScript({Test-Path -Path $_ -PathType Container})]
@@ -45,7 +45,7 @@ function Main {
 
     # Unless the Since has a value specified, use the last time this process was ran.
     if ( $All -eq $false -and
-        $Since -eq [datetime]::MinValue -and 
+        $Since -eq [datetime]::MinValue -and
         ( Test-Path -Path $persistanceFile )
     ) {
         $Since = Import-Clixml -Path $persistanceFile

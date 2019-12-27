@@ -58,10 +58,10 @@ function Get-WorkdayToAdData {
             $o.'Worker Type' = if ($w.Xml.Worker.Worker_Reference.ID | where { $_.type -eq 'Employee_ID' } ) {'Employee'} else {'Contingent Worker'}
             $o.'Worker SubType' = $w.Xml.Worker.Worker_Data.Employment_Data.Worker_Job_Data.Position_Data.Worker_Type_Reference.Descriptor
             # Could not find Department.
-            # <xsl:value-of select="ws:Additional_Information/ws:Department" /> 
+            # <xsl:value-of select="ws:Additional_Information/ws:Department" />
             $o.'Department (LOB)' = 'Unimplemented'
             # Could not find Subdepartment.
-            # <xsl:value-of select="ws:Additional_Information/ws:SubDepartment" /> 
+            # <xsl:value-of select="ws:Additional_Information/ws:SubDepartment" />
             $o.'Sub Department' = 'Unimplemented'
             $o.'Location (Building)' = $w.Location
             $o.'Location(Workspace)' = $w.Workspace

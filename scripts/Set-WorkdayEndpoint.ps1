@@ -15,7 +15,7 @@ function Set-WorkdayEndpoint {
     Uri for this Endpoint.
 
 .EXAMPLE
-    
+
 Set-WorkdayEndpoint -Endpoint Staffing -Uri 'https://SERVICE.workday.com/ccx/service/TENANT/Staffing/v26.0'
 
     Demonstrates how to set a single Endpoint value.

@@ -5,7 +5,7 @@ Import-Module "$PsScriptRoot\Invoke-WorkdayRequestHelper.psm1" -Force -DisableNa
 Describe Update-WorkdayWorkerOtherId {
 
     InModuleScope WorkdayApi {
-    
+
         Mock Get-WorkdayWorkerOtherId  {
             param ($WorkerId)
             if ($WorkerId -eq 0) { return }

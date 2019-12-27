@@ -23,8 +23,8 @@ function Get-WorkdayWorker {
 .PARAMETER Passthru
     Outputs Invoke-WorkdayRequest object, rather than a custom Worker object.
 
-.PARAMETER Force
-    Also returns inactive worker(s).
+.PARAMETER IncludeInactive
+    Also returns inactive worker(s). Alias is Force
 
 .PARAMETER Human_ResourcesUri
     Human_Resources Endpoint Uri for the request. If not provided, the value
@@ -39,7 +39,7 @@ function Get-WorkdayWorker {
     using Set-WorkdayCredential will be used.
 
 .EXAMPLE
-    
+
 Get-WorkdayWorker -WorkerId 123 -IncludePersonal
 
 #>
@@ -64,8 +64,10 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
         [switch]$IncludeWork,
         [switch]$IncludeDocuments,
         [DateTime]$AsOfEntryDateTime = (Get-Date),
+        # Outputs raw XML, rather than a custom object.
         [switch]$Passthru,
-        [switch]$Force
+        [Alias("Force")]
+        [switch]$IncludeInactive
 	)
 
     begin {
@@ -128,10 +130,10 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
             $request.Get_Workers_Request.Response_Group.Include_Worker_Documents = 'true'
         }
 
-        if ($Force) {
+        if ($IncludeInactive) {
             $request.Get_Workers_Request.Request_Criteria.Exclude_Inactive_Workers = 'false'
         }
-       
+
         $more = $true
         $nextPage = 0
         while ($more) {

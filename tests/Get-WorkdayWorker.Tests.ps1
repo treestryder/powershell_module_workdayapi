@@ -40,5 +40,10 @@ Describe Get-WorkdayWorker {
 
         }
 
+        It 'Excepts the IncludeInactive parameter.' {
+            $null = Get-WorkdayWorker -WorkerId 1 -WorkerType Employee_ID -IncludeInactive
+            Assert-MockCalled Invoke-WorkdayRequest -Exactly 3
+        }
+
     }
 }

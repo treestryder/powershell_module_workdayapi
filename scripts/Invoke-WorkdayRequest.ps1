@@ -25,13 +25,13 @@ function Invoke-WorkdayRequest {
     using Set-WorkdayCredential will be used.
 
 .EXAMPLE
-    
+
 $response = Invoke-WorkdayRequest -Request '<bsvc:Server_Timestamp_Get xmlns:bsvc="urn:com.workday/bsvc" />' -Uri https://SERVICE.workday.com/ccx/service/TENANT/Human_Resources/v25.1
 
 $response.Server_Timestamp
 
-wd                   version Server_Timestamp_Data        
---                   ------- ---------------------        
+wd                   version Server_Timestamp_Data
+--                   ------- ---------------------
 urn:com.workday/bsvc v25.1   2015-12-02T12:18:30.841-08:00
 
 .INPUTS
@@ -66,7 +66,7 @@ At C:\Program Files\WindowsPowerShell\Modules\WorkdayApi\scripts\Invoke-WorkdayR
 		[string]$Username,
 		[string]$Password
 	)
-    
+
     if ($WorkdayConfiguration.Credential -is [PSCredential]) {
         if ([string]::IsNullOrWhiteSpace($Username)) { $Username = $WorkdayConfiguration.Credential.Username }
         if ([string]::IsNullOrWhiteSpace($Password)) { $Password = $WorkdayConfiguration.Credential.GetNetworkCredential().Password }
@@ -96,8 +96,8 @@ At C:\Program Files\WindowsPowerShell\Modules\WorkdayApi\scripts\Invoke-WorkdayR
 	$headers= @{
 		'Content-Type' = 'text/xml;charset=UTF-8'
 	}
-	
-    
+
+
      $o = [pscustomobject][ordered]@{
         Success    = $false
         Message  = 'Unknown Error'
@@ -119,7 +119,7 @@ At C:\Program Files\WindowsPowerShell\Modules\WorkdayApi\scripts\Invoke-WorkdayR
 		$reader.Close()
         try {
            $xml = [xml]$response
-           $o.Xml = [xml]$xml.Envelope.Body.InnerXml 
+           $o.Xml = [xml]$xml.Envelope.Body.InnerXml
 
             # Put the first Workday Exception into the Message property.
             if ($o.Xml.InnerXml.StartsWith('<SOAP-ENV:Fault ')) {

@@ -29,7 +29,7 @@ function Set-WorkdayWorkerPhoto {
     using Set-WorkdayCredential will be used.
 
 .EXAMPLE
-    
+
 Set-WorkdayWorkerPhoto -EmpoyeeId 123 -Path Photo.jpg
 
 #>

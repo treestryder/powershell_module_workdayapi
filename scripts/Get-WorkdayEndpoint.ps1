@@ -11,7 +11,7 @@ function Get-WorkdayEndpoint {
     'Human_Resources', 'Staffing'
 
 .EXAMPLE
-    
+
 Get-WorkdayEndpoint -Endpoint Staffing
 
     Demonstrates how to get a single Endpoint value.

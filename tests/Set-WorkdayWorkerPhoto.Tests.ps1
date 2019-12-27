@@ -25,7 +25,7 @@ Describe Set-WorkdayWorkerPhoto {
 
             $response.Xml.OuterXml | Should BeExactly $expectedResponse
             Assert-MockCalled Invoke-WorkdayRequest -Exactly 1
-  
+
         }
     }
 }

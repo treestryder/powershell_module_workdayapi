@@ -9,7 +9,7 @@ function Set-WorkdayCredential {
 
 .PARAMETER Credential
     A standard Powershell Credential object. Optional.
-    
+
 .EXAMPLE
     Set-WorkdayCredential
 

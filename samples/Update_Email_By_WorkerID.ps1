@@ -8,7 +8,7 @@
     Path to input CSV file. The CSV should look like this (with or without the header):
         WorkerID,Email
         1,email1@example.com
-        2,email2@example.com    
+        2,email2@example.com
 
 .PARAMETER ArchiveFile
     A path can be specified to move / archive the input file. The .Net format
@@ -59,15 +59,15 @@ function Main {
     $arguments = @{
         Path = $InputFile
     }
-    
+
     # Add a header argument, if the first line starts with a number.
     $firstLine = Get-Content -Path $InputFile -TotalCount 1
     if ($firstLine -match '^"?\d') {
         $arguments['Header'] = 'WorkerID','Email'
     }
-    
+
     if ($ResultsFile -eq $null) {
-        Import-Csv @arguments | UpdateEmail    
+        Import-Csv @arguments | UpdateEmail
     }
     else {
         $ResultsFile = $ResultsFile -f (Get-Date)
@@ -75,7 +75,7 @@ function Main {
         Import-Csv @arguments | UpdateEmail | Export-Csv -Path $ResultsFile -NoTypeInformation
         Write-Verbose "Result file: $ResultsFile"
     }
-    
+
     if ($ArchiveFile -ne $null) {
         if ($ArchiveFile -eq 'delete') {
             Write-Verbose "Deleting input file."

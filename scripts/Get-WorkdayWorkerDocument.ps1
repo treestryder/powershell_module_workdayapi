@@ -29,7 +29,7 @@
     using Set-WorkdayCredential will be used.
 
 .EXAMPLE
-    
+
 Get-WorkdayWorkerDocument -WorkerId 123
 
 #>
@@ -53,13 +53,15 @@ Get-WorkdayWorkerDocument -WorkerId 123
 		[string]$Password,
         [Parameter(ParameterSetName="NoSearch")]
         [xml]$DocumentXml,
-        [string]$Path
+        [string]$Path,
+        [Alias("Force")]
+        [switch]$IncludeInactive
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
     if ($PsCmdlet.ParameterSetName -eq 'Search') {
-        $response = Get-WorkdayWorker -WorkerId $WorkerId -WorkerType $WorkerType -IncludeDocuments -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
+        $response = Get-WorkdayWorker -WorkerId $WorkerId -WorkerType $WorkerType -IncludeDocuments -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -IncludeInactive:$IncludeInactive -ErrorAction Stop
         $DocumentXml = $response.Xml
     }
 
@@ -83,9 +85,9 @@ Get-WorkdayWorkerDocument -WorkerId 123
         New-Item -Path $Path -ItemType Directory | Out-Null
     }
 
-    $DocumentXml.GetElementsByTagName('wd:Worker_Document_Detail_Data') | foreach {
+    $DocumentXml.GetElementsByTagName('wd:Worker_Document_Detail_Data') | ForEach-Object {
         $o = $fileTemplate.PsObject.Copy()
-        $categoryXml = $_.Document_Category_Reference.ID | where {$_.type -match 'Document_Category__Workday_Owned__ID|Document_Category_ID'}
+        $categoryXml = $_.Document_Category_Reference.ID | Where-Object {$_.type -match 'Document_Category__Workday_Owned__ID|Document_Category_ID'}
         $o.Category = '{0}/{1}' -f $categoryXml.type, $categoryXml.'#text'
         $o.FileName = $_.Filename
         $o.Base64 = $_.File

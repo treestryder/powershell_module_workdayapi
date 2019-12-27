@@ -7,7 +7,7 @@
     Updates a Worker's email in Workday, only if it is different.
     Change requests are always recorded in Workday's audit log even when
     the email is the same. Unlike Set-WorkdayWorkerEmail, this cmdlet
-    first checks the current email before requesting a change. 
+    first checks the current email before requesting a change.
 
 .PARAMETER WorkerId
     The Worker's Id at Workday.
@@ -33,7 +33,7 @@
     using Set-WorkdayCredential will be used.
 
 .EXAMPLE
-    
+
 Update-WorkdayWorkerEmail -WorkerId 123 -Email test@example.com
 
 .NOTES
@@ -68,7 +68,9 @@ Update-WorkdayWorkerEmail -WorkerId 123 -Email test@example.com
 		[ValidateSet('HOME','WORK')]
         [string]$UsageType = 'WORK',
         [switch]$Private,
-        [switch]$Secondary
+        [switch]$Secondary,
+        [Alias("Force")]
+        [switch]$IncludeInactive
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
@@ -79,7 +81,7 @@ Update-WorkdayWorkerEmail -WorkerId 123 -Email test@example.com
         $workerReference = $WorkerXml.GetElementsByTagName('wd:Worker_Reference') | Select-Object -First 1
         $WorkerId = $workerReference.ID | Where-Object {$_.type -eq 'WID'} | Select-Object -ExpandProperty InnerText
     } else {
-        $current = Get-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
+        $current = Get-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password -IncludeInactive:$IncludeInactive
     }
 
     $currentEmail = $current |
