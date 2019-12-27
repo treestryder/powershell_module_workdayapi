@@ -26,7 +26,7 @@ function Get-WorkdayIntegrationEvent {
 .PARAMETER Password
     Password used to authenticate with Workday. If empty, the value stored
     using Set-WorkdayCredential will be used.
-    
+
 .EXAMPLE
     Get-WorkdayIntegrationEvent -Wid 0123456789ABCDEF0123456789ABCDEF -Integrations_ResourcesUri 'https://SERVICE.workday.com/ccx/service/TENANT/Integrations/v26.0'
 
@@ -85,27 +85,27 @@ function Get-WorkdayIntegrationEvent {
         $output.Message = 'ERROR: null response.'
         return $output
     }
-    
+
     if ($response.Success -eq $false) {
         $output.Status = $response.Message
         $output.Xml = $response.Xml
         return $output
     }
-    
+
     $output.Name = $response.Xml.Get_Integration_Events_Response.Request_References.Integration_Event_Reference.Descriptor
 
     $startTime = $response.Xml.Get_Integration_Events_Response.Response_Data.Integration_Event.Integration_Event_Data.Initiated_DateTime
     if ([string]::IsNullOrWhiteSpace($startTime) -eq $false) {
         $output.Start = Get-Date $startTime
     }
-    
+
     $endTime = $response.Xml.Get_Integration_Events_Response.Response_Data.Integration_Event.Integration_Event_Data.Completed_DateTime
     if ([string]::IsNullOrWhiteSpace($endTime) -eq $false) {
         $output.End = Get-Date $endTime
     }
 
     $output.Message = $response.Xml.Get_Integration_Events_Response.Response_Data.Integration_Event.Integration_Event_Data.Integration_Response_Message
-    
+
     $percentComplete = $response.Xml.Get_Integration_Events_Response.Response_Data.Integration_Event.Integration_Event_Data.Percent_Complete
     if ([string]::IsNullOrWhiteSpace($percentComplete) -eq $false) {
         $output.PercentComplete = ([int]$percentComplete) * 100

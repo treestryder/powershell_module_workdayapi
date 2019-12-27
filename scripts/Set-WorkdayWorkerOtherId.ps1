@@ -63,14 +63,14 @@ function Set-WorkdayWorkerOtherId {
 </bsvc:Change_Other_IDs_Request>
 '@
 
-    
+
     $request.Change_Other_IDs_Request.Change_Other_IDs_Data.Worker_Reference.ID.InnerText = $WorkerId
     if ($WorkerType -eq 'Contingent_Worker_ID') {
         $request.Change_Other_IDs_Request.Change_Other_IDs_Data.Worker_Reference.ID.type = 'Contingent_Worker_ID'
     } elseif ($WorkerType -eq 'WID') {
         $request.Change_Other_IDs_Request.Change_Other_IDs_Data.Worker_Reference.ID.type = 'WID'
     }
-    
+
     $request.Change_Other_IDs_Request.Change_Other_IDs_Data.Custom_Identification_Data.Custom_ID.Custom_ID_Data.ID_Type_Reference.ID.InnerText = $Type
     $request.Change_Other_IDs_Request.Change_Other_IDs_Data.Custom_Identification_Data.Custom_ID.Custom_ID_Data.ID = $Id
 

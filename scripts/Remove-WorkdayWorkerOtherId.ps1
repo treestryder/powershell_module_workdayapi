@@ -48,14 +48,14 @@ function Remove-WorkdayWorkerOtherId {
 </bsvc:Change_Other_IDs_Request>
 '@
 
-    
+
     $request.Change_Other_IDs_Request.Change_Other_IDs_Data.Worker_Reference.ID.InnerText = $WorkerId
     if ($WorkerType -eq 'Contingent_Worker_ID') {
         $request.Change_Other_IDs_Request.Change_Other_IDs_Data.Worker_Reference.ID.type = 'Contingent_Worker_ID'
     } elseif ($WorkerType -eq 'WID') {
         $request.Change_Other_IDs_Request.Change_Other_IDs_Data.Worker_Reference.ID.type = 'WID'
     }
-    
+
     $request.Change_Other_IDs_Request.Change_Other_IDs_Data.Custom_Identification_Data.Custom_ID.Custom_ID_Shared_Reference.ID.InnerText = $WID
 
     Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output

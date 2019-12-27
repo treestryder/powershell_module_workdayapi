@@ -29,7 +29,7 @@ function Set-WorkdayWorkerDocument {
     using Set-WorkdayCredential will be used.
 
 .EXAMPLE
-    
+
 Set-WorkdayWorkerDocument -WorkerId 123 -Path Document.pdf
 
 #>

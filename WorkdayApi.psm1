@@ -21,5 +21,5 @@ if (Test-Path $WorkdayConfigurationFile) {
 $NM = New-Object System.Xml.XmlNamespaceManager -ArgumentList (New-Object System.Xml.NameTable)
 $NM.AddNamespace('wd','urn:com.workday/bsvc')
 $NM.AddNamespace('bsvc','urn:com.workday/bsvc')
-    
+
 Get-ChildItem "$PSScriptRoot/scripts/*.ps1" | foreach { . $_ }

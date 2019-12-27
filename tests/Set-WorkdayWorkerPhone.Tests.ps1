@@ -70,13 +70,13 @@ $ $mcid.Worker_Contact_Information_Data.Phone_Data.Usage_Data.Type_Data.Type_Ref
 
 type                        #text
 ----                        -----
-Communication_Usage_Type_ID WORK 
+Communication_Usage_Type_ID WORK
 
 
 
 $ $mcid.Worker_Contact_Information_Data.Phone_Data.Usage_Data.Type_Data.Type_Reference.ID.'#text'
 WORK
-#>        
+#>
         Context 'Invalid Input' {
             It 'Throws an exception when an invalid phone number is supplied.' {
                 { Set-WorkdayWorkerPhone -WorkerId 1 -Number BadNumber } | Should Throw 'Invalid number: [BadNumber]'

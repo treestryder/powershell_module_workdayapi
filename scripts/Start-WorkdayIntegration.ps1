@@ -4,7 +4,7 @@
     Starts a Workday Integration.
 
 .DESCRIPTION
-    Starts a Workday Integration and returns the resulting Integration 
+    Starts a Workday Integration and returns the resulting Integration
     information as a custom Powershell object. If the -Wait switch is used,
     the script will wait for the Integration to complete and return the
     Event information.
@@ -34,14 +34,14 @@
 
 .PARAMETER UseDefaultCredentials
     Sets Invoke_Integration_As_Current_User to 'true'.
-    
+
 .EXAMPLE
     Start-WorkdayIntegration -Id Integration/Id/StartHere -Type Integration_System_ID -Integrations_ResourcesUri 'https://SERVICE.workday.com/ccx/service/TENANT/Integrations/v26.0'
 
     Name    : Integration ESB Invocation (INT123 Integration - 04/13/2016 08:39:02.099 (Processing))
     Start   : 4/13/2016 11:39:02 AM
-    End     : 
-    Message : 
+    End     :
+    Message :
     Xml     : #document
 
 #>
@@ -91,7 +91,7 @@
     if ($response -eq $null) {
         return $output
     }
-    
+
     if ($response.Success -eq $false) {
         $output.Message = $response.Message
         $output.Xml = $response.Xml
@@ -107,7 +107,7 @@
         $event = Get-WorkdayIntegrationEvent -Wid $output.Wid -Integrations_ResourcesUri:$Integrations_ResourcesUri -Username:$Username -Password:$Password
         while ($event.End -eq $null) {
             Start-Sleep -Seconds 5
-            $event = Get-WorkdayIntegrationEvent -Wid $output.Wid -Integrations_ResourcesUri:$Integrations_ResourcesUri -Username:$Username -Password:$Password   
+            $event = Get-WorkdayIntegrationEvent -Wid $output.Wid -Integrations_ResourcesUri:$Integrations_ResourcesUri -Username:$Username -Password:$Password
         }
         return $event
     }

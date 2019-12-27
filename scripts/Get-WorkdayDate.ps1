@@ -18,7 +18,7 @@
     using Set-WorkdayCredential will be used.
 
 .EXAMPLE
-    
+
 Get-WorkdayWorker -WorkerId 123 -IncludePersonal
 
 #>
@@ -32,7 +32,7 @@ function Get-WorkdayDate {
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = Get-WorkdayEndpoint 'Human_Resources' }
 
-    $request = '<bsvc:Server_Timestamp_Get xmlns:bsvc="urn:com.workday/bsvc" />' 
+    $request = '<bsvc:Server_Timestamp_Get xmlns:bsvc="urn:com.workday/bsvc" />'
     $response = Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password
 
     if ($response.Success) {

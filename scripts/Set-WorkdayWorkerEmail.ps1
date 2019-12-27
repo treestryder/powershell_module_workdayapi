@@ -41,7 +41,7 @@ function Set-WorkdayWorkerEmail {
     using Set-WorkdayCredential will be used.
 
 .EXAMPLE
-    
+
 Set-WorkdayWorkerEmail -WorkerId 123 -WorkEmail worker@example.com
 
 .NOTES

@@ -7,7 +7,7 @@
     Updates a Worker's phone number in Workday, only if it is different.
     Change requests are always recorded in Workday's audit log even when
     the number is the same. Unlike Set-WorkdayWorkerPhone, this cmdlet
-    first checks the current phone number before requesting a change. 
+    first checks the current phone number before requesting a change.
 
 .PARAMETER WorkerId
     The Worker's Id at Workday.
@@ -34,7 +34,7 @@
     using Set-WorkdayCredential will be used.
 
 .EXAMPLE
-    
+
 Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
 
 #>
@@ -67,7 +67,9 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
 		[ValidateSet('Landline','Cell')]
         [string]$DeviceType = 'Landline',
         [switch]$Private,
-        [switch]$Secondary
+        [switch]$Secondary,
+        [Alias("Force")]
+        [switch]$IncludeInactive
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
@@ -78,7 +80,7 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
         $workerReference = $WorkerXml.GetElementsByTagName('wd:Worker_Reference') | Select-Object -First 1
         $WorkerId = $workerReference.ID | Where-Object {$_.type -eq 'WID'} | Select-Object -ExpandProperty InnerText
     } else {
-        $current = Get-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
+        $current = Get-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password -IncludeInactive:$IncludeInactive
     }
 
     function scrub ([string]$PhoneNumber) { $PhoneNumber -replace '[^\d]','' }
@@ -97,7 +99,7 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
         $scrubbedCurrentNumber = scrub $currentMatch.Number
         $scrubbedCurrentExtension = scrub $currentMatch.Extension
     }
-    
+
     $msg = "{0} Current [$scrubbedCurrentNumber] ext [$scrubbedCurrentExtension] Proposed [$scrubbedProposedNumber] ext [$scrubbedProposedExtention]"
     $output = [pscustomobject][ordered]@{
         WorkerId = $WorkerId
@@ -139,7 +141,7 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
             }
         }
     }
-    
+
     Write-Verbose $output.Message
     Write-Output $output
 }

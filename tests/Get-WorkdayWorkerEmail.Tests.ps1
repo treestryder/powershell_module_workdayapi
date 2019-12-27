@@ -24,7 +24,7 @@ Describe Get-WorkdayWorkerEmail {
         Context NoSearch {
             It 'Returns expected email information when provided a Worker XML object.' {
                 Mock Invoke-WorkdayRequest {}
-                
+
                 $worker = Mock_Invoke-WorkdayRequest_ExampleWorker
                 $response = @(Get-WorkdayWorkerEmail -WorkerXml $worker.Xml )
                 $response.Count | Should Be 1

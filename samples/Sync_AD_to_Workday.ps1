@@ -26,7 +26,7 @@ function Main {
     $ldapProperties = 'userPrincipalName', 'mail', 'telephoneNumber', 'mobile','extensionAttribute1'
 
     Write-Verbose 'Requesting Workday Workers.'
-    
+
     Get-WorkdayWorker -IncludePersonal | ForEach-Object {
         $worker = $_
         $count++
@@ -148,12 +148,12 @@ function Get-DsAdUsers {
     $objSearcher.PageSize = 1000
     $objSearcher.Filter = $LDAPFilter
     $objSearcher.SearchScope = "Subtree"
-    
+
     $Properties | ForEach-Object {
         $null = $objSearcher.PropertiesToLoad.Add($_)
     }
     $outputTemplate = 1 | Select-Object ($Properties + 'LDAPPath')
-    
+
     foreach ($entry in $objSearcher.FindAll()) {
         $output = $outputTemplate.psobject.Copy()
         $output.LDAPPath = $entry.Path
