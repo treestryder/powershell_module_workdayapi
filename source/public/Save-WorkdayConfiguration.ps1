@@ -17,5 +17,5 @@ function Save-WorkdayConfiguration {
     [CmdletBinding()]
     param ()
 
-    Export-Clixml -Path $WorkdayConfigurationFile -InputObject $WorkdayConfiguration
+    Export-Clixml -Path $ConfigurationFile -InputObject $WorkdayConfiguration
 }

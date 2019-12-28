@@ -14,7 +14,7 @@ function Remove-WorkdayConfiguration {
     [CmdletBinding()]
     param ()
 
-    if (Test-Path -Path $WorkdayConfigurationFile) {
-        Remove-Item -Path $WorkdayConfigurationFile
+    if (Test-Path -Path $ConfigurationFile) {
+        Remove-Item -Path $ConfigurationFile
     }
 }

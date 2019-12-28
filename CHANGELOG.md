@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.3 - 2019-12-27
+
+- Parameter "-IncludeInactive" now available on all Worker cmdlets.
+- Code cleanup and preparation for publishing to the Powershell Gallery.
+
 ## 2.2.2 - 2018-12-13
 
 - Bug fix: Update-WorkdayWorkerOtherId now behaves as expected, when a date is not passed.
