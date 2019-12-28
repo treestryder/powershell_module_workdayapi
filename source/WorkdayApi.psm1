@@ -19,7 +19,7 @@ $OldWorkdayConfigurationFile = $(
         Join-Path ~/.workdayapi/ 'WorkdayConfiguration.clixml'
     })
 if (Test-Path $OldWorkdayConfigurationFile) {
-    Move-Item -Path $OldWorkdayConfigurationFile -Destination $ConfigurationFile    
+    Move-Item -Path $OldWorkdayConfigurationFile -Destination $ConfigurationFile
 }
 
 if (Test-Path $ConfigurationFile) {

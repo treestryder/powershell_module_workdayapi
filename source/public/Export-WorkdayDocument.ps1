@@ -52,6 +52,9 @@
       <bsvc:ID bsvc:type="WID">string</bsvc:ID>
     </bsvc:Worker_Document_Reference>
   </bsvc:Request_References>
+  <bsvc:Request_Criteria>
+    <bsvc:Exclude_Inactive_Workers>false</bsvc:Exclude_Inactive_Workers>
+  </bsvc:Request_Criteria>
   <bsvc:Response_Group>
     <bsvc:Include_Worker_Document_Data>true</bsvc:Include_Worker_Document_Data>
   </bsvc:Response_Group>
@@ -62,7 +65,7 @@
 
     $response = Invoke-WorkdayRequest -Request $request -Uri $StaffingUri -Username:$Username -Password:$Password
 
-    if ($response.Xml -eq $null) {
+    if ($null -eq $response.Xml) {
         Write-Warning ('Unable to find Document information for WID: {0}' -f $Wid)
         return
     }
