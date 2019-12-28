@@ -10,7 +10,7 @@
     PrivateData = @{
         PSData = @{
             Tags = @('Workday')
-            LicenseUri = 'https://github.com/treestryder/powershell_module_workdayapi/blob/PowershellRepository/source/License.txt'
+            LicenseUri = 'https://github.com/treestryder/powershell_module_workdayapi/blob/master/source/License.txt'
             ProjectUri = 'https://github.com/treestryder/powershell_module_workdayapi/'
             ReleaseNotes = 'Inital release to the Powershell Gallery.'
         }
