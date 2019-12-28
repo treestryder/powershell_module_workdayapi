@@ -83,7 +83,7 @@ function Main {
                 $output.WorkerId = $Matches[1]
                 $worker = $Workers[$output.WorkerId]
 
-                if ($worker -eq $null) {
+                if ($null -eq $worker) {
                     $output.Success = $false
                     $output.Message = 'Worker ID not found at Workday.'
                 }
@@ -132,14 +132,14 @@ function Main {
 function CreateDirectoryIfNeeded {
     param ($Path)
     $Directory = Split-Path -Parent -Path $Path
-    if ($Directory -ne $null -and -not (Test-Path $Directory)) {
+    if ($null -ne $Directory -and -not (Test-Path $Directory)) {
         New-Item -Path $Directory -Type Directory | Out-Null
     }
 }
 
 Main | Write-Output -OutVariable Output
 
-if ($ResultsFile -ne $null -and $Output.Count -gt 0) {
+if ($null -ne $ResultsFile -and $Output.Count -gt 0) {
     $ResultsFile = $ResultsFile -f (Get-Date)
     CreateDirectoryIfNeeded $ResultsFile
     $Output | Export-Csv -Path $ResultsFile -NoTypeInformation
