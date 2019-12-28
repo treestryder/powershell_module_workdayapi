@@ -78,7 +78,13 @@ This simple Powershell Module has been written to fulfill my employer's Workday 
 
 The only dependency is Powershell version 4.
 
-To install...
+This module has been published to the Powershell Gallery at https://www.powershellgallery.com/packages/WorkdayApi/ .
+
+To install run the following Powershell command:
+
+    Install-Module -Name WorkdayApi
+
+Alternatively:
 
 * Download the files.
 * Execute the script Install-WorkdayModule.ps1
