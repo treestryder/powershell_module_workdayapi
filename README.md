@@ -84,11 +84,6 @@ To install run the following Powershell command:
 
     Install-Module -Name WorkdayApi
 
-Alternatively:
-
-* Download the files.
-* Execute the script Install-WorkdayModule.ps1
-
 ## Fine Print ##
 Please use with caution. This module could cause baldness, could warp time and space, could kill your puppy or, could do nothing at all. I am sharing what I am using as a starting point for a community developed solution.
 
