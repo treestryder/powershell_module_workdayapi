@@ -107,19 +107,23 @@ At C:\Program Files\WindowsPowerShell\Modules\WorkdayApi\scripts\Invoke-WorkdayR
 
 	$response = $null
     try {
-		$response = Invoke-RestMethod -Method Post -Uri $Uri -Headers $headers -Body $WorkdaySoapEnvelope
+		$response = Invoke-RestMethod -Method Post -Uri $Uri -Headers $headers -Body $WorkdaySoapEnvelope -ErrorAction Stop
         $o.Xml = [xml]$response.Envelope.Body.InnerXml
         $o.Message = ''
         $o.Success = $true
 	}
 	catch [System.Net.WebException] {
+        Write-Debug $_
         $o.Success = $false
-		$reader = New-Object System.IO.StreamReader -ArgumentList $_.Exception.Response.GetResponseStream()
-		$response = $reader.ReadToEnd()
-		$reader.Close()
+        $o.Message = $_.ToString()
+
         try {
-           $xml = [xml]$response
-           $o.Xml = [xml]$xml.Envelope.Body.InnerXml
+            $reader = New-Object System.IO.StreamReader -ArgumentList $_.Exception.Response.GetResponseStream()
+            $response = $reader.ReadToEnd()
+            $reader.Close()
+            $o.Message = $response
+            $xml = [xml]$response
+            $o.Xml = [xml]$xml.Envelope.Body.InnerXml
 
             # Put the first Workday Exception into the Message property.
             if ($o.Xml.InnerXml.StartsWith('<SOAP-ENV:Fault ')) {
@@ -127,13 +131,11 @@ At C:\Program Files\WindowsPowerShell\Modules\WorkdayApi\scripts\Invoke-WorkdayR
                 $o.Message = "$($o.Xml.Fault.faultcode): $($o.Xml.Fault.faultstring)"
             }
         }
-        catch {
-            $o.Message = $response
-        }
+        catch {}
 	}
     catch {
+        Write-Debug $_
         $o.Success = $false
-        $o.Message = $_.ToString()
     }
     finally {
         Write-Output $o
