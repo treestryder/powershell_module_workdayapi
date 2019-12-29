@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.2.5 - 2019-12-28
+
+- Fixed Worker Location that before was returning the ID, rather than the value.
+
+## 2.2.4 - 2019-12-28
+
+- Published to the Microsoft Powershell Gallery.
+- Improved server level error handling when calling Invoke-WorkdayRequest.
+
 ## 2.2.3 - 2019-12-27
 
 - Parameter "-IncludeInactive" now available on all Worker cmdlets.
