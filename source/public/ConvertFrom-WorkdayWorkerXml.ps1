@@ -57,18 +57,18 @@ function ConvertFrom-WorkdayWorkerXml {
                 $o.WorkerId         = $referenceId.'#text'
                 $o.XML              = [XML]$x.OuterXml
 
-                $o.Phone   = @(Get-WorkdayWorkerPhone -WorkerXml $x.OuterXml)
-                $o.Email   = @(Get-WorkdayWorkerEmail -WorkerXml $x.OuterXml)
+                $o.Phone      = @(Get-WorkdayWorkerPhone -WorkerXml $x.OuterXml)
+                $o.Email      = @(Get-WorkdayWorkerEmail -WorkerXml $x.OuterXml)
                 $o.NationalId = @(Get-WorkdayWorkerNationalId -WorkerXml $x.OuterXml)
-                $o.OtherId = @(Get-WorkdayWorkerOtherId -WorkerXml $x.OuterXml)
-                $o.UserId  = $x.Worker_Data.User_ID
+                $o.OtherId    = @(Get-WorkdayWorkerOtherId -WorkerXml $x.OuterXml)
+                $o.UserId     = $x.Worker_Data.User_ID
 
                 # The methods SelectNodes and SelectSingleNode have access to the entire XML document and require anchoring with "./" to work as expected.
                 $workerJobData = $x.SelectSingleNode('./wd:Worker_Data/wd:Employment_Data/wd:Worker_Job_Data', $NM)
                 if ($null -ne $workerJobData) {
                     $o.BusinessTitle = $workerJobData.Position_Data.Business_Title
                     $o.JobProfileName = $workerJobData.Position_Data.Job_Profile_Summary_Data.Job_Profile_Name
-                    $o.Location = $workerJobData.SelectNodes('./wd:Position_Data/wd:Business_Site_Summary_Data/wd:Location_Reference/wd:ID[@wd:type="Location_ID"]', $NM).InnerText
+                    $o.Location = $workerJobData.SelectNodes('./wd:Position_Data/wd:Business_Site_Summary_Data/wd:Name', $NM).InnerText
                     $o.WorkSpace = $workerJobData.SelectNodes('./wd:Position_Data/wd:Work_Space__Reference/wd:ID[@wd:type="Location_ID"]', $NM).InnerText
                     $o.WorkerTypeReference = $workerJobData.SelectNodes('./wd:Position_Data/wd:Worker_Type_Reference/wd:ID[@wd:type="Employee_Type_ID"]', $NM).InnerText
                     $o.Manager = $workerJobData.Position_Data.Manager_as_of_last_detected_manager_change_Reference.ID |
