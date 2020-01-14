@@ -10,7 +10,7 @@ param (
 )
 
 $sourceFiles = @(
-    '.\source\public\*'
+    '.\source\*'
 )
 
 
