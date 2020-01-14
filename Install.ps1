@@ -10,11 +10,7 @@ param (
 )
 
 $sourceFiles = @(
-    '.\source\en-US\',
-    '.\source\samples\',
-    '.\source\scripts\',
-    '.\source\tests\',
-    '.\source\WorkdayApi.ps*'
+    '.\source\public\*'
 )
 
 
