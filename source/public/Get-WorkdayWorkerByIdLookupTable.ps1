@@ -9,6 +9,7 @@ function Get-WorkdayWorkerByIdLookupTable {
     #>
     [CmdletBinding()]
     param (
+        [switch]$IncludeInactive,
 		[string]$Human_ResourcesUri,
 		[string]$Username,
 		[string]$Password
@@ -19,13 +20,14 @@ function Get-WorkdayWorkerByIdLookupTable {
     $WorkerByIdLookup = @{}
 
     Write-Verbose 'Downloading lookup table from Workday.'
-    Get-WorkdayWorker -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password | ForEach-Object {
+    Get-WorkdayWorker -IncludeInactive:$IncludeInactive -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password | ForEach-Object {
         if (-not $WorkerByIdLookup.ContainsKey($_.WorkerId)) {
             $WorkerByIdLookup[$_.WorkerId] = @()
         }
         $WorkerByIdLookup[$_.WorkerId] += @{
             WorkerType = $_.WorkerType
             WorkerId   = $_.WorkerId
+            WorkerWid  = $_.WorkerWid
         }
     }
     Write-Output $WorkerByIdLookup

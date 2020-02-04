@@ -16,6 +16,7 @@ function ConvertFrom-WorkdayWorkerXml {
     Begin {
         $WorkerObjectTemplate = [pscustomobject][ordered]@{
             WorkerWid             = $null
+            Active                = $null
             WorkerDescriptor      = $null
             PreferredName         = $null
             FirstName             = $null
@@ -64,6 +65,10 @@ function ConvertFrom-WorkdayWorkerXml {
                 $o.UserId     = $x.Worker_Data.User_ID
 
                 # The methods SelectNodes and SelectSingleNode have access to the entire XML document and require anchoring with "./" to work as expected.
+                $workerEmploymentData = $x.SelectSingleNode('./wd:Worker_Data/wd:Employment_Data', $NM)
+                if ($null -ne $workerEmploymentData) {
+                    $o.Active = $workerEmploymentData.Worker_Status_Data.Active -eq '1'
+                }
                 $workerJobData = $x.SelectSingleNode('./wd:Worker_Data/wd:Employment_Data/wd:Worker_Job_Data', $NM)
                 if ($null -ne $workerJobData) {
                     $o.BusinessTitle = $workerJobData.Position_Data.Business_Title

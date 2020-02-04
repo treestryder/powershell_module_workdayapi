@@ -44,6 +44,8 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
 
 #>
 
+#TODO: Potentially, include inactive users when a specific worker is requestd.
+
 	[CmdletBinding()]
     [OutputType([PSCustomObject])]
 	param (
