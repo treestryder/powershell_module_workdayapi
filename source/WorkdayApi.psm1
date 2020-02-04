@@ -31,3 +31,5 @@ $NM.AddNamespace('wd','urn:com.workday/bsvc')
 $NM.AddNamespace('bsvc','urn:com.workday/bsvc')
 
 Get-ChildItem "$PSScriptRoot/public/*.ps1" | ForEach-Object { . $_ }
+
+New-Alias -Name Export-WorkdayWorkerDocument -Value Get-WorkdayWorkerDocument

@@ -14,7 +14,7 @@
     are 'WID', 'Contingent_Worker_ID' and 'Employee_ID'.
 
 .PARAMETER Path
-    If specified, the files will be saved to this directory path.
+    If specified, the files will be saved to this directory path. Otherwise the Base64 is returned with an object that can be saved using its SaveAs method.
 
 .PARAMETER Human_ResourcesUri
     Human_Resources Endpoint Uri for the request. If not provided, the value
@@ -53,19 +53,18 @@ Get-WorkdayWorkerDocument -WorkerId 123
 		[string]$Password,
         [Parameter(ParameterSetName="NoSearch")]
         [xml]$DocumentXml,
-        [string]$Path,
-        [Alias("Force")]
-        [switch]$IncludeInactive
+        [string]$Path
 	)
 
     if ([string]::IsNullOrWhiteSpace($Human_ResourcesUri)) { $Human_ResourcesUri = $WorkdayConfiguration.Endpoints['Human_Resources'] }
 
     if ($PsCmdlet.ParameterSetName -eq 'Search') {
-        $response = Get-WorkdayWorker -WorkerId $WorkerId -WorkerType $WorkerType -IncludeDocuments -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -IncludeInactive:$IncludeInactive -ErrorAction Stop
+        $response = Get-WorkdayWorker -WorkerId $WorkerId -WorkerType $WorkerType -IncludeInactive -IncludeDocuments -PassThru -Human_ResourcesUri $Human_ResourcesUri -Username:$Username -Password:$Password -ErrorAction Stop
+        if (-not $response.Success) { throw "Error getting documents using Get-WorkdayWorker: $($response.Message)" }
         $DocumentXml = $response.Xml
     }
 
-    if ($DocumentXml -eq $null) {
+    if ($null -eq $DocumentXml) {
         Write-Warning 'Unable to find Document information.'
         return
     }
@@ -74,6 +73,7 @@ Get-WorkdayWorkerDocument -WorkerId 123
         FileName      = $null
         Category      = $null
         Base64        = $null
+        Path          = $null
     }
 
     Add-Member -InputObject $fileTemplate -MemberType ScriptMethod -Name SaveAs -Value {
@@ -85,16 +85,19 @@ Get-WorkdayWorkerDocument -WorkerId 123
         New-Item -Path $Path -ItemType Directory | Out-Null
     }
 
-    $DocumentXml.GetElementsByTagName('wd:Worker_Document_Detail_Data') | ForEach-Object {
+    foreach ($doc in $DocumentXml.GetElementsByTagName('wd:Worker_Document_Detail_Data')) {
         $o = $fileTemplate.PsObject.Copy()
-        $categoryXml = $_.Document_Category_Reference.ID | Where-Object {$_.type -match 'Document_Category__Workday_Owned__ID|Document_Category_ID'}
+        $categoryXml = $doc.Document_Category_Reference.ID | Where-Object {$_.type -match 'Document_Category__Workday_Owned__ID|Document_Category_ID'}
         $o.Category = '{0}/{1}' -f $categoryXml.type, $categoryXml.'#text'
-        $o.FileName = $_.Filename
-        $o.Base64 = $_.File
-        Write-Output $o
+        $o.FileName = $doc.Filename
+        $o.Base64 = $doc.File
+    
         if (-not ([string]::IsNullOrEmpty($Path))) {
             $filePath = Join-Path $Path $o.FileName
+            $o.Path = $filePath
             $o.SaveAs($filePath)
         }
+
+        Write-Output $o
     }
 }

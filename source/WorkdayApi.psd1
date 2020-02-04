@@ -17,7 +17,6 @@
     }
     FunctionsToExport = @(
         'ConvertFrom-WorkdayWorkerXml',
-		'Export-WorkdayDocument',
         'Get-WorkdayToAdData',
         'Get-WorkdayReport',
         'Get-WorkdayWorker',
