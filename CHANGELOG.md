@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.6 - 2020-02-03
+
+- Added WID to the terribly named Get-WorkdayWorkerByIdLookupTable and an Active property to Get-WorkdayWorker.
+- Removed the confusing and broken Export-WorkdayWorkerDocument and improved Get-WorkdayWorkerDocument.
+
 ## 2.2.5 - 2019-12-28
 
 - Fixed Worker Location that before was returning the ID, rather than the value.
