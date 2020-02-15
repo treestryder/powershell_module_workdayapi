@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.7 - 2020-02-15
+
+- Set-WorkdayWorkerPhone now excepts any DeviceType and UsageType.
+
 ## 2.2.6 - 2020-02-03
 
 - Added WID to the terribly named Get-WorkdayWorkerByIdLookupTable and an Active property to Get-WorkdayWorker.
