@@ -17,6 +17,21 @@ function Set-WorkdayWorkerPhone {
     Sets the Workday primary Work Landline for a Worker. This cmdlet does not
     currently support other phone types. Also excepts the alias OfficePhone.
 
+.PARAMETER Extension
+	Sets the worker's extension, if included.
+
+.PARAMETER UsageType
+	Known usage types: 'HOME' or 'WORK'.
+
+.PARAMETER DeviceType
+	Known device types: 'Landline', 'Cell', Mobile, 'WORK'
+
+.PARAMETER Private
+	Mark number as private.
+
+.PARAMETER Secondary
+	Any non-primary number. There can be multiple non-primary numbers, but only one primary. 
+		
 .PARAMETER Human_ResourcesUri
     Human_Resources Endpoint Uri for the request. If not provided, the value
     stored with Set-WorkdayEndpoint -Endpoint Human_Resources is used.
@@ -47,9 +62,7 @@ Set-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
 		[ValidateNotNullOrEmpty()]
 		[string]$Number,
 		[string]$Extension,
-		[ValidateSet('HOME','WORK')]
         [string]$UsageType = 'WORK',
-		[ValidateSet('Landline','Cell')]
         [string]$DeviceType = 'Landline',
         [switch]$Private,
         [switch]$Secondary,
