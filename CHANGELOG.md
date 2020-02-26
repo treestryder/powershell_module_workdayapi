@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.8 - 2020-02-25
+
+- Added Set-WorkdayWorkderUserName to set employee UserName
+
 ## 2.2.7 - 2020-02-15
 
 - Set-WorkdayWorkerPhone now excepts any DeviceType and UsageType.
