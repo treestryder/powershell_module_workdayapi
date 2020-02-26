@@ -1,4 +1,4 @@
-function Set-WorkdayWorkderUserName {
+function Set-WorkdayWorkerUserName {
 <#
 .SYNOPSIS
     Sets a Worker's account user name in Workday.
@@ -29,7 +29,7 @@ function Set-WorkdayWorkderUserName {
 
 .EXAMPLE
 
-Set-WorkdayWorkderUserName -WorkerId 123 -WorkerUserName worker@example.com
+Set-WorkdayWorkerUserName -WorkerId 123 -WorkerUserName worker@example.com
 
 .NOTES
 	This changes the users login name for Workday
