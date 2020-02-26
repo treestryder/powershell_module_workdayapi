@@ -72,7 +72,7 @@ This simple Powershell Module has been written to fulfill my employer's Workday 
     Start-WorkdayIntegration    Starts a Workday Integration.
     Update-WorkdayWorkerEmail   Updates a Worker's email in Workday, only if it is different.
     Update-WorkdayWorkerPhone   Updates a Worker's phone number in Workday, only if it is different.
-
+    Set-WorkdayWorkerUserName	Sets the employee/contingent workers login user name.
 
 
 ## Installation ##
