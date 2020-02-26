@@ -51,7 +51,9 @@
         'Start-WorkdayIntegration',
         'Get-WorkdayIntegrationEvent',
         
-        'Get-WorkdayDate'
+        'Get-WorkdayDate',
+	
+	'Set-WorkdayWorkderUserName'
     )
     GUID = 'bd4390dc-a8ad-4bce-8d69-f53ccf8e4163'
 }
