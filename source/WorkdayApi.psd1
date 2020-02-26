@@ -23,7 +23,7 @@
         'Get-WorkdayWorkerByIdLookupTable',
         'Invoke-WorkdayRequest',
         'Remove-WorkdayConfiguration',
-		'Set-WorkdayWorkerPhoto',
+	'Set-WorkdayWorkerPhoto',
         
         'Get-WorkdayEndpoint',
         'Set-WorkdayCredential',
@@ -31,7 +31,7 @@
         'Save-WorkdayConfiguration',
         
         'Get-WorkdayWorkerEmail',
-		'Set-WorkdayWorkerEmail',
+	'Set-WorkdayWorkerEmail',
         'Update-WorkdayWorkerEmail',
         
         'Get-WorkdayWorkerDocument',
@@ -45,7 +45,7 @@
         'Update-WorkdayWorkerOtherId',
         
         'Get-WorkdayWorkerPhone',
-		'Set-WorkdayWorkerPhone',
+	'Set-WorkdayWorkerPhone',
         'Update-WorkdayWorkerPhone',
         
         'Start-WorkdayIntegration',
@@ -53,7 +53,7 @@
         
         'Get-WorkdayDate',
 	
-	'Set-WorkdayWorkderUserName'
+	'Set-WorkdayWorkerUserName'
     )
     GUID = 'bd4390dc-a8ad-4bce-8d69-f53ccf8e4163'
 }
