@@ -2,7 +2,7 @@
 
 ## 2.2.8 - 2020-02-25
 
-- Added Set-WorkdayWorkerUserName to set employee UserName
+- Added Set-WorkdayWorkerUsername for setting Worker Usernames. Thanks to skumarkom.
 
 ## 2.2.7 - 2020-02-15
 
