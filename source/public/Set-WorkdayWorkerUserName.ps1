@@ -1,4 +1,4 @@
-function Set-WorkdayWorkerUserName {
+function Set-WorkdayWorkerUsername {
 <#
 .SYNOPSIS
     Sets a Worker's account user name in Workday.
@@ -13,7 +13,8 @@ function Set-WorkdayWorkerUserName {
 	The Worker UserName to login into Workday.
 
 .PARAMETER WorkerType
-	Currently supports Employee and Contingent.
+    The type of ID that the WorkerId represents. Valid values
+    are 'Contingent_Worker_ID' and 'Employee_ID'.
 
 .PARAMETER Human_ResourcesUri
     Human_Resources Endpoint Uri for the request. If not provided, the value
@@ -43,10 +44,10 @@ Set-WorkdayWorkerUserName -WorkerId 123 -WorkerUserName worker@example.com
 		[ValidatePattern ('^[a-fA-F0-9\-]{1,32}$')]
 		[string]$WorkerId,
 		[Parameter(Mandatory = $true)]
-		[ValidatePattern('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$')] # Since the user name is email-id in this implementation
+		[ValidateNotNullOrEmpty()]
 		[string]$WorkerUserName,
-		[ValidateSet('Employee','Contingent')]
-        [string]$WorkerType = 'Employee',
+		[ValidateSet('Contingent_Worker_ID', 'Employee_ID')]
+		[string]$WorkerType = 'Employee_ID',
 		[string]$Human_ResourcesUri,
 		[string]$Username,
 		[string]$Password
@@ -79,12 +80,13 @@ Set-WorkdayWorkerUserName -WorkerId 123 -WorkerUserName worker@example.com
 </bsvc:Contingent_Worker_Reference>
 '@		
 
-	if ($WorkerType -eq 'Employee') {
-		$employeeref.Employee_Reference.Integration_ID_Reference.ID.InnerText = $WorkerId
-		$request.Workday_Account_for_Worker_Update.Worker_Reference.InnerXml = $employeeref.OuterXml
-	} elseif ($WorkerType -eq 'Contingent') {
+	if ($WorkerType -eq 'Contingent_Worker_ID') {
 		$contingentref.Contingent_Worker_Reference.Integration_ID_Reference.ID.InnerText = $WorkerId
 		$request.Workday_Account_for_Worker_Update.Worker_Reference.InnerXml = $contingentref.OuterXml
+	}
+	else {
+		$employeeref.Employee_Reference.Integration_ID_Reference.ID.InnerText = $WorkerId
+		$request.Workday_Account_for_Worker_Update.Worker_Reference.InnerXml = $employeeref.OuterXml		
 	}
 	
 	# Set Workday employee/congingent worker UserName
