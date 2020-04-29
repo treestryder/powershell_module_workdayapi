@@ -1,8 +1,8 @@
 # Changelog
 
-## 2.2.8 - 2020-02-25
+## 2.2.9 - 2020-02-25
 
-- Added Set-WorkdayWorkerUsername for setting Worker Usernames. Thanks to skumarkom.
+- Added Set-WorkdayWorkerUserId for setting Worker's User Id (username). Thanks to skumarkom.
 
 ## 2.2.7 - 2020-02-15
 
@@ -26,6 +26,7 @@
 
 - Parameter "-IncludeInactive" now available on all Worker cmdlets.
 - Code cleanup and preparation for publishing to the Powershell Gallery.
+- Thanks to PHactotum.
 
 ## 2.2.2 - 2018-12-13
 

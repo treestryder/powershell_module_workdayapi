@@ -1,6 +1,6 @@
 @{
     Description = 'Provides a means to access the Workday SOAP API in a Powershell friendly manner.'
-    ModuleVersion = '2.2.8'
+    ModuleVersion = '2.2.9'
     HelpInfoURI = 'https://github.com/treestryder/powershell_module_workdayapi/wiki'
     Author = 'Nathan Hartley'
     Copyright = '(c) 2019 Nathan Hartley. All rights reserved.'
@@ -53,7 +53,7 @@
         
         'Get-WorkdayDate',
 	
-	    'Set-WorkdayWorkerUsername'
+	    'Set-WorkdayWorkerUserId'
     )
     GUID = 'bd4390dc-a8ad-4bce-8d69-f53ccf8e4163'
 }

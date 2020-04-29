@@ -1,4 +1,4 @@
-function Set-WorkdayWorkerUsername {
+function Set-WorkdayWorkerUserId {
 <#
 .SYNOPSIS
     Sets a Worker's account user name in Workday.
@@ -9,8 +9,8 @@ function Set-WorkdayWorkerUsername {
 .PARAMETER WorkerId
     The Worker's Id at Workday.
 
-.PARAMETER WorkerUserName
-	The Worker UserName to login into Workday.
+.PARAMETER UserId
+	The Worker UserId to login into Workday.
 
 .PARAMETER WorkerType
     The type of ID that the WorkerId represents. Valid values
@@ -30,7 +30,7 @@ function Set-WorkdayWorkerUsername {
 
 .EXAMPLE
 
-Set-WorkdayWorkerUserName -WorkerId 123 -WorkerUserName worker@example.com
+Set-WorkdayWorkerUserId -WorkerId 123 -UserId worker@example.com
 
 .NOTES
 	This changes the users login name for Workday
@@ -45,7 +45,8 @@ Set-WorkdayWorkerUserName -WorkerId 123 -WorkerUserName worker@example.com
 		[string]$WorkerId,
 		[Parameter(Mandatory = $true)]
 		[ValidateNotNullOrEmpty()]
-		[string]$WorkerUserName,
+		[Alias('')]
+		[string]$UserId,
 		[ValidateSet('Contingent_Worker_ID', 'Employee_ID')]
 		[string]$WorkerType = 'Employee_ID',
 		[string]$Human_ResourcesUri,
@@ -89,8 +90,8 @@ Set-WorkdayWorkerUserName -WorkerId 123 -WorkerUserName worker@example.com
 		$request.Workday_Account_for_Worker_Update.Worker_Reference.InnerXml = $employeeref.OuterXml		
 	}
 	
-	# Set Workday employee/congingent worker UserName
-	$request.Workday_Account_for_Worker_Update.Workday_Account_for_Worker_Data.User_Name = $WorkerUserName
+	# Set Workday employee/congingent worker User ID
+	$request.Workday_Account_for_Worker_Update.Workday_Account_for_Worker_Data.User_Name = $UserId
 	
 	Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password | Write-Output
 

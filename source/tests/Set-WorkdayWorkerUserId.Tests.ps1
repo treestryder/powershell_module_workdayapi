@@ -2,7 +2,7 @@
 Import-Module "$PsScriptRoot\..\WorkdayApi.psd1" -Force
 Import-Module "$PsScriptRoot\Invoke-WorkdayRequestHelper.psm1" -Force -DisableNameChecking
 
-Describe Set-WorkdayWorkerUsername {
+Describe Set-WorkdayWorkerUserId {
     InModuleScope WorkdayApi {
 
         # Echo Request
@@ -14,7 +14,7 @@ Describe Set-WorkdayWorkerUsername {
         $expectedResponse = @'
 <bsvc:Workday_Account_for_Worker_Update bsvc:version="v33.0" xmlns:bsvc="urn:com.workday/bsvc"><bsvc:Worker_Reference><bsvc:Contingent_Worker_Reference><bsvc:Integration_ID_Reference><bsvc:ID bsvc:System_ID="WD-EMPLID">1</bsvc:ID></bsvc:Integration_ID_Reference></bsvc:Contingent_Worker_Reference></bsvc:Worker_Reference><bsvc:Workday_Account_for_Worker_Data><bsvc:User_Name>new@example.com</bsvc:User_Name></bsvc:Workday_Account_for_Worker_Data></bsvc:Workday_Account_for_Worker_Update>
 '@ -f (Get-Date)
-            $response = Set-WorkdayWorkerUsername -WorkerId 1 -WorkerType Contingent_Worker_ID -WorkerUsername 'new@example.com'
+            $response = Set-WorkdayWorkerUserId -WorkerId 1 -WorkerType Contingent_Worker_ID -UserId 'new@example.com'
             $response.Xml.OuterXml | Should BeExactly $expectedResponse
         }
 
@@ -22,12 +22,12 @@ Describe Set-WorkdayWorkerUsername {
             $expectedResponse = @'
 <bsvc:Workday_Account_for_Worker_Update bsvc:version="v33.0" xmlns:bsvc="urn:com.workday/bsvc"><bsvc:Worker_Reference><bsvc:Employee_Reference><bsvc:Integration_ID_Reference><bsvc:ID bsvc:System_ID="WD-EMPLID">1</bsvc:ID></bsvc:Integration_ID_Reference></bsvc:Employee_Reference></bsvc:Worker_Reference><bsvc:Workday_Account_for_Worker_Data><bsvc:User_Name>new@example.com</bsvc:User_Name></bsvc:Workday_Account_for_Worker_Data></bsvc:Workday_Account_for_Worker_Update>
 '@ -f (Get-Date)
-                $response = Set-WorkdayWorkerUsername -WorkerId 1 -WorkerType Employee_ID -WorkerUsername 'new@example.com'
+                $response = Set-WorkdayWorkerUserId -WorkerId 1 -WorkerType Employee_ID -UserId 'new@example.com'
                 $response.Xml.OuterXml | Should BeExactly $expectedResponse
             }
 
-        It 'Throws an exception when a blank username is supplied.' {
-            { Set-WorkdayWorkerUsername -WorkerId 1 -WorkerUsername '' } | Should Throw
+        It 'Throws an exception when a blank UserId is supplied.' {
+            { Set-WorkdayWorkerUserId -WorkerId 1 -UserId '' } | Should Throw
         }
     }
 }
