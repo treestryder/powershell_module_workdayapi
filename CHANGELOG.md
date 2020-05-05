@@ -2,7 +2,7 @@
 
 ## 2.3.0 - 2020-05-04
 
-- Added Get-WorkdayWorkerPhoto for getting worker's photo encoded as Base64.
+- Added Get-WorkdayWorkerPhoto for getting worker's photo encoded as Base64. Thanks to skywayskase.
 
 ## 2.2.9 - 2020-02-25
 
