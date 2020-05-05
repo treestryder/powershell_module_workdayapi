@@ -60,6 +60,7 @@ This simple Powershell Module has been written to fulfill my employer's Workday 
     Get-WorkdayWorkerDocument   Gets Workday Worker Documents.
     Get-WorkdayWorkerEmail      Returns a Worker's email addresses.
     Get-WorkdayWorkerPhone      Returns a Worker's phone numbers.
+    Get-WorkdayWorkerPhoto      Returns a worker's photo.
     Invoke-WorkdayRequest       Sends XML requests to Workday API, with proper authentication and receives XML response.
     Remove-WorkdayConfiguration Removes Workday configuration file from the current user's Profile.
     Save-WorkdayConfiguration   Saves default Workday configuration to a file in the current users Profile.

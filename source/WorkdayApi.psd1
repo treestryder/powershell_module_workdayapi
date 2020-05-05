@@ -1,9 +1,9 @@
 @{
     Description = 'Provides a means to access the Workday SOAP API in a Powershell friendly manner.'
-    ModuleVersion = '2.2.9'
+    ModuleVersion = '2.3.0'
     HelpInfoURI = 'https://github.com/treestryder/powershell_module_workdayapi/wiki'
     Author = 'Nathan Hartley'
-    Copyright = '(c) 2019 Nathan Hartley. All rights reserved.'
+    Copyright = '(c) 2020 Nathan Hartley. All rights reserved.'
     RootModule = 'WorkdayApi.psm1'
     PowerShellVersion = '5.1'
     CompatiblePSEditions = @('Desktop', 'Core')
@@ -12,7 +12,11 @@
             Tags = @('Workday')
             LicenseUri = 'https://github.com/treestryder/powershell_module_workdayapi/blob/master/source/License.txt'
             ProjectUri = 'https://github.com/treestryder/powershell_module_workdayapi/'
-            ReleaseNotes = 'Inital release to the Powershell Gallery.'
+            ReleaseNotes = @'
+ * Added Get-WorkdayWorkerPhoto for getting worker's photo.
+
+Change log available at: https://github.com/treestryder/powershell_module_workdayapi/blob/master/CHANGELOG.md 
+'@
         }
     }
     FunctionsToExport = @(
@@ -23,6 +27,7 @@
         'Get-WorkdayWorkerByIdLookupTable',
         'Invoke-WorkdayRequest',
         'Remove-WorkdayConfiguration',
+        'Get-WorkdayWorkerPhoto',
 	    'Set-WorkdayWorkerPhoto',
         
         'Get-WorkdayEndpoint',
