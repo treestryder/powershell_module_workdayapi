@@ -65,7 +65,7 @@ USA-SSN             000000000 000-00-0000 (USA-SSN)
         $WorkerXml = $response.Xml
     }
 
-    if ($WorkerXml -eq $null) {
+    if ($null -eq $WorkerXml) {
         Write-Warning 'Unable to get National Id information, Worker not found.'
         return
     }

@@ -66,7 +66,7 @@ function Main {
         $arguments['Header'] = 'WorkerID','Email'
     }
 
-    if ($ResultsFile -eq $null) {
+    if ($null -eq $ResultsFile) {
         Import-Csv @arguments | UpdateEmail
     }
     else {
@@ -76,7 +76,7 @@ function Main {
         Write-Verbose "Result file: $ResultsFile"
     }
 
-    if ($ArchiveFile -ne $null) {
+    if ($null -ne $ArchiveFile) {
         if ($ArchiveFile -eq 'delete') {
             Write-Verbose "Deleting input file."
             Remove-Item -Path $InputFile
@@ -93,7 +93,7 @@ function Main {
 filter UpdateEmail {
     $entry = $_
     $worker = $Workers[$entry.WorkerID]
-    if ($worker -eq $null) {
+    if ($null -eq $worker) {
         $output = GetErrorResponse -WorkerId $entry.WorkerID -Email $entry.Email -Message 'Workday Worker not found by WorkerID.'
         Write-Output $output
     }

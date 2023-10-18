@@ -88,7 +88,7 @@
         Xml       = $null
     }
 
-    if ($response -eq $null) {
+    if ($null -eq $response) {
         return $output
     }
 
@@ -105,7 +105,7 @@
     $output.Xml = $response.Xml
     if ($Wait) {
         $event = Get-WorkdayIntegrationEvent -Wid $output.Wid -Integrations_ResourcesUri:$Integrations_ResourcesUri -Username:$Username -Password:$Password
-        while ($event.End -eq $null) {
+        while ($null -eq $event.End) {
             Start-Sleep -Seconds 5
             $event = Get-WorkdayIntegrationEvent -Wid $output.Wid -Integrations_ResourcesUri:$Integrations_ResourcesUri -Username:$Username -Password:$Password
         }

@@ -95,7 +95,7 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
         $_.DeviceType -eq $DeviceType -and
         (-not $_.Primary) -eq $Secondary
     } | Select-Object -First 1
-    if ($currentMatch -ne $null) {
+    if ($null -ne $currentMatch) {
         $scrubbedCurrentNumber = scrub $currentMatch.Number
         $scrubbedCurrentExtension = scrub $currentMatch.Extension
     }
@@ -130,7 +130,7 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
         $null = $params.Remove('WorkerType')
         Write-Debug $params
         $o = Set-WorkdayWorkerPhone -WorkerId $WorkerId -WorkerType $WorkerType @params
-        if ($o -ne $null) {
+        if ($null -ne $o) {
             if ($o.Success) {
                 $output.Success = $true
                 $output.Message = $msg -f 'Changed'
