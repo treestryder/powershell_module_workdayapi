@@ -65,7 +65,7 @@ Badge_ID            1         Badge ID
         $WorkerXml = $response.Xml
     }
 
-    if ($WorkerXml -eq $null) {
+    if ($null -eq $WorkerXml) {
         Write-Warning 'Unable to get Other Id information, Worker not found.'
         return
     }
@@ -85,8 +85,8 @@ Badge_ID            1         Badge ID
         $o.Type = '{0}' -f $typeXml.'#text'
         $o.Id = $_.Custom_ID_Data.ID
         $o.Descriptor = $_.Custom_ID_Data.ID_Type_Reference.Descriptor
-        $o.Issued_Date = try { Get-Date $_.Custom_ID_Data.Issued_Date -ErrorAction Stop } catch {}
-        $o.Expiration_Date = try { Get-Date $_.Custom_ID_Data.Expiration_Date -ErrorAction Stop } catch {}
+        $o.Issued_Date = if ($_.Custom_ID_Data.Issued_Date -match '\d\d\d\d-\d\d-\d\d') { Get-Date $_.Custom_ID_Data.Issued_Date }
+        $o.Expiration_Date = if ($_.Custom_ID_Data.Expiration_Date -match '\d\d\d\d-\d\d-\d\d') { Get-Date $_.Custom_ID_Data.Expiration_Date }
         $o.WID = $_.Custom_ID_Shared_Reference.ID | Where-Object {$_.type -eq 'WID'} | Select-Object -ExpandProperty '#text'
         Write-Output $o
     }

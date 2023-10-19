@@ -81,7 +81,7 @@ function Get-WorkdayIntegrationEvent {
         Xml             = $null
     }
 
-    if ($response -eq $null) {
+    if ($null -eq $response) {
         $output.Message = 'ERROR: null response.'
         return $output
     }

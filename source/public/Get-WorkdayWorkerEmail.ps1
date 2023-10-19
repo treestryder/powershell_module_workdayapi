@@ -67,7 +67,7 @@ Work work@example.com                True   True
         $WorkerXml = $response.Xml
     }
 
-    if ($WorkerXml -eq $null) {
+    if ($null -eq $WorkerXml) {
         Write-Warning 'Unable to get Email information, Worker not found.'
         return
     }

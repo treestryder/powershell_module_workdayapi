@@ -102,7 +102,7 @@ Update-WorkdayWorkerEmail -WorkerId 123 -Email test@example.com
         Message = $msg -f 'Failed'
     }
     if (
-        $currentEmail -ne $null -and
+        $null -ne $currentEmail -and
         $currentEmail.Email -eq $Email -and
         $currentEmail.UsageType -eq $UsageType -and
         (-not $currentEmail.Primary) -eq $Secondary -and
@@ -112,7 +112,7 @@ Update-WorkdayWorkerEmail -WorkerId 123 -Email test@example.com
         $output.Success = $true
     } else {
         $o = Set-WorkdayWorkerEmail -WorkerId $WorkerId -WorkerType $WorkerType -Email $Email -UsageType:$UsageType -Private:$Private -Secondary:$Secondary -Human_ResourcesUri:$Human_ResourcesUri -Username:$Username -Password:$Password
-        if ($o -ne $null) {
+        if ($null -ne $o) {
             if ($o.Success) {
                 $output.Success = $true
                 $output.Message = $msg -f 'Changed'
