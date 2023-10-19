@@ -98,7 +98,7 @@ At C:\Program Files\WindowsPowerShell\Modules\WorkdayApi\scripts\Invoke-WorkdayR
 	}
 
 
-     $o = [pscustomobject][ordered]@{
+     $o = [pscustomobject]@{
         Success    = $false
         Message  = 'Unknown Error'
         Xml = $null
