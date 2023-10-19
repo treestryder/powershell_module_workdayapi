@@ -102,7 +102,7 @@ Update-WorkdayWorkerEmail -WorkerId 123 -Email test@example.com
         Message = $msg -f 'Failed'
     }
     if (
-        $currentEmail -ne $null -and
+        $null -ne $currentEmail -and
         $currentEmail.Email -eq $Email -and
         $currentEmail.UsageType -eq $UsageType -and
         (-not $currentEmail.Primary) -eq $Secondary -and

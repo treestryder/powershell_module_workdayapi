@@ -98,7 +98,7 @@ filter UpdateEmail {
         Write-Output $output
     }
     elseif ($worker.Count -gt 1) {
-        $unrolledWorkers = ($worker | foreach {'{0} {1}' -f $_.WorkerType, $_.WorkerId}) -join ', '
+        $unrolledWorkers = ($worker | ForEach-Object {'{0} {1}' -f $_.WorkerType, $_.WorkerId}) -join ', '
         $msg = "More than one Workday Worker found by WorkerID: $unrolledWorkers"
         $output = GetErrorResponse -WorkerId $entry.WorkerID -Email $entry.Email -Message $msg
         Write-Output $output

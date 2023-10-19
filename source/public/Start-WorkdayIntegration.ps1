@@ -99,17 +99,17 @@
     }
 
     $output.Name = $response.Xml.Launch_Integration_Event_Response.Integration_Event.Integration_Event_Reference.Descriptor
-    $output.Wid = $response.Xml.Launch_Integration_Event_Response.Integration_Event.Integration_Event_Reference.ID | where {$_.type -eq 'WID'} | select -ExpandProperty InnerText
+    $output.Wid = $response.Xml.Launch_Integration_Event_Response.Integration_Event.Integration_Event_Reference.ID | Where-Object {$_.type -eq 'WID'} | Select-Object -ExpandProperty InnerText
     $initTime = Get-Date $response.Xml.Launch_Integration_Event_Response.Integration_Event.Integration_Event_Data.Initiated_DateTime
     $output.Message = 'Started at {0:g}.' -f $initTime
     $output.Xml = $response.Xml
     if ($Wait) {
-        $event = Get-WorkdayIntegrationEvent -Wid $output.Wid -Integrations_ResourcesUri:$Integrations_ResourcesUri -Username:$Username -Password:$Password
-        while ($null -eq $event.End) {
+        $wie = Get-WorkdayIntegrationEvent -Wid $output.Wid -Integrations_ResourcesUri:$Integrations_ResourcesUri -Username:$Username -Password:$Password
+        while ($null -eq $wie.End) {
             Start-Sleep -Seconds 5
-            $event = Get-WorkdayIntegrationEvent -Wid $output.Wid -Integrations_ResourcesUri:$Integrations_ResourcesUri -Username:$Username -Password:$Password
+            $wie = Get-WorkdayIntegrationEvent -Wid $output.Wid -Integrations_ResourcesUri:$Integrations_ResourcesUri -Username:$Username -Password:$Password
         }
-        return $event
+        return $wie
     }
     return $output
 }

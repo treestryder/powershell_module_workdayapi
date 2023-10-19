@@ -114,7 +114,7 @@ Update-WorkdayWorkerPhone -WorkerId 123 -Number 1234567890
         Message = $msg -f 'Failed'
     }
     if (
-        $currentMatch -ne $null -and
+        $null -ne $currentMatch -and
         $scrubbedCurrentNumber -eq $scrubbedProposedNumber -and
         $scrubbedCurrentExtension -eq $scrubbedProposedExtention -and
         (-not $currentMatch.Primary) -eq $Secondary -and
