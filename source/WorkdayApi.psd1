@@ -3,7 +3,6 @@
     ModuleVersion = '2.3.2'
     HelpInfoURI = 'https://github.com/treestryder/powershell_module_workdayapi/wiki'
     Author = 'Nathan Hartley'
-    Copyright = '(c) 2022 Nathan Hartley. All rights reserved.'
     RootModule = 'WorkdayApi.psm1'
     PowerShellVersion = '5.1'
     CompatiblePSEditions = @('Desktop', 'Core')
@@ -13,7 +12,8 @@
             LicenseUri = 'https://github.com/treestryder/powershell_module_workdayapi/blob/master/source/License.txt'
             ProjectUri = 'https://github.com/treestryder/powershell_module_workdayapi/'
             ReleaseNotes = @'
- * Added Get-WorkdayWorkerPhoto for getting worker's photo.
+* Added progress meter to Get-WorkdayWorker.
+* Minor improvements. In particular, removed some uses of silent exceptions.
 
 Change log available at: https://github.com/treestryder/powershell_module_workdayapi/blob/master/CHANGELOG.md 
 '@
