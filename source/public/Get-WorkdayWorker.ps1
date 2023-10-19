@@ -136,9 +136,12 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
             $request.Get_Workers_Request.Request_Criteria.Exclude_Inactive_Workers = 'false'
         }
 
-        $more = $true
         $nextPage = 0
+        $totalPages = 1
+        $more = $true
         while ($more) {
+            $percentComplete = ($nextPage / $totalPages) * 100
+            Write-Progress -Activity 'WorkdayAPI Get_Workers_Request' -Status "Page $nextPage of $totalPages" -PercentComplete $percentComplete
             $nextPage += 1
             $request.Get_Workers_Request.Response_Filter.Page = $nextPage.ToString()
             $response = Invoke-WorkdayRequest -Request $request -Uri $Human_ResourcesUri -Username:$Username -Password:$Password
@@ -147,7 +150,9 @@ Get-WorkdayWorker -WorkerId 123 -IncludePersonal
             } else {
                 $response.Xml | ConvertFrom-WorkdayWorkerXml
             }
-            $more = $response.Success -and $nextPage -lt $response.xml.Get_Workers_Response.Response_Results.Total_Pages
+            $totalPages = $response.xml.Get_Workers_Response.Response_Results.Total_Pages
+            $more = $response.Success -and $nextPage -lt $totalPages
         }
+        Write-Progress -Completed -Activity 'WorkdayAPI Get_Workers_Request'
     }
 }
