@@ -12,8 +12,10 @@
             LicenseUri = 'https://github.com/treestryder/powershell_module_workdayapi/blob/master/source/License.txt'
             ProjectUri = 'https://github.com/treestryder/powershell_module_workdayapi/'
             ReleaseNotes = @'
-* Added progress meter to Get-WorkdayWorker.
-* Minor improvements. In particular, removed some uses of silent exceptions.
+ * Added progress meter to Get-WorkdayWorker.
+ * Removed redunant [ordered] accelerator in Invoke-WorkdayRequest. Thank you mthreer.
+ * Removed some uses of silent exceptions.
+ * Implemented some validator recommendations.
 
 Change log available at: https://github.com/treestryder/powershell_module_workdayapi/blob/master/CHANGELOG.md 
 '@

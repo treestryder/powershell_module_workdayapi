@@ -3,7 +3,9 @@
 ## 2.3.1 - 2023-10-19
 
 * Added progress meter to Get-WorkdayWorker.
-* Minor improvements. In particular, removed some uses of silent exceptions.
+* Removed redunant [ordered] accelerator in Invoke-WorkdayRequest. Thank you mthreer.
+* Removed some uses of silent exceptions.
+* Implemented some validator recommendations.
 
 ## 2.3.0 - 2020-05-04
 
