@@ -120,7 +120,7 @@ At C:\Program Files\WindowsPowerShell\Modules\WorkdayApi\scripts\Invoke-WorkdayR
         try {
 	    $respStream = $_.Exception.Response.GetResponseStream()
             $respStream.position = 0
-            $reader = New-Object System.IO.StreamReader -ArgumentList
+            $reader = New-Object System.IO.StreamReader($respStream)
             $response = $reader.ReadToEnd()
             $reader.Close()
             $o.Message = $response
