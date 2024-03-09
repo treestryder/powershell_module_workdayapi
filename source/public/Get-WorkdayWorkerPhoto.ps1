@@ -52,7 +52,7 @@ $BinaryArray = Get-WorkdayWorkerPhoto -WorkerId 123
                    Position=0,
                    ValueFromPipelineByPropertyName=$true,
                    ParameterSetName='IndividualWorker')]
-		[ValidatePattern ('^$|^[a-fA-F0-9\-]{1,32}$')]
+		[ValidatePattern ('^$|^[a-zA-Z0-9\-]{1,32}$')]
         [string]$WorkerId,
         [Parameter(Position=1,
                    ValueFromPipelineByPropertyName=$true,

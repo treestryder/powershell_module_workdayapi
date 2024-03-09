@@ -36,7 +36,7 @@
 		[Parameter(Mandatory = $true,
             ParameterSetName="Search",
             Position=0)]
-		[ValidatePattern ('^[a-fA-F0-9\-]{1,32}$')]
+		[ValidatePattern ('^[a-zA-Z0-9\-]{1,32}$')]
 		[string]$WorkerId,
         [Parameter(ParameterSetName="Search")]
 		[ValidateSet('WID', 'Contingent_Worker_ID', 'Employee_ID')]
@@ -56,7 +56,7 @@
 		[Parameter(Mandatory = $true)]
 		[ValidateNotNullOrEmpty()]
 		[string]$Id,
-        [ValidatePattern ('^[a-fA-F0-9\-]{1,32}$')]
+        [ValidatePattern ('^[a-zA-Z0-9\-]{1,32}$')]
 		$WID,
         $IssuedDate,
         $ExpirationDate,

@@ -38,7 +38,7 @@ Set-WorkdayWorkerDocument -WorkerId 123 -Path Document.pdf
 	param (
 		[Parameter(Mandatory = $true,
             Position=0)]
-		[ValidatePattern ('^[a-fA-F0-9\-]{1,32}$')]
+		[ValidatePattern ('^[a-zA-Z0-9\-]{1,32}$')]
 		[string]$WorkerId,
 		[ValidateSet('WID', 'Contingent_Worker_ID', 'Employee_ID')]
 		[string]$WorkerType = 'Employee_ID',
