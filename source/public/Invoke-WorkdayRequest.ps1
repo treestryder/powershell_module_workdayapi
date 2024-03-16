@@ -107,7 +107,7 @@ At C:\Program Files\WindowsPowerShell\Modules\WorkdayApi\scripts\Invoke-WorkdayR
 
 	$response = $null
     try {
-		$response = Invoke-RestMethod -Method Post -Uri $Uri -Headers $headers -Body $WorkdaySoapEnvelope -ErrorAction Stop
+	$response = Invoke-RestMethod -Method Post -Uri $Uri -Headers $headers -Body $WorkdaySoapEnvelope -ErrorAction Stop
         $o.Xml = [xml]$response.Envelope.Body.InnerXml
         $o.Message = ''
         $o.Success = $true
@@ -118,7 +118,9 @@ At C:\Program Files\WindowsPowerShell\Modules\WorkdayApi\scripts\Invoke-WorkdayR
         $o.Message = $_.ToString()
 
         try {
-            $reader = New-Object System.IO.StreamReader -ArgumentList $_.Exception.Response.GetResponseStream()
+	    $respStream = $_.Exception.Response.GetResponseStream()
+            $respStream.position = 0
+            $reader = New-Object System.IO.StreamReader($respStream)
             $response = $reader.ReadToEnd()
             $reader.Close()
             $o.Message = $response
