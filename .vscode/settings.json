@@ -1,5 +1,8 @@
 {
     "githubPullRequests.remotes": [
         "origin"
+    ],
+    "githubPullRequests.ignoredPullRequestBranches": [
+        "master"
     ]
 }
