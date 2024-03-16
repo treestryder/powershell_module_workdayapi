@@ -41,7 +41,7 @@ Set-WorkdayWorkerUserId -WorkerId 123 -UserId worker@example.com
 	param (
 		[Parameter(Mandatory = $true,
             Position=0)]
-		[ValidatePattern ('^[a-fA-F0-9\-]{1,32}$')]
+		[ValidatePattern ('^[a-zA-Z0-9\-]{1,32}$')]
 		[string]$WorkerId,
 		[Parameter(Mandatory = $true)]
 		[ValidateNotNullOrEmpty()]
