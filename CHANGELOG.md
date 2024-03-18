@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.3 - 2024-03-18
+
+* FIX: No error messages returned Invoke-WorkdayRequest. Thank you YuriySamorodov.
+* FIX: Allow characters A through Z, not just hex A through F, for Worker ID / EID. Thank you YuriySamorodov.
+
 ## 2.3.1 - 2023-10-19
 
 * Added progress meter to Get-WorkdayWorker.
