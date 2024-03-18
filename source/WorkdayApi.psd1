@@ -1,6 +1,6 @@
 @{
     Description = 'Provides a means to access the Workday SOAP API in a Powershell friendly manner.'
-    ModuleVersion = '2.3.2'
+    ModuleVersion = '2.3.3'
     HelpInfoURI = 'https://github.com/treestryder/powershell_module_workdayapi/wiki'
     Author = 'Nathan Hartley'
     RootModule = 'WorkdayApi.psm1'
